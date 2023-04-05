@@ -4,6 +4,8 @@ import vue from '@vitejs/plugin-vue';
 import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 import pkg from './package.json';
+// vite 本身已按需导入了组件库，仅样式不是按需导入的，因此只需按需导入样式即可。
+import { createStyleImportPlugin, AndDesignVueResolve } from 'vite-plugin-style-import';
 import WindiCSS from 'vite-plugin-windicss'
 
 // https://vitejs.dev/config/
@@ -15,9 +17,20 @@ export default defineConfig(({ command }) => {
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   return {
+    css: {
+      preprocessorOptions: {
+        less: {
+          javascriptEnabled: true,
+        },
+      },
+    },
     plugins: [
       vue(),
       WindiCSS(),
+        // 按需加载样式文件
+        createStyleImportPlugin({
+          resolves: [AndDesignVueResolve()],
+        }),
       electron([
         {
           // Main-Process entry file of the Electron App.
@@ -61,6 +74,7 @@ export default defineConfig(({ command }) => {
       ]),
       // Use Node.js API in the Renderer-process
       renderer(),
+     
     ],
     server:
       process.env.VSCODE_DEBUG &&
@@ -72,5 +86,6 @@ export default defineConfig(({ command }) => {
         };
       })(),
     clearScreen: false,
+    
   };
 });
