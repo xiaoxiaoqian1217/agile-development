@@ -15,7 +15,7 @@ const useRouterManager = (router?: Router) => {
         if (this.isLoaded) {
           console.log('routerManager is loaded.');
           // this.registSystemEventListener()
-          this.router.push({ path: '/home' });
+          //   this.router.push({ path: '/home' });
         }
         this.isLoaded = false;
       },

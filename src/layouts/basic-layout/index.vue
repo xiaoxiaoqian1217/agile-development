@@ -1,24 +1,15 @@
 <template>
   <div>
-    <!--global-header -->
-    <div class="global-nav min-h-48px">
-      <div>
-        <div></div>
-        <div>
-          <div>独立应用</div>
-          <span> <ExclamationCircleOutlined /> </span>
-          <span> <StarOutlined /> </span>
-        </div>
-      </div>
-    </div>
+    <router-view v-slot="{ Component }">
+      <component :is="Component" />
+    </router-view>
   </div>
 
-  <!-- <Button type="primary">Primary Button</Button> -->
+  <Button type="primary" @click="$router.back()">Go back</Button>
 </template>
 
 <script setup lang="ts">
-  import { ExclamationCircleOutlined, StarOutlined } from '@ant-design/icons-vue';
-  import { Button } from 'ant-design-vue';
+  import { Tabs, TabPane, Button } from 'ant-design-vue';
 </script>
 
 <style scoped></style>
