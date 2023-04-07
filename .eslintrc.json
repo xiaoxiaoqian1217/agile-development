@@ -19,5 +19,7 @@
   },
   "plugins": ["vue", "@typescript-eslint"],
   "rules": {
+    "vue/no-setup-props-destructure": "off" // vue@3.2.5以上, props可以直接解构, 不会失去响应式
+
   }
 }
