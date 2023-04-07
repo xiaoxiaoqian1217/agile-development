@@ -6,7 +6,7 @@ import renderer from 'vite-plugin-electron-renderer';
 import pkg from './package.json';
 // vite 本身已按需导入了组件库，仅样式不是按需导入的，因此只需按需导入样式即可。
 import { createStyleImportPlugin, AndDesignVueResolve } from 'vite-plugin-style-import';
-import WindiCSS from 'vite-plugin-windicss'
+import WindiCSS from 'vite-plugin-windicss';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -15,7 +15,17 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve';
   const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
-
+  const serverConfig = process.env.VSCODE_DEBUG
+    ? (() => {
+        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+        return {
+          host: url.hostname,
+          port: +url.port,
+        };
+      })()
+    : {
+        host: 'https://sz.cwgis.site/',
+      };
   return {
     css: {
       preprocessorOptions: {
@@ -27,10 +37,10 @@ export default defineConfig(({ command }) => {
     plugins: [
       vue(),
       WindiCSS(),
-        // 按需加载样式文件
-        createStyleImportPlugin({
-          resolves: [AndDesignVueResolve()],
-        }),
+      // 按需加载样式文件
+      createStyleImportPlugin({
+        resolves: [AndDesignVueResolve()],
+      }),
       electron([
         {
           // Main-Process entry file of the Electron App.
@@ -74,18 +84,23 @@ export default defineConfig(({ command }) => {
       ]),
       // Use Node.js API in the Renderer-process
       renderer(),
-     
     ],
-    server:
-      process.env.VSCODE_DEBUG &&
-      (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-        return {
-          host: url.hostname,
-          port: +url.port,
-        };
-      })(),
+    server: process.env.VSCODE_DEBUG
+      ? (() => {
+          const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+          return {
+            host: url.hostname,
+            port: +url.port,
+          };
+        })()
+      : {
+          proxy: {
+            '/api': {
+              target: 'https://sz.cwgis.site/',
+              changeOrigin: true,
+            },
+          },
+        },
     clearScreen: false,
-    
   };
 });
