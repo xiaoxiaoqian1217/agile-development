@@ -3,7 +3,7 @@
     <!-- 侧栏 -->
     <div class="w-300px task-sidebar">
       <div class="flex py-2.5 px-4 justify-between"><span>视图</span></div>
-      <div class="flex py-2.5 px-4">
+      <div class="flex py-2.5 px-4 cursor-auto" @click="toAllTask">
         <span class="mr-2"><UnorderedListOutlined /></span><span>所有任务</span>
       </div>
     </div>
@@ -17,6 +17,16 @@
 
 <script setup lang="ts">
   import { UnorderedListOutlined } from '@ant-design/icons-vue';
+  import { onMounted } from 'vue';
+  import { useRouter } from 'vue-router';
+  const router = useRouter();
+  onMounted(() => {});
+  const toAllTask = () => {
+    console.log(`output->`, toAllTask);
+    router.push({
+      name: 'allTask',
+    });
+  };
 </script>
 
 <style scoped>

@@ -7,7 +7,7 @@ export default [
     path: '/project/:projectId',
     name: 'project',
     component: Project,
-    redirect: '/project/:projectId/task',
+    // redirect: '/project/:projectId/task',
     children: [
       {
         path: 'task',
@@ -17,7 +17,7 @@ export default [
           // parentRouteName: 'project',
         },
         component: Task,
-        redirect: '/project/:projectId/task/allTask',
+        // redirect: '/project/:projectId/task/allTask',
         children: [
           {
             path: 'allTask',

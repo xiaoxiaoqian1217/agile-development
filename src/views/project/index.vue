@@ -18,7 +18,7 @@
         </div>
         <!-- right -->
         <div class="ml-auto">
-          <span class="user"><UserOutlined /></span>
+          <span class="user" @click="showMembers"><UserOutlined /></span>
         </div>
       </div>
       <!-- 工具栏 -->
@@ -31,21 +31,37 @@
     <router-view v-slot="{ Component }">
       <component :is="Component" />
     </router-view>
+    <!-- 项目成员抽屉组件 -->
+    <Drawer v-model:visible="visible" class="custom-class" title="全部成员" placement="right">
+      <div>
+        <template v-for="userInfo in userList" :key="userInfo.id">
+          <div class="flex px-5 items-center">
+            <div class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white">
+              <span>{{ userInfo.user.name?.slice(0, 2) }}</span>
+            </div>
+            <span class="truncate font-500 text-neutral-800">{{ userInfo.user.name }}</span
+            ><span></span>
+          </div>
+        </template>
+      </div>
+    </Drawer>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue';
+  import { computed, ref, onMounted } from 'vue';
   import { RouterLink } from 'vue-router';
-
   import { ExclamationCircleOutlined, StarOutlined, UserOutlined, FilterOutlined } from '@ant-design/icons-vue';
-  import { Tabs, Button } from 'ant-design-vue';
+  import { Tabs, Drawer } from 'ant-design-vue';
 
   import { useRouter, useRoute } from 'vue-router';
   import { Key } from 'ant-design-vue/lib/_util/type';
+  import { getMembers } from '../../apis';
+  import { useUserStore } from '../../stores';
   const TabPane = Tabs.TabPane;
   const activeTab = ref<Key>('');
   const router = useRouter();
+  const route = useRoute();
   let matchedRoutes = router.currentRoute?.value.matched;
   console.log(`output->matchedRoutes`, matchedRoutes, router.currentRoute?.value.name);
   const curPath = computed(() => {
@@ -62,6 +78,32 @@
     console.log(`output->`, activeKey);
     activeTab.value = activeKey;
     router.push(`${curPath.value}/${activeKey}`);
+  };
+  onMounted(() => {
+    console.log(`output->route`, route.params.projectId);
+    router.push({
+      name: 'task',
+      params: {
+        pId: route.params.projectId,
+      },
+    });
+  });
+
+  const userStore = useUserStore();
+  const visible = ref<boolean>(false);
+  const userList = ref([]);
+  //  展示项目成员
+  const showMembers = () => {
+    visible.value = true;
+    fetchProjectMembers();
+  };
+
+  const fetchProjectMembers = async () => {
+    const resp = await getMembers({
+      pid: '5' || route.params.projectId,
+      token: userStore.token,
+    });
+    userList.value = resp.users;
   };
 </script>
 
