@@ -37,9 +37,9 @@
         <template v-for="userInfo in userList" :key="userInfo.id">
           <div class="flex px-5 items-center">
             <div class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white">
-              <span>{{ userInfo.user.name?.slice(0, 2) }}</span>
+              <span>{{ userInfo?.user.name?.slice(0, 2) }}</span>
             </div>
-            <span class="truncate font-500 text-neutral-800">{{ userInfo.user.name }}</span
+            <span class="truncate font-500 text-neutral-800">{{ userInfo?.user.name }}</span
             ><span></span>
           </div>
         </template>
@@ -50,7 +50,6 @@
 
 <script setup lang="ts">
   import { computed, ref, onMounted } from 'vue';
-  import { RouterLink } from 'vue-router';
   import { ExclamationCircleOutlined, StarOutlined, UserOutlined, FilterOutlined } from '@ant-design/icons-vue';
   import { Tabs, Drawer } from 'ant-design-vue';
 
@@ -58,6 +57,7 @@
   import { Key } from 'ant-design-vue/lib/_util/type';
   import { getMembers } from '../../apis';
   import { useUserStore } from '../../stores';
+  import { UserInfo } from '../../types';
   const TabPane = Tabs.TabPane;
   const activeTab = ref<Key>('');
   const router = useRouter();
@@ -91,7 +91,7 @@
 
   const userStore = useUserStore();
   const visible = ref<boolean>(false);
-  const userList = ref([]);
+  const userList = ref<UserInfo[]>();
   //  展示项目成员
   const showMembers = () => {
     visible.value = true;

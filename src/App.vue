@@ -16,7 +16,7 @@
       username: 'xiaoqian',
       password: 'password',
     });
-    store.setToken(loginResp.data.token);
+    store.setToken(loginResp?.data?.token);
   };
   onMounted(() => {
     login();
