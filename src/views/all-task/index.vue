@@ -16,9 +16,7 @@
       token: store.token,
       sort: 'status:desc',
     });
-    console.log(`output->`, taskResp);
   };
-  console.log(`output-route.params.projectId`, route.params.projectId);
   onMounted(async () => {
     // await login();
     store.token && fetchTask();

@@ -18,13 +18,17 @@
 <script setup lang="ts">
   import { UnorderedListOutlined } from '@ant-design/icons-vue';
   import { onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
+  const route = useRoute();
   const router = useRouter();
-  onMounted(() => {});
+  const projectId = route.params.projectId;
+  onMounted(() => {
+    toAllTask();
+  });
   const toAllTask = () => {
-    console.log(`output->`, toAllTask);
     router.push({
       name: 'allTask',
+      params: {},
     });
   };
 </script>

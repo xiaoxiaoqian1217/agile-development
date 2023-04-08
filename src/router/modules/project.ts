@@ -1,13 +1,13 @@
 import Project from '../../views/project/index.vue';
 import Task from '../../views/task/index.vue';
 import AllTask from '../../views/all-task/index.vue';
+import Test from '../../views/all-task/index.vue';
 
 export default [
   {
     path: '/project/:projectId',
     name: 'project',
     component: Project,
-    // redirect: '/project/:projectId/task',
     children: [
       {
         path: 'task',
@@ -17,7 +17,6 @@ export default [
           // parentRouteName: 'project',
         },
         component: Task,
-        // redirect: '/project/:projectId/task/allTask',
         children: [
           {
             path: 'allTask',
@@ -29,6 +28,16 @@ export default [
             component: AllTask,
           },
         ],
+      },
+      {
+        path: 'test',
+        name: 'test',
+        meta: {
+          title: '测试',
+          // parentRouteName: 'project',
+        },
+        component: Test,
+        // redirect: '/project/:projectId/task/allTask',
       },
     ],
   },
