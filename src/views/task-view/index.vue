@@ -1,5 +1,7 @@
 <template>
-  <div>根据视频,识别3种防御等级的目标</div>
+  <div>
+    <!-- <TaskList :title=""></TaskList> -->
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -21,6 +23,9 @@
     // await login();
     store.token && fetchTask();
   });
+
+  // 根据筛选类型动态获取task 列别
+
   // const login = async () => {
   //   const loginResp = await loginIn({
   //     username: 'xiaoqian',

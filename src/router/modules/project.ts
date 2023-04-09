@@ -1,7 +1,7 @@
 import Project from '../../views/project/index.vue';
 import Task from '../../views/task/index.vue';
-import AllTask from '../../views/all-task/index.vue';
-import Test from '../../views/all-task/index.vue';
+import TaskView from '../../views/task-view/index.vue';
+import Test from '../../views/test/index.vue';
 
 export default [
   {
@@ -10,7 +10,7 @@ export default [
     component: Project,
     children: [
       {
-        path: 'task',
+        path: 'task/:viewId?',
         name: 'task',
         meta: {
           title: '任务',
@@ -19,13 +19,13 @@ export default [
         component: Task,
         children: [
           {
-            path: 'allTask',
+            path: 'taskView',
             name: 'allTask',
             meta: {
               title: '所有任务',
               // parentRouteName: 'project',
             },
-            component: AllTask,
+            component: TaskView,
           },
         ],
       },

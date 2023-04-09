@@ -22,9 +22,29 @@
         </div>
       </div>
       <!-- 工具栏 -->
-      <div class="tool-bar flex h-48px px-24px py-12px">
-        <span class="setting ml-auto"><FilterOutlined /> 111</span><span class="filter"></span>
-      </div>
+      <!-- <div class="tool-bar flex h-48px px-24px py-12px">
+        <div class="setting ml-auto">
+          <Dropdown :trigger="['click']">
+            <a class="ant-dropdown-link" @click.prevent>
+              <FilterOutlined />
+              {{ filterTypeName }}
+              <span class="filter"></span>
+            </a>
+            <template #overlay>
+              <Menu @click="searchTypeChange">
+                <template v-for="item in ['1', '2']" :key="item">
+                  <MenuItem>
+                    <div class="flex justify-between">
+                      <span>{{ item }}</span>
+                      <span v-if="isActiveType === item"></span>
+                    </div>
+                  </MenuItem>
+                </template>
+              </Menu>
+            </template>
+          </Dropdown>
+        </div>
+      </div> -->
     </div>
     <!-- 项目下的tab切换 -->
 
@@ -51,11 +71,11 @@
 <script setup lang="ts">
   import { computed, ref, onMounted } from 'vue';
   import { ExclamationCircleOutlined, StarOutlined, UserOutlined, FilterOutlined } from '@ant-design/icons-vue';
-  import { Tabs, Drawer } from 'ant-design-vue';
+  import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
 
   import { useRouter, useRoute } from 'vue-router';
   import { Key } from 'ant-design-vue/lib/_util/type';
-  import { getMembers } from '../../apis';
+  import { getMembers, getTaskStatusTypes } from '../../apis';
   import { useUserStore } from '../../stores';
   import { UserItem } from '../../types';
   import { PAGE_ROUTE_NAME } from '../../router/router.d';
@@ -91,7 +111,7 @@
     activeTab.value = activeRoute as string;
     toTask(activeRoute as Key);
   });
-
+  //  获取项目成员相关
   const userStore = useUserStore();
   const visible = ref<boolean>(false);
   const userList = ref<UserItem[]>();

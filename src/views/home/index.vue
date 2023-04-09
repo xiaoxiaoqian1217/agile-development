@@ -32,6 +32,7 @@
   import { useRouter } from 'vue-router';
   import { getProjectList, loginIn } from '../../apis';
   import { useUserStore } from '../../stores';
+  import { useLocalStorage } from '@vueuse/core';
   const userStore = useUserStore();
   const router = useRouter();
   const activeKey = ref('1');
@@ -47,8 +48,9 @@
   const login = async () => {
     const loginResp = await loginIn({
       username: 'xiaoqian',
-      password: 'password',
+      password: 'xiaoqian',
     });
+    useLocalStorage('token', loginResp?.data?.token);
     userStore.setToken(loginResp.data.token);
   };
   const fetchProjectList = async () => {
@@ -56,7 +58,6 @@
       token: userStore.token,
     });
     projectList.value = res.projects;
-    console.log(`output->res`, res.projects);
   };
   onMounted(async () => {
     console.log(`output->`, userStore.token);
