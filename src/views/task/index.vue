@@ -37,40 +37,52 @@
       <div class="flex flex-auto">
         <!-- 工具栏 -->
         <!-- 这里展示动态的view -->
-        <div class="flex">
-          <div class="mr-5" v-for="[type, values] in taskBoard.groupMap" :key="type">
-            <div class="flex">
-              <div class="py-2.5">
-                <span class="mr-3 font-500 text-sm">
-                  {{ getStatusName(type)?.name }}
-                </span>
-                <span class="text-xs text-gray-500"> {{ values.length }} </span>
-              </div>
-              <!-- <span>...</span> -->
+        <!-- <div class="flex"> -->
+        <div class="mr-5 flex flex-col" v-for="[type, values] in taskBoard.groupMap" :key="type">
+          <div class="flex">
+            <div class="py-2.5">
+              <span class="mr-3 font-500 text-sm">
+                {{ getStatusName(type)?.name }}
+              </span>
+              <span class="text-xs text-gray-500"> {{ values.value.length }} </span>
             </div>
-            <div class="flex flex-col w-272px">
-              <div class="mb-2 bg-light-50 h-90px" v-for="task in values" :key="task.id">
+            <!-- <span>...</span> -->
+          </div>
+          <draggable
+            class="w-272px min-h-100px"
+            v-model="values.value"
+            group="taskList"
+            @change="dragChange"
+            item-key="id"
+            @start="drag = true"
+            @end="drag = false"
+          >
+            <template #item="{ element }">
+              <div class="mb-2 bg-light-50 h-90px">
                 <div class="ml-3.5 mt-3.5">
-                  <Checkbox :checked="task.status === Status.close || task.stats === Status.solve">
-                    <span class="ml-3 text-sm">{{ task.subject }}</span>
+                  <Checkbox :checked="element.status_id === Status.close || element.status_id === Status.solve">
+                    <span class="ml-3 text-sm">{{ element.subject }}</span>
                   </Checkbox>
                 </div>
-                <div></div>
-              </div>
+                <div></div></div
+            ></template>
+            <template #footer>
               <template v-if="type === Status.new">
                 <div class="shadow bg-light-50" @click="addTask">
                   <div class="text-center"><PlusOutlined /></div>
                 </div>
               </template>
-            </div>
-          </div>
+            </template>
+          </draggable>
         </div>
+        <!-- </div> -->
         <!-- <router-view v-slot="{ Component }">
         <component :is="Component" />
       </router-view> -->
       </div>
     </div>
-    <!--  -->
+    <!-- 创建任务弹出层 -->
+    <CreateTaskModal @on-visible="showCreateModal" :visible="isShowCreateModal"></CreateTaskModal>
   </div>
 </template>
 
@@ -81,12 +93,18 @@
   import { useRouter, useRoute } from 'vue-router';
   import { Status } from '../../types';
   import { getTaskStatusTypes, getTaskList } from '../../apis';
-
+  import draggable from 'vuedraggable';
+  import CreateTaskModal from './components/createTaskModal.vue';
+  const names = ref([1, 2]);
   const route = useRoute();
   const router = useRouter();
   const projectId = route.params.projectId;
   onMounted(() => {
     toAllTask();
+    searchTypeChange({
+      item: 1,
+      key: 1,
+    });
   });
   const toAllTask = (viewId = 1) => {
     router.push({
@@ -114,16 +132,16 @@
   };
   const fetchTask = async () => {
     const taskResp = await getTaskList({
-      pid: 5,
+      pid: 11,
       token: localStorage.getItem('token'),
       sort: 'status:desc',
     });
     const groupMap = taskBoard.groupMap;
     taskBoard.statusType.forEach((type) => {
-      if (!groupMap.has(type.id)) groupMap.set(type.id, []);
+      if (!groupMap.has(type.id)) groupMap.set(type.id, ref([]));
     });
     taskResp.issues.forEach((issue) => {
-      if (groupMap.has(issue.status)) groupMap.get(issue.status)?.push(issue);
+      if (groupMap.has(issue.status_id)) groupMap.get(issue.status_id).value?.push(issue);
     });
     taskBoard.groupMap = groupMap;
     // taskBoard.groupMap = groupMap;
@@ -141,7 +159,24 @@
     return taskBoard.statusType.find((item) => item.id === typeId);
   };
   // 新建任务
-  const addTask = () => {};
+  const addTask = () => {
+    isShowCreateModal.value = true;
+  };
+
+  // 拖拽改变
+  const dragChange = (evt) => {
+    const todo = evt.added?.element;
+
+    console.log(`output->todo`, todo);
+    // if (todo && todo.done !== props.done) {
+    //   const mutation = props.done ? M.DONE_TODO : M.UNDONE_TODO;
+    //   store.commit(mutation, todo);
+    // }
+  };
+  const isShowCreateModal = ref(false);
+  const showCreateModal = (flag: boolean) => {
+    isShowCreateModal.value = flag;
+  };
 </script>
 
 <style scoped>
