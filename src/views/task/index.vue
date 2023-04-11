@@ -38,42 +38,20 @@
         <!-- 工具栏 -->
         <!-- 这里展示动态的view -->
         <!-- <div class="flex"> -->
-        <div class="mr-5 flex flex-col" v-for="[type, values] in taskBoard.groupMap" :key="type">
-          <div class="flex">
-            <div class="py-2.5">
-              <span class="mr-3 font-500 text-sm">
-                {{ getStatusName(type)?.name }}
-              </span>
-              <span class="text-xs text-gray-500"> {{ values.value.length }} </span>
-            </div>
-            <!-- <span>...</span> -->
-          </div>
-          <draggable
-            class="w-272px min-h-100px"
-            v-model="values.value"
-            group="taskList"
-            @change="dragChange"
-            item-key="id"
-            @start="drag = true"
-            @end="drag = false"
+        <div class="mr-5 flex flex-col" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
+          <TaskList
+            @open-detail="showTaskDetail"
+            :title="getStatusName(type)?.name"
+            :list="tasks.value"
+            :status="type"
+            @change="drapStatusChange"
           >
-            <template #item="{ element }">
-              <div class="mb-2 bg-light-50 h-90px">
-                <div class="ml-3.5 mt-3.5">
-                  <Checkbox :checked="element.status_id === Status.close || element.status_id === Status.solve">
-                    <span class="ml-3 text-sm">{{ element.subject }}</span>
-                  </Checkbox>
-                </div>
-                <div></div></div
-            ></template>
-            <template #footer>
-              <template v-if="type === Status.new">
-                <div class="shadow bg-light-50" @click="addTask">
-                  <div class="text-center"><PlusOutlined /></div>
-                </div>
-              </template>
+            <template v-if="type === Status.new">
+              <div class="shadow bg-light-50" @click="addTask">
+                <div class="text-center"><PlusOutlined /></div>
+              </div>
             </template>
-          </draggable>
+          </TaskList>
         </div>
         <!-- </div> -->
         <!-- <router-view v-slot="{ Component }">
@@ -83,6 +61,12 @@
     </div>
     <!-- 创建任务弹出层 -->
     <CreateTaskModal @on-visible="showCreateModal" :visible="isShowCreateModal"></CreateTaskModal>
+    <UpdateTaskModal
+      v-if="isShowUpdateModal"
+      :detail="taskdetail"
+      @on-visible="updateTaskList"
+      :visible="isShowUpdateModal"
+    ></UpdateTaskModal>
   </div>
 </template>
 
@@ -91,10 +75,12 @@
   import { Tabs, Drawer, Dropdown, Menu, MenuItem, Checkbox } from 'ant-design-vue';
   import { PlusOutlined, FilterOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
-  import { Status } from '../../types';
-  import { getTaskStatusTypes, getTaskList } from '../../apis';
-  import draggable from 'vuedraggable';
+  import { Status, TaskItem } from '../../types';
+  import { getTaskStatusTypes, getTaskList, updateTask } from '@apis';
   import CreateTaskModal from './components/createTaskModal.vue';
+  import UpdateTaskModal from './components/updateTaskModal.vue';
+
+  import { TaskList } from '@components';
   const names = ref([1, 2]);
   const route = useRoute();
   const router = useRouter();
@@ -163,19 +149,55 @@
     isShowCreateModal.value = true;
   };
 
-  // 拖拽改变
-  const dragChange = (evt) => {
-    const todo = evt.added?.element;
-
-    console.log(`output->todo`, todo);
-    // if (todo && todo.done !== props.done) {
-    //   const mutation = props.done ? M.DONE_TODO : M.UNDONE_TODO;
-    //   store.commit(mutation, todo);
-    // }
-  };
   const isShowCreateModal = ref(false);
   const showCreateModal = (flag: boolean) => {
     isShowCreateModal.value = flag;
+    if (!flag)
+      searchTypeChange({
+        item: 1,
+        key: 1,
+      });
+  };
+  const updateTaskList = (flag: boolean) => {
+    isShowUpdateModal.value = flag;
+    if (!flag)
+      searchTypeChange({
+        item: 1,
+        key: 1,
+      });
+  };
+  // 更新任务状态
+  const defaultUpdateParams = {
+    fixed_version_id: '',
+    is_private: '',
+    assigned_to_id: 24,
+    estimated_hours: 1,
+  };
+  const drapStatusChange = async (status: Status, todo: TaskItem) => {
+    const resp = await updateTask({
+      token: localStorage.getItem('token'),
+      pid: projectId,
+      ...todo,
+      ...defaultUpdateParams,
+      status_id: status,
+    });
+    console.log(`output->drapStatusChange`, resp);
+    searchTypeChange({
+      item: 1,
+      key: 1,
+    });
+  };
+  const isShowUpdateModal = ref(false);
+
+  const taskdetail = reactive({});
+  const showTaskDetail = (detail) => {
+    console.log(`output->showTaskDetail`, detail);
+    Object.keys(detail).forEach((key) => {
+      console.log(`output->`, key);
+      taskdetail[key] = detail[key];
+    });
+    console.log(`output->`, taskdetail);
+    isShowUpdateModal.value = true;
   };
 </script>
 

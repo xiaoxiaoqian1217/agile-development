@@ -7,4 +7,6 @@ export const getProjectList = async (params: any): Promise<ApiResult<any>> =>
 export const getMembers = async (params: any): Promise<ApiResult<UserItem[]>> =>
   await httpClient.post('/api/users', params);
 
-//
+//目标版本
+export const fetchVersion = async (params: any): Promise<ApiResult<UserItem[]>> =>
+  await httpClient.post('/api/project/version', params);

@@ -15,3 +15,11 @@ export const fetchTrackerTypes = async (params: any): Promise<ApiResult<any>> =>
 // 查询任务优先级
 export const fetchTaskLevel = async (params: any): Promise<ApiResult<any>> =>
   httpClient.post('/api/priority', { ...params });
+
+//  新建任务
+export const createTask = async (params: any): Promise<ApiResult<any>> =>
+  httpClient.post('/api/issue/create', { ...params });
+
+//  更新任务
+export const updateTask = async (params: any): Promise<ApiResult<any>> =>
+  httpClient.post('/api/issue/update', { ...params });

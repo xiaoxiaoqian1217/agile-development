@@ -59,8 +59,8 @@
             <div class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white">
               <span>{{ userInfo.user.name?.slice(0, 2) }}</span>
             </div>
-            <span class="truncate font-500 text-neutral-800">{{ userInfo?.user.name }}</span
-            ><span></span>
+            <span class="truncate font-500 text-neutral-800">{{ userInfo?.user.name }}</span>
+            <span></span>
           </div>
         </template>
       </div>

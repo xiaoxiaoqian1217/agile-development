@@ -32,7 +32,7 @@
   import { useRouter } from 'vue-router';
   import { getProjectList, loginIn } from '../../apis';
   import { useUserStore } from '../../stores';
-  import { useLocalStorage } from '@vueuse/core';
+  import { useStorage } from '@vueuse/core';
   const userStore = useUserStore();
   const router = useRouter();
   const activeKey = ref('1');
@@ -50,7 +50,8 @@
       username: 'xiaoqian',
       password: 'xiaoqian',
     });
-    useLocalStorage('token', loginResp?.data?.token);
+    localStorage.setItem('token', loginResp?.data?.token);
+    // useStorage('token', loginResp?.data?.token);
     userStore.setToken(loginResp.data.token);
   };
   const fetchProjectList = async () => {

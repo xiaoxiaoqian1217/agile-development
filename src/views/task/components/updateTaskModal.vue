@@ -1,69 +1,108 @@
 <template>
   <div>
-    <Modal v-model:visible="visible" :title="`创建${seletedTrackerName}`" @ok="handleOk" @cancel="handleCancel">
-      <template #footer>
-        <Button key="back" @click="handleCancel">Return</Button>
-        <Button key="submit" type="primary" :loading="loading" @click="handleOk">完成</Button>
-      </template>
-      <Textarea class="w-full" v-model:value="formModel.subject" placeholder="输入标题" :rows="4" />
-      <div>
-        <div class="member"></div>
-        <div class="time"></div>
+    <Modal v-model:visible="visible" :title="`${seletedTrackerName}`" @ok="handleOk" @cancel="handleCancel">
+      <!-- 可编辑的标题 -->
+      <div ref="titleElement" class="bg-gray-50 w-full h-12" contenteditable spellcheck="false" @blur="validate">
+        {{ formModel.subject }}
       </div>
-      <div class="flex">
-        <div class="mr-5 project-name"></div>
-        <div class="mr-5 tracker">
-          <Dropdown :trigger="['click']">
-            <a class="ant-dropdown-link" @click.prevent>
-              {{ seletedTrackerName }}
-              <span class="filter"></span>
-            </a>
-            <template #overlay>
-              <Menu @click="trackerChange">
-                <template v-for="tracker in trackers" :key="tracker.id">
-                  <MenuItem>
-                    <div class="flex justify-between">
-                      <span>{{ tracker.name }}</span>
-                      <span v-if="formModel.tracker_id === tracker.id"></span>
-                    </div>
-                  </MenuItem>
-                </template>
-              </Menu>
-            </template>
-          </Dropdown>
-        </div>
-        <div class="mr-5 status">
-          <Dropdown :trigger="['click']">
-            <a class="ant-dropdown-link" @click.prevent>
-              {{ seletedStatusName }}
-              <span class="filter"></span>
-            </a>
-            <template #overlay>
-              <Menu @click="statusChange">
-                <template v-for="status in statusList" :key="status.id">
-                  <MenuItem>
-                    <div class="flex justify-between">
-                      <span>{{ status.name }}</span>
-                      <span v-if="formModel.status_id === status.id"></span>
-                    </div>
-                  </MenuItem>
-                </template>
-              </Menu>
-            </template>
-          </Dropdown>
-        </div>
-      </div>
-      <Divider />
-      <!-- label项 -->
       <div class="">
-        <div class="flex py-2 my-3">
-          <div class="w-30"><span class="label">备注</span></div>
-          <div><Textarea v-model:value="description" placeholder="添加备注" :rows="4" /></div>
+        <div class="flex py-2 my-3 items-center">
+          <div class="w-30"><span class="label">项目</span></div>
+          <div class="flex-auto"></div>
         </div>
-        <!-- <div>
-          <div><span class="label">状态</span></div>
-          <div></div>
-        </div> -->
+        <div class="flex py-2 my-3 items-center">
+          <div class="w-30"><span class="label">项目类型</span></div>
+          <div class="flex-auto">
+            <Dropdown :trigger="['click']">
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ seletedTrackerName }}
+                <span class="filter"></span>
+              </a>
+              <template #overlay>
+                <Menu @click="trackerChange">
+                  <template v-for="tracker in trackers" :key="tracker.id">
+                    <MenuItem>
+                      <div class="flex justify-between">
+                        <span>{{ tracker.name }}</span>
+                        <span v-if="formModel.tracker_id === tracker.id"></span>
+                      </div>
+                    </MenuItem>
+                  </template>
+                </Menu>
+              </template>
+            </Dropdown>
+          </div>
+        </div>
+        <div class="flex py-2 my-3 items-center">
+          <div class="w-30"><span class="label">状态</span></div>
+          <div class="flex-auto">
+            <Dropdown :trigger="['click']">
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ seletedStatusName }}
+                <span class="filter"></span>
+              </a>
+              <template #overlay>
+                <Menu @click="statusChange">
+                  <template v-for="status in statusList" :key="status.id">
+                    <MenuItem>
+                      <div class="flex justify-between">
+                        <span>{{ status.name }}</span>
+                        <span v-if="formModel.status_id === status.id"></span>
+                      </div>
+                    </MenuItem>
+                  </template>
+                </Menu>
+              </template>
+            </Dropdown>
+          </div>
+        </div>
+        <div class="flex py-2 my-3 items-center">
+          <div class="w-30"><span class="label">执行者</span></div>
+          <div class="flex-auto">
+            <Dropdown :trigger="['click']">
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ assignedMember }}
+                <span class="filter"></span>
+              </a>
+              <template #overlay>
+                <AutoComplete
+                  allowClear
+                  v-model:value="assignedMember"
+                  style="width: 200px"
+                  placeholder="input here"
+                  :options="userList"
+                  @search="handleSearch"
+                  :defaultOpen="true"
+                >
+                  <template #option="{ value, label }">
+                    <!-- <template v-for="userInfo in userList" :key="userInfo.id"> -->
+                    <div class="flex px-5 items-center">
+                      <div class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white">
+                        <span>{{ userInfo.user.name?.slice(0, 2) }}</span>
+                      </div>
+                      <span class="truncate font-500 text-neutral-800">{{ userInfo?.user.name }}</span>
+                      <span>{{ value }}</span>
+                      <span>{{ label }}</span>
+                    </div>
+                    <!-- </template> -->
+                  </template>
+                </AutoComplete>
+                <!-- <div>
+                  <a-input v-model:value="searchMember" placeholder="搜索" />
+                  <template v-for="userInfo in userList" :key="userInfo.id">
+                    <div class="flex px-5 items-center">
+                      <div class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white">
+                        <span>{{ userInfo.user.name?.slice(0, 2) }}</span>
+                      </div>
+                      <span class="truncate font-500 text-neutral-800">{{ userInfo?.user.name }}</span>
+                      <span></span>
+                    </div>
+                  </template>
+                </div> -->
+              </template>
+            </Dropdown>
+          </div>
+        </div>
         <div class="flex py-2 my-3 items-center">
           <div class="inline-block w-30"><span class="label">优先级</span></div>
           <div class="flex-auto">
@@ -97,7 +136,7 @@
               </a>
               <template #overlay>
                 <Menu @click="versionChange">
-                  <MenuItem key="0">
+                  <MenuItem key="">
                     <div class="flex justify-between">
                       <span>无</span>
                     </div>
@@ -139,17 +178,13 @@
           <div class="w-30"><span class="label"></span></div>
           <div class="flex-auto"></div>
         </div>
-        <div>
-          <div><span class="label"></span></div>
-          <div></div>
-        </div>
       </div>
     </Modal>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed, defineProps, toRaw } from 'vue';
+  import { ref, reactive, onMounted, computed, defineProps, toRaw, unref } from 'vue';
   import { useRoute } from 'vue-router';
   import dayjs, { Dayjs } from 'dayjs';
   import {
@@ -163,39 +198,32 @@
     DatePicker,
     InputNumber,
     notification,
+    AutoComplete,
   } from 'ant-design-vue';
-  import { fetchTrackerTypes, getTaskStatusTypes, fetchTaskLevel, createTask } from '@apis/index';
-  import { useProjectApi } from '@hooks/index';
+  import { fetchTrackerTypes, getTaskStatusTypes, fetchTaskLevel, updateTask } from '@apis/index';
+  import { useProjectApi, useCommonApis } from '@hooks/index';
   const route = useRoute();
   const projectId = route.params.projectId;
   const props = defineProps({
     visible: Boolean,
+    detail: {},
   });
+  const { detail } = props;
+  console.log(`output->prosp detail`, detail, props.detail);
   const emits = defineEmits(['onVisible']);
   const loading = ref<boolean>(false);
   // const visible = ref<boolean>(false);
   const visible = computed(() => {
     return props.visible;
   });
-  const formModel = reactive({
-    author: 12,
-    description: '根22',
-    priority: 2,
-    subject: 'JFJFJFJJJJJ',
-    tracker_id: 1,
-    status_id: 1,
-    priority_id: 2,
-    category_id: 11,
-    fixed_version_id: '',
-    is_private: 1,
-    assigned_to_id: '',
-    estimated_hours: '',
-    done_ratio: '81',
-    start_date: dayjs('2023-04-01'),
-    due_date: dayjs('2023-04-02'),
-    watcher_user_ids: '',
-    parent_issue_id: '',
-  });
+
+  const defaultDetail = {
+    ...props.detail,
+    start_date: dayjs(detail.start_date),
+    due_date: dayjs(detail?.due_date),
+  };
+
+  const formModel = reactive(defaultDetail);
 
   onMounted(() => {
     getTrackerTypes();
@@ -263,41 +291,30 @@
     formModel.priority_id = key;
   };
 
-  const estimated_hours = ref();
-
   // 获取版本列表
   const seletedVersionName = computed(() => {
-    return versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name || '待添加';
+    return versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name || '请选择版本';
   });
   const versionChange = ({ item, key }) => {
     formModel.fixed_version_id = key;
   };
 
   const { versionList } = useProjectApi();
-
-  // 校验提交的内容
-  const validate = (type = 'error', title = '失败', tip = '标题不能为空') => {
-    if (!formModel['subject'])
-      notification.error({
-        message: title,
-        placement: 'bottomLeft',
-        description: tip,
-      });
-    return false;
+  const defaultUpdateParams = {
+    fixed_version_id: '',
+    is_private: '',
+    assigned_to_id: '',
+    estimated_hours: '',
   };
-
   const handleOk = async () => {
-    validate();
     loading.value = true;
-    const start_date = dayjs(formModel.start_date).format('YYYY-MM-DD');
-    const due_date = dayjs(formModel.due_date).format('YYYY-MM-DD');
-
-    const resp = await createTask({
+    const resp = await updateTask({
       pid: projectId,
       token: localStorage.getItem('token'),
+      ...defaultUpdateParams,
       ...toRaw(formModel),
-      start_date,
-      due_date,
+      start_date: dayjs(formModel.start_date).format('YYYY-MM-DD'),
+      due_date: dayjs(formModel.due_date).format('YYYY-MM-DD'),
     });
     loading.value = false;
     emits('onVisible', false);
@@ -308,6 +325,29 @@
 
   const handleCancel = () => {
     emits('onVisible', false);
+  };
+  const { userList } = useCommonApis();
+  const filterList = ref(unref(userList));
+
+  const titleElement = ref(null);
+
+  function validate() {
+    if (!titleElement.value.innerText.trim()) return false;
+    formModel.subject = titleElement.value.innerText.trim();
+  }
+
+  const assignedMember = computed(() => {
+    return userList.value?.find((user) => formModel.assigned_to_id === user.id)?.name;
+  });
+
+  const handleSearch = (val: string) => {
+    let res: { value: string }[];
+    if (!val) {
+      res = [];
+    } else {
+      res = userList.value;
+    }
+    filterList.value = res;
   };
 </script>
 

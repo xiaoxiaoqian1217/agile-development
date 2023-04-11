@@ -7,6 +7,7 @@ import pkg from './package.json';
 // vite 本身已按需导入了组件库，仅样式不是按需导入的，因此只需按需导入样式即可。
 import { createStyleImportPlugin, AndDesignVueResolve } from 'vite-plugin-style-import';
 import WindiCSS from 'vite-plugin-windicss';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -85,6 +86,14 @@ export default defineConfig(({ command }) => {
       // Use Node.js API in the Renderer-process
       renderer(),
     ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+        '@apis': path.resolve(__dirname, 'src/apis'),
+        '@components': path.resolve(__dirname, 'src/components'),
+        '@hooks': path.resolve(__dirname, 'src/hooks'),
+      },
+    },
     server: process.env.VSCODE_DEBUG
       ? (() => {
           const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
