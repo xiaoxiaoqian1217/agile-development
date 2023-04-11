@@ -1,11 +1,11 @@
 <template>
   <div class="flex">
     <div class="py-2.5">
-      <span class="mr-3 font-500 text-sm">
+      <span class="mr-3 font-700 text-14px">
         <!-- {{ getStatusName(type)?.name }} -->
         {{ title }}
       </span>
-      <span class="text-xs text-gray-500"> {{ list.length }} </span>
+      <span class="text-12px text-gray-500"> {{ list.length }} </span>
     </div>
     <!-- <span>...</span> -->
   </div>
@@ -19,12 +19,18 @@
     @end="drag = false"
   >
     <template #item="{ element }">
-      <div class="mb-2 pl-3.5 pt-3.5 bg-light-50 h-105px flex" @click="openTaskDetail(element)">
+      <div
+        class="mb-2 pl-3.5 pt-3.5 bg-light-50 h-105px flex"
+        :class="element.status_id === Status.solve && 'done'"
+        @click="openTaskDetail(element)"
+      >
         <div class="">
-          <Checkbox :checked="element.status_id === Status.close || element.status_id === Status.solve"> </Checkbox>
+          <Checkbox v-if="element.status_id === Status.solve" disabled checked />
+          <Checkbox v-else :checked="element.status_id === Status.close || element.status_id === Status.solve">
+          </Checkbox>
         </div>
         <div class="ml-2 flex-1">
-          <span class="text-xs block">{{ element.subject }}</span>
+          <span class="text-14px block pt-4px">{{ element.subject }}</span>
           <div class="flex items-center mt-2">
             <img class="w-20px h-20px" :src="iconTypes[`type${element.status_id}`] || iconTypes.type3" />
             <span class="ml-1" v-if="element.description"><FileTextOutlined /></span>
@@ -54,7 +60,7 @@
 <script setup lang="ts">
   import { computed, ref, onMounted, reactive } from 'vue';
   import { Checkbox } from 'ant-design-vue';
-  import { FileTextOutlined } from '@ant-design/icons-vue';
+  import { FileTextOutlined, CheckSquareOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { Status, TaskItem } from '../../types';
   import draggable from 'vuedraggable';
@@ -98,4 +104,8 @@
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  .done {
+    color: #8c8c8c;
+  }
+</style>
