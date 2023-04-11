@@ -218,6 +218,10 @@
   });
 
   const defaultDetail = {
+    fixed_version_id: '',
+    is_private: '',
+    assigned_to_id: '',
+    estimated_hours: '',
     ...props.detail,
     start_date: dayjs(detail.start_date),
     due_date: dayjs(detail?.due_date),
@@ -300,18 +304,11 @@
   };
 
   const { versionList } = useProjectApi();
-  const defaultUpdateParams = {
-    fixed_version_id: '',
-    is_private: '',
-    assigned_to_id: '',
-    estimated_hours: '',
-  };
   const handleOk = async () => {
     loading.value = true;
     const resp = await updateTask({
       pid: projectId,
       token: localStorage.getItem('token'),
-      ...defaultUpdateParams,
       ...toRaw(formModel),
       start_date: dayjs(formModel.start_date).format('YYYY-MM-DD'),
       due_date: dayjs(formModel.due_date).format('YYYY-MM-DD'),
@@ -337,7 +334,7 @@
   }
 
   const assignedMember = computed(() => {
-    return userList.value?.find((user) => formModel.assigned_to_id === user.id)?.name;
+    return userList.value?.find((userInfo) => formModel.assigned_to_id === userInfo.user.id)?.user?.name;
   });
 
   const handleSearch = (val: string) => {
