@@ -4,7 +4,7 @@
       <Dropdown class="ml-4" :trigger="['click']">
         <a class="ant-dropdown-link" @click.prevent>
           <DownOutlined />
-          {{ `${filterTypeName}分列` }}
+          {{ curSideMenuName }}
           <span class="filter"></span>
         </a>
         <template #overlay>
@@ -13,7 +13,7 @@
               <MenuItem>
                 <div class="flex justify-between">
                   <span>{{ menu.name }}</span>
-                  <span v-if="isActiveType === item"></span>
+                  <span v-if="isActiveMenu === menu.id"></span>
                 </div>
               </MenuItem>
             </template>
@@ -21,16 +21,17 @@
         </template>
       </Dropdown>
       <!-- 搜索标题和ID -->
-      <div>
-        <Input v-model:value="searchValue" placeholder="搜索标题和 ID" @change="searchTask">
-          <template #prefix>
-            <SearchOutlined />
-          </template>
-        </Input>
-      </div>
+
       <!-- 如何分列查看 -->
-      <div class="setting ml-auto">
-        <Dropdown :trigger="['click']">
+      <div class="flex setting ml-auto items-center">
+        <div class="">
+          <Input v-model:value="searchValue" placeholder="搜索标题和 ID" @change="searchTask">
+            <template #prefix>
+              <SearchOutlined />
+            </template>
+          </Input>
+        </div>
+        <Dropdown class="ml-3" :trigger="['click']">
           <a class="ant-dropdown-link" @click.prevent>
             <FilterOutlined />
             {{ `${filterTypeName}分列` }}
@@ -146,8 +147,12 @@
     statusType: [],
     groupMap: new Map(),
   });
+  const activeMenuId = ref(SIDER_MENU[0]?.id);
   const filterTypeName = computed(() => {
-    return '按任务状态选';
+    return FILTER_DROP_DOWN_MENU.find((item) => item.id === isActiveType.value)?.name;
+  });
+  const curSideMenuName = computed(() => {
+    return SIDER_MENU.find((item) => item.id === activeMenuId.value)?.name;
   });
   const searchTypeChange = async ({ item, key }) => {
     // 根据任务状态筛选任务列表

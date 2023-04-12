@@ -1,28 +1,34 @@
 <template>
-  <div class="h-full">
+  <div class="h-full divide-y divide-gray-500 divide-opacity-10">
     <!--global-header -->
-    <div class="divide-y divide-gray-500 divide-opacity-10">
-      <div class="global-nav flex h-48px px-24px py-12px">
-        <!-- left -->
-        <div class="">
-          <div></div>
+    <div class="global-nav flex h-70px px-24px py-12px">
+      <!-- left -->
+      <div class="flex">
+        <!-- 项目图片 -->
+        <div class="flex h-full w-10 items-center">
+          <span @click="backToHome">
+            <LeftOutlined />
+          </span>
+        </div>
+        <div class>
           <div>
-            <div class="inline-block">独立应用</div>
+            <div class="inline-block">{{ projectName }}</div>
             <span class="ml-3"> <ExclamationCircleOutlined /> </span>
             <span class="ml-3"> <StarOutlined /> </span>
           </div>
-          <!--  tab-routes-切换 -->
-          <Tabs v-model:activeKey="activeTab" @change="toTask">
+          <Tabs v-model:activeKey="activeTab" @change="toTask" sise="small">
             <TabPane v-for="item in tabsRoutes" :key="item?.name" :tab="item.meta?.title"> </TabPane>
           </Tabs>
         </div>
-        <!-- right -->
-        <div class="ml-auto">
-          <span class="user" @click="showMembers"><UserOutlined /></span>
-        </div>
+        <!--  tab-routes-切换 -->
       </div>
-      <!-- 工具栏 -->
-      <!-- <div class="tool-bar flex h-48px px-24px py-12px">
+      <!-- right -->
+      <div class="ml-auto">
+        <span class="user" @click="showMembers"><UserOutlined /></span>
+      </div>
+    </div>
+    <!-- 工具栏 -->
+    <!-- <div class="tool-bar flex h-48px px-24px py-12px">
         <div class="setting ml-auto">
           <Dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
@@ -45,9 +51,7 @@
           </Dropdown>
         </div>
       </div> -->
-    </div>
     <!-- 项目下的tab切换 -->
-
     <router-view v-slot="{ Component }">
       <component :is="Component" />
     </router-view>
@@ -70,7 +74,7 @@
 
 <script setup lang="ts">
   import { computed, ref, onMounted } from 'vue';
-  import { ExclamationCircleOutlined, StarOutlined, UserOutlined, FilterOutlined } from '@ant-design/icons-vue';
+  import { ExclamationCircleOutlined, StarOutlined, UserOutlined, LeftOutlined } from '@ant-design/icons-vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
 
   import { useRouter, useRoute } from 'vue-router';
@@ -79,11 +83,13 @@
   import { useUserStore } from '../../stores';
   import { UserItem } from '../../types';
   import { PAGE_ROUTE_NAME } from '../../router/router.d';
+  import { useProjectApi } from '@hooks';
+
   const TabPane = Tabs.TabPane;
   const activeTab = ref<string>(PAGE_ROUTE_NAME.TASK);
   const router = useRouter();
   const route = useRoute();
-
+  console.log(`output->route`, route.query);
   const curPath = computed(() => {
     return router.currentRoute.value;
   });
@@ -94,6 +100,11 @@
     const curRoutes = router.currentRoute?.value.matched.filter((item) => item.name === PAGE_ROUTE_NAME.PROJECT);
     return curRoutes[0].children;
   });
+  const backToHome = () => {
+    router.push({
+      name: 'home',
+    });
+  };
   const toTask = (activeKey: Key) => {
     router.push({
       name: activeKey as string,
@@ -102,7 +113,17 @@
       },
     });
   };
-  onMounted(() => {
+  const { fetchProjectList, projectList } = useProjectApi();
+
+  const projectName = computed(() => {
+    return projectList.value.find((item) => {
+      console.log(`output->item`, item);
+      return item.id === Number(route.params.projectId);
+    })?.name;
+  });
+
+  onMounted(async () => {
+    await fetchProjectList();
     // 刷新时以当前路由为准
     const activeRoute =
       curPath.value?.name === PAGE_ROUTE_NAME.PROJECT
@@ -123,11 +144,15 @@
 
   const fetchProjectMembers = async () => {
     const resp = await getMembers({
-      pid: '5' || route.params.projectId,
+      pid: route.params.projectId,
       token: userStore.token,
     });
     userList.value = resp.users;
   };
 </script>
 
-<style scoped></style>
+<style>
+  .ant-tabs-tab {
+    padding: 8px 0;
+  }
+</style>

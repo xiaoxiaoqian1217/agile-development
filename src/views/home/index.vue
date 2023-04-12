@@ -4,7 +4,7 @@
       <TabPane key="1" tab="我的项目">
         <div class="flex flex-wrap items-start">
           <template v-for="project in projectList" :key="project.id">
-            <div class="w-224px animate-none m-2" @click="toProject(project.id)">
+            <div class="w-224px animate-none m-2" @click="toProject(project)">
               <div>
                 <img
                   src="https://tcs-ga.teambition.net/thumbnail/111tef9a0fbcb8a22b1ea0de47d85b9a52e0/w/600/h/300"
@@ -33,15 +33,19 @@
   import { getProjectList, loginIn } from '../../apis';
   import { useUserStore } from '../../stores';
   import { useStorage } from '@vueuse/core';
+  import { useProjectApi } from '@hooks';
   const userStore = useUserStore();
   const router = useRouter();
   const activeKey = ref('1');
-  const projectList = ref([]);
-  const toProject = (id: number) => {
+  const { projectList, fetchProjectList } = useProjectApi();
+  const toProject = (project) => {
     router.push({
       name: 'project',
       params: {
-        projectId: id,
+        projectId: project.id,
+      },
+      query: {
+        projectName: project.name,
       },
     });
   };
@@ -54,12 +58,12 @@
     // useStorage('token', loginResp?.data?.token);
     userStore.setToken(loginResp.data.token);
   };
-  const fetchProjectList = async () => {
-    const res = await getProjectList({
-      token: userStore.token,
-    });
-    projectList.value = res.projects;
-  };
+  // const fetchProjectList = async () => {
+  //   const res = await getProjectList({
+  //     token: userStore.token,
+  //   });
+  //   projectList.value = res.projects;
+  // };
   onMounted(async () => {
     console.log(`output->`, userStore.token);
     await login();

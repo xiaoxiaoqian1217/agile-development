@@ -67,9 +67,6 @@
   import { type1, type2, type3 } from './icon.ts';
   import { useCommonApis } from '../../hooks';
   const { userList } = useCommonApis();
-  // import type1 from '../../assets/task/type-1.png';
-  // import type2 from '../../assets/task/type-2.png';
-  // import type3 from '../../assets/task/type-3.png';
   const iconTypes = {
     type1,
     type2,
