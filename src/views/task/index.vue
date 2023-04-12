@@ -3,9 +3,9 @@
     <div class="tool-bar flex h-48px px-24px py-12px">
       <Dropdown class="ml-4" :trigger="['click']">
         <a class="ant-dropdown-link" @click.prevent>
-          <DownOutlined />
           {{ curSideMenuName }}
-          <span class="filter"></span>
+          <DownOutlined class="mt-0.5 ml-1" />
+          <span class=""> </span>
         </a>
         <template #overlay>
           <Menu @click="searchTypeChange">
@@ -25,7 +25,7 @@
       <!-- 如何分列查看 -->
       <div class="flex setting ml-auto items-center">
         <div class="">
-          <Input v-model:value="searchValue" placeholder="搜索标题和 ID" @change="searchTask">
+          <Input v-model:value="searchValue" placeholder="搜索标题" @change="searchTask">
             <template #prefix>
               <SearchOutlined />
             </template>

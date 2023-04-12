@@ -16,3 +16,10 @@ export interface UserInfo {
   id: number;
   name: string;
 }
+
+export interface LoginUserInfo {
+  admin: boolean;
+  id: number;
+  mail: string;
+  name: string;
+}

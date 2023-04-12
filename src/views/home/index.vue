@@ -30,9 +30,8 @@
   import { Tabs, TabPane } from 'ant-design-vue';
   import { onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
-  import { getProjectList, loginIn } from '../../apis';
+  import { loginIn } from '../../apis';
   import { useUserStore } from '../../stores';
-  import { useStorage } from '@vueuse/core';
   import { useProjectApi } from '@hooks';
   const userStore = useUserStore();
   const router = useRouter();

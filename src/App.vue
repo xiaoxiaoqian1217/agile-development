@@ -8,9 +8,9 @@
   // import { Tabs, TabPane, Button } from 'ant-design-vue';
   // import { loginIn } from './apis';
   // import { useUserStore } from './stores';
+  // const store = useUserStore();
   // import { onMounted } from 'vue';
 
-  // const store = useUserStore();
   // const login = async () => {
   //   const loginResp = await loginIn({
   //     username: 'xiaoqian',
