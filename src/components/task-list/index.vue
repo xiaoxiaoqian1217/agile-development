@@ -5,13 +5,13 @@
         <!-- {{ getStatusName(type)?.name }} -->
         {{ title }}
       </span>
-      <span class="text-12px text-gray-500"> {{ list.length }} </span>
+      <span class="text-12px text-gray-500"> {{ computedList.length }} </span>
     </div>
     <!-- <span>...</span> -->
   </div>
   <draggable
     class="w-272px min-h-300px"
-    v-model="list"
+    v-model="computedList"
     group="taskList"
     @change="dragChange"
     item-key="id"
@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted, reactive } from 'vue';
+  import { computed, ref, onMounted, reactive, watch } from 'vue';
   import { Checkbox } from 'ant-design-vue';
   import { FileTextOutlined, CheckSquareOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
@@ -84,9 +84,12 @@
   const props = withDefaults(defineProps<TaskListProps>(), {});
   const emits = defineEmits(['change', 'openDetail']);
   const { title, list, status } = props;
+  const computedList = computed(() => props.list);
+
   const assignedMember = (element) => {
     return userList.value?.find((userInfo) => element.author === userInfo.user.id)?.user.name;
   };
+
   // 拖拽改变
   const dragChange = (evt) => {
     const todo = evt.added?.element;

@@ -1,19 +1,47 @@
 <template>
   <div class="h-full">
     <div class="tool-bar flex h-48px px-24px py-12px">
+      <Dropdown class="ml-4" :trigger="['click']">
+        <a class="ant-dropdown-link" @click.prevent>
+          <DownOutlined />
+          {{ `${filterTypeName}分列` }}
+          <span class="filter"></span>
+        </a>
+        <template #overlay>
+          <Menu @click="searchTypeChange">
+            <template v-for="menu in SIDER_MENU" :key="menu.id">
+              <MenuItem>
+                <div class="flex justify-between">
+                  <span>{{ menu.name }}</span>
+                  <span v-if="isActiveType === item"></span>
+                </div>
+              </MenuItem>
+            </template>
+          </Menu>
+        </template>
+      </Dropdown>
+      <!-- 搜索标题和ID -->
+      <div>
+        <Input v-model:value="searchValue" placeholder="搜索标题和 ID" @change="searchTask">
+          <template #prefix>
+            <SearchOutlined />
+          </template>
+        </Input>
+      </div>
+      <!-- 如何分列查看 -->
       <div class="setting ml-auto">
         <Dropdown :trigger="['click']">
           <a class="ant-dropdown-link" @click.prevent>
             <FilterOutlined />
-            {{ filterTypeName }}
+            {{ `${filterTypeName}分列` }}
             <span class="filter"></span>
           </a>
           <template #overlay>
             <Menu @click="searchTypeChange">
-              <template v-for="item in ['1', '2']" :key="item">
+              <template v-for="item in FILTER_DROP_DOWN_MENU" :key="item.id">
                 <MenuItem>
                   <div class="flex justify-between">
-                    <span>{{ item }}</span>
+                    <span>{{ item.name }}</span>
                     <span v-if="isActiveType === item"></span>
                   </div>
                 </MenuItem>
@@ -72,26 +100,39 @@
 
 <script setup lang="ts">
   import { computed, ref, onMounted, reactive } from 'vue';
-  import { Tabs, Drawer, Dropdown, Menu, MenuItem, Checkbox } from 'ant-design-vue';
-  import { PlusOutlined, FilterOutlined } from '@ant-design/icons-vue';
+  import { Tabs, Drawer, Dropdown, Menu, MenuItem, Checkbox, Input } from 'ant-design-vue';
+  import { PlusOutlined, FilterOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { Status, TaskItem } from '../../types';
   import { getTaskStatusTypes, getTaskList, updateTask } from '@apis';
   import CreateTaskModal from './components/createTaskModal.vue';
   import UpdateTaskModal from './components/updateTaskModal.vue';
-
+  import { FILTER_DROP_DOWN_MENU, type FilterType, SIDER_MENU } from './constants';
   import { TaskList } from '@components';
-  const names = ref([1, 2]);
+  import { useTaskBusiness } from './hooks';
   const route = useRoute();
   const router = useRouter();
   const projectId = route.params.projectId;
+
+  const { filterTask, fetchTask, initTaskList, filterTaskList } = useTaskBusiness();
+
+  const isActiveType = ref(FILTER_DROP_DOWN_MENU[0]?.id);
+  const searchValue = ref('');
+
   onMounted(() => {
     toAllTask();
     searchTypeChange({
-      item: 1,
-      key: 1,
+      item: FILTER_DROP_DOWN_MENU[0],
+      key: FILTER_DROP_DOWN_MENU[0]?.id,
     });
   });
+  const searchTask = () => {
+    const value = searchValue.value;
+    filterTask({ subject: value });
+    // else filterTask({ id: value });
+    classifyTask(filterTaskList.value);
+  };
+
   const toAllTask = (viewId = 1) => {
     router.push({
       name: 'task',
@@ -101,7 +142,6 @@
     });
   };
   // 根据筛选类型查询项目
-  const isActiveType = ref('1');
   const taskBoard = reactive({
     statusType: [],
     groupMap: new Map(),
@@ -110,35 +150,27 @@
     return '按任务状态选';
   });
   const searchTypeChange = async ({ item, key }) => {
-    console.log(`output->item`, item, key);
-    // 根据任务状态
-    taskBoard.groupMap = new Map();
+    // 根据任务状态筛选任务列表
     await taskStatusTypes();
     await fetchTask();
+    classifyTask(initTaskList.value);
   };
-  const fetchTask = async () => {
-    const taskResp = await getTaskList({
-      pid: 11,
-      token: localStorage.getItem('token'),
-      sort: 'status:desc',
-    });
-    const groupMap = taskBoard.groupMap;
+  const classifyTask = async (list) => {
+    const groupMap = new Map();
     taskBoard.statusType.forEach((type) => {
       if (!groupMap.has(type.id)) groupMap.set(type.id, ref([]));
     });
-    taskResp.issues.forEach((issue) => {
+    console.log(`output->initTaskList.value`, list);
+    list.forEach((issue) => {
       if (groupMap.has(issue.status_id)) groupMap.get(issue.status_id).value?.push(issue);
     });
     taskBoard.groupMap = groupMap;
-    // taskBoard.groupMap = groupMap;
-    // console.log('groupMap', groupMap);
   };
   const taskStatusTypes = async () => {
     const resp = await getTaskStatusTypes({
       token: localStorage.getItem('token'),
     });
     taskBoard.statusType = resp.tracker;
-    console.log(`output->resp`, resp);
   };
 
   const getStatusName = (typeId: number) => {
