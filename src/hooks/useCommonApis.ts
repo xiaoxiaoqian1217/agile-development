@@ -5,12 +5,7 @@ import { UserItem, Users } from '../types';
 export const useCommonApis = () => {
   const route = useRoute();
   const projectId = route.params.projectId; // 获取版本列表
-  const commonModel = reactive({
-    versionList: [],
-  });
-  onMounted(() => {
-    fetchMembers();
-  });
+
   const userList = ref<UserItem[]>();
   //  展示项目成员
 
@@ -21,5 +16,5 @@ export const useCommonApis = () => {
     });
     userList.value = resp.users;
   };
-  return { userList, fetchMembers };
+  return { memberList: userList, fetchMembers };
 };

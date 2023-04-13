@@ -2,7 +2,6 @@
   <div class="flex">
     <div class="py-2.5">
       <span class="mr-3 font-700 text-14px">
-        <!-- {{ getStatusName(type)?.name }} -->
         {{ computedtitle }}
       </span>
       <span class="text-12px text-gray-500"> {{ computedList.length }} </span>
@@ -40,7 +39,9 @@
               :src="iconTypes[`type${element.status_id}`] || iconTypes.type3"
             />
             <span class="ml-1" v-if="element.description"><FileTextOutlined /></span>
-            <span v-if="element.fixed_version_id">{{ element?.fixed_version_id }}</span>
+            <span v-if="element.fixed_version_id">{{
+              getVersionName(element?.fixed_version_id)
+            }}</span>
           </div>
 
           <div v-if="element.estimated_hours">预期时间: {{ element?.estimated_hours }}小时</div>
@@ -66,15 +67,13 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted, reactive, watch } from 'vue';
+  import { computed, ref, onMounted, reactive, watch, inject } from 'vue';
   import { Checkbox, Drawer } from 'ant-design-vue';
   import { FileTextOutlined, CheckSquareOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { Status, TaskItem } from '../../types';
   import draggable from 'vuedraggable';
   import { type1, type2, type3 } from './icon';
-  import { useCommonApis } from '../../hooks';
-  const { userList } = useCommonApis();
   const iconTypes = {
     type1,
     type2,
@@ -89,24 +88,26 @@
 
   const props = withDefaults(defineProps<TaskListProps>(), {});
   const emits = defineEmits(['change', 'openDetail']);
-  const { title, list, fieldId, field } = props;
+  const { field } = props;
   const computedList = computed(() => props.list);
   const computedtitle = computed(() => props.title);
   const computedfield = computed(() => props.field);
   const computedfieldiD = computed(() => props.fieldId);
+  const versionList = inject('versionList');
+  const memberList = inject('memberList');
 
   const assignedMember = (element) => {
-    return userList.value?.find((userInfo) => element.author === userInfo.user.id)?.user.name;
+    return memberList.value?.find((userInfo) => element.author === userInfo.user.id)?.user.name;
   };
-
+  const getVersionName = (id) => {
+    return versionList.value?.find((item) => item.id === id)?.name;
+  };
   // 拖拽改变
   const dragChange = (evt) => {
     const todo = evt.added?.element;
     if (todo && todo[field] !== props.fieldId) {
       console.log(`output->dragChange`, field, todo[field], props.fieldId);
       emits('change', { ...todo, [computedfield.value]: computedfieldiD.value });
-      // const mutation = props.done ? M.DONE_TODO : M.UNDONE_TODO;
-      // store.commit(mutation, todo);
     }
   };
   const openTaskDetail = (detail) => {

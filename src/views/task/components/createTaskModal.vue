@@ -1,14 +1,20 @@
 <template>
   <div>
-    <Modal v-model:visible="visible" :title="`创建${seletedTrackerName}`" @ok="handleOk" @cancel="handleCancel">
+    <Modal
+      v-model:visible="visible"
+      :title="`创建${seletedTrackerName}`"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
       <template #footer>
-        <Button key="back" @click="handleCancel">Return</Button>
+        <Button key="back" @click="handleCancel">取消</Button>
         <Button key="submit" type="primary" :loading="loading" @click="handleOk">完成</Button>
       </template>
       <Textarea class="w-full" v-model:value="formModel.subject" placeholder="输入标题" :rows="4" />
       <div>
-        <div class="member"></div>
-        <div class="time"></div>
+        <div class="member">
+          <SelectMember></SelectMember>
+        </div>
       </div>
       <div class="flex">
         <div class="mr-5 project-name"></div>
@@ -35,12 +41,12 @@
         <div class="mr-5 status">
           <Dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
-              {{ seletedStatusName }}
+              {{ defaultStatus?.name }}
               <span class="filter"></span>
             </a>
             <template #overlay>
               <Menu @click="statusChange">
-                <template v-for="status in statusList" :key="status.id">
+                <template v-for="status in [defaultStatus]" :key="status.id">
                   <MenuItem>
                     <div class="flex justify-between">
                       <span>{{ status.name }}</span>
@@ -58,7 +64,9 @@
       <div class="">
         <div class="flex py-2 my-3">
           <div class="w-30"><span class="label">备注</span></div>
-          <div><Textarea v-model:value="description" placeholder="添加备注" :rows="4" /></div>
+          <div>
+            <Textarea v-model:value="formModel.description" placeholder="添加备注" :rows="4" />
+          </div>
         </div>
         <!-- <div>
           <div><span class="label">状态</span></div>
@@ -149,7 +157,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed, defineProps, toRaw } from 'vue';
+  import { ref, reactive, onMounted, computed, defineProps, toRaw, inject } from 'vue';
   import { useRoute } from 'vue-router';
   import dayjs, { Dayjs } from 'dayjs';
   import {
@@ -164,8 +172,9 @@
     InputNumber,
     notification,
   } from 'ant-design-vue';
-  import { fetchTrackerTypes, getTaskStatusTypes, fetchTaskLevel, createTask } from '@apis/index';
-  import { useProjectApi } from '@hooks/index';
+  import { createTask } from '@apis/index';
+  import { SelectMember } from '@/components';
+
   const route = useRoute();
   const projectId = route.params.projectId;
   const props = defineProps({
@@ -178,13 +187,13 @@
     return props.visible;
   });
   const formModel = reactive({
-    author: 12,
-    description: '根22',
+    author: '',
+    description: '',
     priority: 2,
-    subject: 'JFJFJFJJJJJ',
+    subject: '',
     tracker_id: 1,
     status_id: 1,
-    priority_id: 2,
+    priority_id: 1,
     category_id: 11,
     fixed_version_id: '',
     is_private: 1,
@@ -197,83 +206,50 @@
     parent_issue_id: '',
   });
 
-  onMounted(() => {
-    getTrackerTypes();
-    taskStatusTypes();
-    getTaskLevel();
+  const levels = inject('levelList');
+  const statusList = inject('statusList');
+  const trackers = inject('trackersList');
+  const versionList = inject('versionList');
+  const memberList = inject('memberList');
+  console.log(`output->trackers`, trackers);
+
+  const defaultStatus = computed(() => {
+    return statusList.value[0];
   });
-
-  const showModal = () => {
-    emits('onVisible', true);
-  };
-
-  const trackers = ref();
-  // 获取任务类型
-  const getTrackerTypes = async () => {
-    const resp = await fetchTrackerTypes({
-      token: localStorage.getItem('token'),
-      pid: projectId,
-    });
-    trackers.value = resp.tracker;
-  };
   const seletedTrackerName = computed(() => {
     return trackers.value?.find((tracker) => formModel.tracker_id === tracker.id)?.name;
   });
-  // const seletedTrackerId = ref();
   const trackerChange = ({ item, key }) => {
     formModel.tracker_id = key;
   };
-  // 获取任务状态
 
-  const statusList = ref();
-  // const seletedStatusId = ref();
-
-  const seletedStatusName = computed(() => {
-    return statusList.value?.find((status) => formModel.status_id === status.id)?.name;
-  });
-  const taskStatusTypes = async () => {
-    const resp = await getTaskStatusTypes({
-      token: localStorage.getItem('token'),
-    });
-    statusList.value = resp.tracker;
-    console.log(`output->resp`, resp);
-  };
+  // const seletedStatusName = computed(() => {
+  //   return statusList.value?.find((status) => formModel.status_id === status.id)?.name;
+  // });
   const statusChange = ({ item, key }) => {
     formModel.status_id = key;
   };
 
-  const taskName = ref('');
-  const description = ref('');
-
   // 查询任务优先级
-  const levels = ref([]);
   // const seletedLevelId = ref();
   const seletedLevelName = computed(() => {
     return levels.value?.find((level) => formModel.priority_id === level.id)?.name;
   });
-  const getTaskLevel = async () => {
-    const resp = await fetchTaskLevel({
-      token: localStorage.getItem('token'),
-      pid: projectId,
-    });
-    levels.value = resp.priority;
-    console.log(`output->priority`, levels.value);
-  };
+
   const levelChange = ({ item, key }) => {
     formModel.priority_id = key;
   };
 
-  const estimated_hours = ref();
-
   // 获取版本列表
   const seletedVersionName = computed(() => {
-    return versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name || '待添加';
+    return (
+      versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name ||
+      '待添加'
+    );
   });
   const versionChange = ({ item, key }) => {
     formModel.fixed_version_id = key;
   };
-
-  const { versionList } = useProjectApi();
 
   // 校验提交的内容
   const validate = (type = 'error', title = '失败', tip = '标题不能为空') => {
@@ -291,8 +267,7 @@
     loading.value = true;
     const start_date = dayjs(formModel.start_date).format('YYYY-MM-DD');
     const due_date = dayjs(formModel.due_date).format('YYYY-MM-DD');
-
-    const resp = await createTask({
+    await createTask({
       pid: projectId,
       token: localStorage.getItem('token'),
       ...toRaw(formModel),
@@ -301,9 +276,6 @@
     });
     loading.value = false;
     emits('onVisible', false);
-
-    // setTimeout(() => {
-    // }, 2000);
   };
 
   const handleCancel = () => {

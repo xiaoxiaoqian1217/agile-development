@@ -30,10 +30,8 @@
   import { Tabs, TabPane } from 'ant-design-vue';
   import { onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
-  import { loginIn } from '../../apis';
   import { useUserStore } from '../../stores';
-  import { useProjectApi } from '@hooks';
-  const userStore = useUserStore();
+  import { useProjectApi } from '@/hooks';
   const router = useRouter();
   const activeKey = ref('1');
   const { projectList, fetchProjectList } = useProjectApi();
@@ -48,25 +46,9 @@
       },
     });
   };
-  const login = async () => {
-    const loginResp = await loginIn({
-      username: 'xiaoqian',
-      password: 'xiaoqian',
-    });
-    localStorage.setItem('token', loginResp?.data?.token);
-    // useStorage('token', loginResp?.data?.token);
-    userStore.setToken(loginResp.data.token);
-  };
-  // const fetchProjectList = async () => {
-  //   const res = await getProjectList({
-  //     token: userStore.token,
-  //   });
-  //   projectList.value = res.projects;
-  // };
+
   onMounted(async () => {
-    console.log(`output->`, userStore.token);
-    await login();
-    userStore.token && fetchProjectList();
+    fetchProjectList();
   });
 </script>
 

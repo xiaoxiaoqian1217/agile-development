@@ -8,16 +8,12 @@ export const useProjectApi = () => {
     versionList: [],
     projectList: [],
   });
-  onMounted(() => {
-    getVersion();
-  });
   const getVersion = async () => {
     const resp = await fetchVersion({
       token: localStorage.getItem('token'),
       pid: projectId,
     });
     projectModel.versionList = resp.version;
-    console.log(`output->resp`, resp);
   };
   const fetchProjectList = async () => {
     const res = await getProjectList({

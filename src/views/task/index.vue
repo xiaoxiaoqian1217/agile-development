@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted, reactive } from 'vue';
+  import { computed, ref, onMounted, reactive, provide } from 'vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem, Checkbox, Input } from 'ant-design-vue';
   import {
     PlusOutlined,
@@ -134,12 +134,16 @@
   import CreateTaskModal from './components/createTaskModal.vue';
   import UpdateTaskModal from './components/updateTaskModal.vue';
   import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU } from './constants';
+  import { useProjectApi, useCommonApis } from '@/hooks';
+
   import { useTaskBusiness } from './hooks';
   import { Status, TaskItem } from '../../types';
 
   const route = useRoute();
   const router = useRouter();
   const projectId = route.params.projectId;
+  const { getVersion, versionList } = useProjectApi();
+  const { memberList, fetchMembers } = useCommonApis();
 
   const {
     filterTask,
@@ -156,9 +160,18 @@
 
   const activeFilterMenu = reactive({ ...FILTER_DROP_DOWN_MENU[0] });
   const searchValue = ref('');
+  provide('versionList', versionList);
+  provide('memberList', memberList);
+  provide('levelList', levels);
+  provide('trackersList', trackers);
+  provide('statusList', status);
 
   onMounted(async () => {
     await fetchTask();
+    await taskStatusTypes();
+    getVersion();
+    fetchMembers();
+    getTrackerTypes();
     toAllTask();
     searchTypeChange(activeFilterMenu);
   });
@@ -188,9 +201,10 @@
   const curSideMenuName = computed(() => {
     return SIDER_MENU.find((item) => item.id === activeMenuId.value)?.name;
   });
+
   const searchTypeChange = async (menuItem) => {
     if (menuItem.id === FilterType.status) {
-      await taskStatusTypes();
+      // await taskStatusTypes();
       taskBoard.statusType = status.value;
     }
     if (menuItem.id === FilterType.category) {
@@ -233,13 +247,15 @@
   };
 
   const isShowCreateModal = ref(false);
-  const showCreateModal = (flag: boolean) => {
+  const showCreateModal = async (flag: boolean) => {
     isShowCreateModal.value = flag;
-    if (!flag) searchTypeChange(activeFilterMenu);
+    if (!flag) await fetchTask();
+    searchTypeChange(activeFilterMenu);
   };
-  const updateTaskList = (flag: boolean) => {
+  const updateTaskList = async (flag: boolean) => {
     isShowUpdateModal.value = flag;
-    if (!flag) searchTypeChange(activeFilterMenu);
+    if (!flag) await fetchTask();
+    searchTypeChange(activeFilterMenu);
   };
   // 更新任务状态
   const defaultUpdateParams = {
