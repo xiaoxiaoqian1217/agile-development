@@ -1,8 +1,19 @@
 <template>
   <div>
-    <Modal v-model:visible="visible" :title="`${seletedTrackerName}`" @ok="handleOk" @cancel="handleCancel">
+    <Modal
+      v-model:visible="visible"
+      :title="`${seletedTrackerName}`"
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
       <!-- 可编辑的标题 -->
-      <div ref="titleElement" class="bg-gray-50 w-full h-12" contenteditable spellcheck="false" @blur="validate">
+      <div
+        ref="titleElement"
+        class="bg-gray-50 w-full h-12"
+        contenteditable
+        spellcheck="false"
+        @blur="validate"
+      >
         {{ formModel.subject }}
       </div>
       <div class="">
@@ -77,10 +88,14 @@
                   <template #option="{ value, label }">
                     <!-- <template v-for="userInfo in userList" :key="userInfo.id"> -->
                     <div class="flex px-5 items-center">
-                      <div class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white">
+                      <div
+                        class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white"
+                      >
                         <span>{{ userInfo.user.name?.slice(0, 2) }}</span>
                       </div>
-                      <span class="truncate font-500 text-neutral-800">{{ userInfo?.user.name }}</span>
+                      <span class="truncate font-500 text-neutral-800">{{
+                        userInfo?.user.name
+                      }}</span>
                       <span>{{ value }}</span>
                       <span>{{ label }}</span>
                     </div>
@@ -297,7 +312,10 @@
 
   // 获取版本列表
   const seletedVersionName = computed(() => {
-    return versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name || '请选择版本';
+    return (
+      versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name ||
+      '请选择版本'
+    );
   });
   const versionChange = ({ item, key }) => {
     formModel.fixed_version_id = key;
@@ -306,7 +324,7 @@
   const { versionList } = useProjectApi();
   const handleOk = async () => {
     loading.value = true;
-    const resp = await updateTask({
+    await updateTask({
       pid: projectId,
       token: localStorage.getItem('token'),
       ...toRaw(formModel),
@@ -334,7 +352,8 @@
   }
 
   const assignedMember = computed(() => {
-    return userList.value?.find((userInfo) => formModel.assigned_to_id === userInfo.user.id)?.user?.name;
+    return userList.value?.find((userInfo) => formModel.assigned_to_id === userInfo.user.id)?.user
+      ?.name;
   });
 
   const handleSearch = (val: string) => {

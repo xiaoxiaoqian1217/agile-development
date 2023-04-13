@@ -3,7 +3,7 @@
     <div class="py-2.5">
       <span class="mr-3 font-700 text-14px">
         <!-- {{ getStatusName(type)?.name }} -->
-        {{ title }}
+        {{ computedtitle }}
       </span>
       <span class="text-12px text-gray-500"> {{ computedList.length }} </span>
     </div>
@@ -26,13 +26,19 @@
       >
         <div class="">
           <Checkbox v-if="element.status_id === Status.solve" disabled checked />
-          <Checkbox v-else :checked="element.status_id === Status.close || element.status_id === Status.solve">
+          <Checkbox
+            v-else
+            :checked="element.status_id === Status.close || element.status_id === Status.solve"
+          >
           </Checkbox>
         </div>
         <div class="ml-2 flex-1">
           <span class="text-14px block pt-4px">{{ element.subject }}</span>
           <div class="flex items-center mt-2">
-            <img class="w-20px h-20px" :src="iconTypes[`type${element.status_id}`] || iconTypes.type3" />
+            <img
+              class="w-20px h-20px"
+              :src="iconTypes[`type${element.status_id}`] || iconTypes.type3"
+            />
             <span class="ml-1" v-if="element.description"><FileTextOutlined /></span>
             <span v-if="element.fixed_version_id">{{ element?.fixed_version_id }}</span>
           </div>
@@ -40,7 +46,9 @@
           <div v-if="element.estimated_hours">预期时间: {{ element?.estimated_hours }}小时</div>
         </div>
         <div class="ml-auto">
-          <div class="w-6 h-6 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-xs text-light-50">
+          <div
+            class="w-6 h-6 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-xs text-light-50"
+          >
             <span>{{ assignedMember(element)?.slice(0, 1) }}</span>
           </div>
         </div>
@@ -64,7 +72,7 @@
   import { useRouter, useRoute } from 'vue-router';
   import { Status, TaskItem } from '../../types';
   import draggable from 'vuedraggable';
-  import { type1, type2, type3 } from './icon.ts';
+  import { type1, type2, type3 } from './icon';
   import { useCommonApis } from '../../hooks';
   const { userList } = useCommonApis();
   const iconTypes = {
@@ -73,15 +81,19 @@
     type3,
   };
   interface TaskListProps {
+    field: string;
     title: string;
     list: TaskItem[];
-    status: Status;
+    fieldId: number;
   }
 
   const props = withDefaults(defineProps<TaskListProps>(), {});
   const emits = defineEmits(['change', 'openDetail']);
-  const { title, list, status } = props;
+  const { title, list, fieldId, field } = props;
   const computedList = computed(() => props.list);
+  const computedtitle = computed(() => props.title);
+  const computedfield = computed(() => props.field);
+  const computedfieldiD = computed(() => props.fieldId);
 
   const assignedMember = (element) => {
     return userList.value?.find((userInfo) => element.author === userInfo.user.id)?.user.name;
@@ -90,16 +102,14 @@
   // 拖拽改变
   const dragChange = (evt) => {
     const todo = evt.added?.element;
-
-    console.log(`output->todo`, todo);
-    if (todo && todo.status_id !== props.status) {
-      emits('change', props.status, todo);
+    if (todo && todo[field] !== props.fieldId) {
+      console.log(`output->dragChange`, field, todo[field], props.fieldId);
+      emits('change', { ...todo, [computedfield.value]: computedfieldiD.value });
       // const mutation = props.done ? M.DONE_TODO : M.UNDONE_TODO;
       // store.commit(mutation, todo);
     }
   };
   const openTaskDetail = (detail) => {
-    console.log(`output->detail`, detail);
     emits('openDetail', detail);
   };
 </script>

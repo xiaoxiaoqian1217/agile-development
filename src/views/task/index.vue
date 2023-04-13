@@ -23,9 +23,9 @@
             <span class=""> </span>
           </a>
           <template #overlay>
-            <Menu @click="searchTypeChange">
+            <Menu>
               <template v-for="menu in SIDER_MENU" :key="menu.id">
-                <MenuItem>
+                <MenuItem @click="searchTypeChange(menu)">
                   <div class="flex justify-between">
                     <span>{{ menu.name }}</span>
                     <span v-if="activeMenuId === menu.id"></span>
@@ -53,12 +53,12 @@
               <span class="filter"></span>
             </a>
             <template #overlay>
-              <Menu @click="searchTypeChange">
+              <Menu>
                 <template v-for="item in FILTER_DROP_DOWN_MENU" :key="item.id">
-                  <MenuItem>
+                  <MenuItem @click="searchTypeChange(item)">
                     <div class="flex justify-between">
                       <span>{{ item.name }}</span>
-                      <span v-if="isActiveType === item.id"></span>
+                      <span v-if="activeFilterMenu.id === item.id"></span>
                     </div>
                   </MenuItem>
                 </template>
@@ -80,7 +80,8 @@
               @open-detail="showTaskDetail"
               :title="getStatusName(type)?.name"
               :list="tasks.value"
-              :status="type"
+              :field="activeFilterMenu.field"
+              :fieldId="type"
               @change="drapStatusChange"
             >
               <template v-if="type === Status.new">
@@ -123,11 +124,11 @@
     MenuUnfoldOutlined,
   } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
-  import { getTaskStatusTypes, getTaskList, updateTask } from '@apis';
-  import { TaskList, SideTaskPanel } from '@components';
+  import { updateTask } from '@/apis';
+  import { TaskList, SideTaskPanel } from '@/components';
   import CreateTaskModal from './components/createTaskModal.vue';
   import UpdateTaskModal from './components/updateTaskModal.vue';
-  import { FILTER_DROP_DOWN_MENU, type FilterType, SIDER_MENU } from './constants';
+  import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU } from './constants';
   import { useTaskBusiness } from './hooks';
   import { Status, TaskItem } from '../../types';
 
@@ -135,22 +136,30 @@
   const router = useRouter();
   const projectId = route.params.projectId;
 
-  const { filterTask, fetchTask, initTaskList, filterTaskList } = useTaskBusiness();
+  const {
+    filterTask,
+    fetchTask,
+    initTaskList,
+    filterTaskList,
+    getTaskLevel,
+    getTrackerTypes,
+    taskStatusTypes,
+    levels,
+    trackers,
+    status,
+  } = useTaskBusiness();
 
-  const isActiveType = ref(FILTER_DROP_DOWN_MENU[0]?.id);
+  const activeFilterMenu = reactive(FILTER_DROP_DOWN_MENU[0]);
   const searchValue = ref('');
 
-  onMounted(() => {
+  onMounted(async () => {
+    await fetchTask();
     toAllTask();
-    searchTypeChange({
-      item: FILTER_DROP_DOWN_MENU[0],
-      key: FILTER_DROP_DOWN_MENU[0]?.id,
-    });
+    searchTypeChange(activeFilterMenu);
   });
   const searchTask = () => {
     const value = searchValue.value;
     filterTask({ subject: value });
-    // else filterTask({ id: value });
     classifyTask(filterTaskList.value);
   };
 
@@ -169,37 +178,47 @@
   });
   const activeMenuId = ref(SIDER_MENU[0]?.id);
   const filterTypeName = computed(() => {
-    return FILTER_DROP_DOWN_MENU.find((item) => item.id === isActiveType.value)?.name;
+    return FILTER_DROP_DOWN_MENU.find((item) => item.id === activeFilterMenu.id)?.name;
   });
   const curSideMenuName = computed(() => {
     return SIDER_MENU.find((item) => item.id === activeMenuId.value)?.name;
   });
-  const searchTypeChange = async ({ item, key }) => {
+  const searchTypeChange = async (menuItem) => {
+    if (menuItem.id === FilterType.status) {
+      await taskStatusTypes();
+      taskBoard.statusType = status.value;
+    }
+    if (menuItem.id === FilterType.category) {
+      await getTrackerTypes();
+      taskBoard.statusType = trackers.value;
+    }
+    if (menuItem.id === FilterType.level) {
+      await getTaskLevel();
+      taskBoard.statusType = levels.value;
+    }
+    Object.keys(menuItem).forEach((key) => {
+      activeFilterMenu[key] = menuItem[key];
+    });
     // 根据任务状态筛选任务列表
-    await taskStatusTypes();
-    await fetchTask();
     classifyTask(initTaskList.value);
   };
   const classifyTask = async (list) => {
+    const { field } = activeFilterMenu;
+    console.log(`output->initTaskList.value`, list);
     const groupMap = new Map();
-    taskBoard.statusType.forEach((type) => {
+    taskBoard.statusType?.forEach((type) => {
       if (!groupMap.has(type.id)) groupMap.set(type.id, ref([]));
     });
-    console.log(`output->initTaskList.value`, list);
     list.forEach((issue) => {
-      if (groupMap.has(issue.status_id)) groupMap.get(issue.status_id).value?.push(issue);
+      if (groupMap.has(issue[field])) groupMap.get(issue[field]).value?.push(issue);
     });
     taskBoard.groupMap = groupMap;
   };
-  const taskStatusTypes = async () => {
-    const resp = await getTaskStatusTypes({
-      token: localStorage.getItem('token'),
-    });
-    taskBoard.statusType = resp.tracker;
-  };
 
   const getStatusName = (typeId: number) => {
-    return taskBoard.statusType.find((item) => item.id === typeId);
+    return taskBoard.statusType.find((item) => {
+      return item.id === typeId;
+    });
   };
   // 新建任务
   const addTask = () => {
@@ -209,40 +228,28 @@
   const isShowCreateModal = ref(false);
   const showCreateModal = (flag: boolean) => {
     isShowCreateModal.value = flag;
-    if (!flag)
-      searchTypeChange({
-        item: 1,
-        key: 1,
-      });
+    if (!flag) searchTypeChange(activeFilterMenu);
   };
   const updateTaskList = (flag: boolean) => {
     isShowUpdateModal.value = flag;
-    if (!flag)
-      searchTypeChange({
-        item: 1,
-        key: 1,
-      });
+    if (!flag) searchTypeChange(activeFilterMenu);
   };
   // 更新任务状态
   const defaultUpdateParams = {
     fixed_version_id: '',
     is_private: '',
     assigned_to_id: 24,
-    estimated_hours: 1,
+    estimated_hours: 0,
   };
-  const drapStatusChange = async (status: Status, todo: TaskItem) => {
-    const resp = await updateTask({
+  const drapStatusChange = async (todo: TaskItem) => {
+    await updateTask({
       token: localStorage.getItem('token'),
       pid: projectId,
       ...todo,
       ...defaultUpdateParams,
-      status_id: status,
     });
-    console.log(`output->drapStatusChange`, resp);
-    searchTypeChange({
-      item: 1,
-      key: 1,
-    });
+    await fetchTask();
+    searchTypeChange(activeFilterMenu);
   };
   const isShowUpdateModal = ref(false);
 
@@ -253,7 +260,6 @@
       console.log(`output->`, key);
       taskdetail[key] = detail[key];
     });
-    console.log(`output->`, taskdetail);
     isShowUpdateModal.value = true;
   };
 
