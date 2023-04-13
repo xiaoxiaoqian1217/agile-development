@@ -1,12 +1,15 @@
 <template>
-  <div class="flex h-full w-full overflow-x-auto">
+  <div class="flex w-full relative">
     <!-- 侧栏 -->
-    <div v-if="isVisiblePanel" class="w-300px flex-none task-sidebar">
+    <div
+      v-if="isVisiblePanel"
+      class="w-300px flex-none task-sidebar absolute h-full z-40 bg-light-50"
+    >
       <SideTaskPanel></SideTaskPanel>
     </div>
-    <div class="flex flex-1 flex-col h-full">
+    <div class="w-full">
       <!-- 顶部操作栏 -->
-      <div class="tool-bar flex h-48px px-24px py-12px">
+      <div class="tool-bar flex h-48px px-24px py-12px" :class="isVisiblePanel && 'pl-310px'">
         <!-- 控制任面板图标 -->
         <div>
           <span class="cursor-pointer" @click="openTaskPanel">
@@ -36,8 +39,7 @@
           </template>
         </Dropdown>
 
-        <!-- 如何分列查看 -->
-        <div class="flex setting ml-auto items-center">
+        <div class="flex flex-auto setting justify-center items-center">
           <!-- 搜索标题和ID -->
           <div class="">
             <Input v-model:value="searchValue" placeholder="搜索标题" @change="searchTask">
@@ -46,6 +48,7 @@
               </template>
             </Input>
           </div>
+          <!-- 如何分列查看 -->
           <Dropdown class="ml-3" :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
               <FilterOutlined />
@@ -54,27 +57,29 @@
             </a>
             <template #overlay>
               <Menu>
-                <template v-for="item in FILTER_DROP_DOWN_MENU" :key="item.id">
-                  <MenuItem @click="searchTypeChange(item)">
-                    <div class="flex justify-between">
-                      <span>{{ item.name }}</span>
-                      <span v-if="activeFilterMenu.id === item.id"></span>
-                    </div>
-                  </MenuItem>
-                </template>
+                <MenuItem
+                  v-for="item in FILTER_DROP_DOWN_MENU"
+                  :key="`${item.field}-${item.id}`"
+                  @click="searchTypeChange(item)"
+                >
+                  <div class="flex justify-between">
+                    <span>{{ item.name }}</span>
+                    <span v-if="activeFilterMenu.id === item.id"></span>
+                  </div>
+                </MenuItem>
               </Menu>
             </template>
           </Dropdown>
         </div>
       </div>
-      <div class="flex h-full bg-gray-100 pr-6.5">
-        <div class="w-5 h-full task-list-handler">
+      <div class="flex h-full bg-gray-100 pr-6.5 w-full overflow-x-auto">
+        <div class="pl-5 h-full task-list-handler">
           <SideTaskPanel
             v-if="!isVisiblePanel"
-            class="task-list-panel fixed w-320px"
+            class="task-list-panel absolute w-320px"
           ></SideTaskPanel>
         </div>
-        <div class="flex flex-auto h-full w-full">
+        <div class="flex flex-auto w-full">
           <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
             <TaskList
               @open-detail="showTaskDetail"
@@ -149,7 +154,7 @@
     status,
   } = useTaskBusiness();
 
-  const activeFilterMenu = reactive(FILTER_DROP_DOWN_MENU[0]);
+  const activeFilterMenu = reactive({ ...FILTER_DROP_DOWN_MENU[0] });
   const searchValue = ref('');
 
   onMounted(async () => {
@@ -200,7 +205,9 @@
       activeFilterMenu[key] = menuItem[key];
     });
     // 根据任务状态筛选任务列表
-    classifyTask(initTaskList.value);
+    if (searchValue.value) filterTask({ subject: searchValue.value });
+
+    classifyTask(searchValue.value ? filterTaskList.value : initTaskList.value);
   };
   const classifyTask = async (list) => {
     const { field } = activeFilterMenu;
@@ -274,15 +281,20 @@
   .task-sidebar {
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
   }
+  .task-board {
+    width: calc(100% - 80px);
+  }
   .task-list-panel {
     bottom: 0;
     left: 0;
     position: absolute;
-    top: 130px;
+    top: 60px;
     transition: all 0.2s ease-in-out;
-    transform: translateX(-320px);
+    transform: translateX(-900px);
+    z-index: 30;
+    cursor: pointer;
   }
   .task-list-handler:hover .task-list-panel {
-    transform: translateX(80px);
+    transform: translateX(0px);
   }
 </style>

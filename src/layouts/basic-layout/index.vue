@@ -34,7 +34,7 @@
         </template>
       </Dropdown>
     </div>
-    <div class="flex-auto">
+    <div class="layout-container">
       <router-view v-slot="{ Component }">
         <component :is="Component" />
       </router-view>
@@ -55,20 +55,13 @@
       name: 'login',
     });
   };
-  // import { loginIn } from '../../apis';
-  // onMounted(() => {
-  //   login();
-  // });
-  // const login = async () => {
-  //   const loginResp = await loginIn({
-  //     username: 'xiaoqian',
-  //     password: 'password',
-  //   });
-  // };
 </script>
 
 <style scoped>
   .side-menu {
     border-right: 1px solid #f0f0f0;
+  }
+  .layout-container {
+    width: calc(100% - 80px);
   }
 </style>
