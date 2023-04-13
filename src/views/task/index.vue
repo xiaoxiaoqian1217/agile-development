@@ -1,116 +1,136 @@
 <template>
-  <div class="h-full">
-    <div class="tool-bar flex h-48px px-24px py-12px">
-      <Dropdown class="ml-4" :trigger="['click']">
-        <a class="ant-dropdown-link" @click.prevent>
-          {{ curSideMenuName }}
-          <DownOutlined class="mt-0.5 ml-1" />
-          <span class=""> </span>
-        </a>
-        <template #overlay>
-          <Menu @click="searchTypeChange">
-            <template v-for="menu in SIDER_MENU" :key="menu.id">
-              <MenuItem>
-                <div class="flex justify-between">
-                  <span>{{ menu.name }}</span>
-                  <span v-if="isActiveMenu === menu.id"></span>
-                </div>
-              </MenuItem>
-            </template>
-          </Menu>
-        </template>
-      </Dropdown>
-      <!-- 搜索标题和ID -->
-
-      <!-- 如何分列查看 -->
-      <div class="flex setting ml-auto items-center">
-        <div class="">
-          <Input v-model:value="searchValue" placeholder="搜索标题" @change="searchTask">
-            <template #prefix>
-              <SearchOutlined />
-            </template>
-          </Input>
+  <div class="flex h-full w-full overflow-x-auto">
+    <!-- 侧栏 -->
+    <div v-if="isVisiblePanel" class="w-300px flex-none task-sidebar">
+      <SideTaskPanel></SideTaskPanel>
+    </div>
+    <div class="flex flex-1 flex-col h-full">
+      <!-- 顶部操作栏 -->
+      <div class="tool-bar flex h-48px px-24px py-12px">
+        <!-- 控制任面板图标 -->
+        <div>
+          <span class="cursor-pointer" @click="openTaskPanel">
+            <MenuUnfoldOutlined v-if="isVisiblePanel" />
+            <MenuFoldOutlined v-else />
+            <!-- <DoubleLeftOutlined v-if="isVisiblePanel" />
+            <DoubleRightOutlined v-else /> -->
+          </span>
         </div>
-        <Dropdown class="ml-3" :trigger="['click']">
+        <Dropdown class="ml-4" :trigger="['click']">
           <a class="ant-dropdown-link" @click.prevent>
-            <FilterOutlined />
-            {{ `${filterTypeName}分列` }}
-            <span class="filter"></span>
+            {{ curSideMenuName }}
+            <DownOutlined class="mt-0.5 ml-1" />
+            <span class=""> </span>
           </a>
           <template #overlay>
             <Menu @click="searchTypeChange">
-              <template v-for="item in FILTER_DROP_DOWN_MENU" :key="item.id">
+              <template v-for="menu in SIDER_MENU" :key="menu.id">
                 <MenuItem>
                   <div class="flex justify-between">
-                    <span>{{ item.name }}</span>
-                    <span v-if="isActiveType === item"></span>
+                    <span>{{ menu.name }}</span>
+                    <span v-if="activeMenuId === menu.id"></span>
                   </div>
                 </MenuItem>
               </template>
             </Menu>
           </template>
         </Dropdown>
-      </div>
-    </div>
-    <div class="w-full h-full overflow-x-auto bg-gray-100 px-6.5">
-      <!-- 侧栏 -->
-      <!-- <div class="w-300px flex-none task-sidebar">
-        <div class="flex py-2.5 px-4 justify-between"><span>视图</span></div>
-        <div class="flex py-2.5 px-4 cursor-auto" @click="toAllTask(1)">
-          <span class="mr-2"><UnorderedListOutlined /></span><span>所有任务</span>
-        </div>
-        <div class="flex py-2.5 px-4 cursor-auto" @click="toAllTask(2)">
-          <span class="mr-2"><UnorderedListOutlined /></span><span>所有任务</span>
-        </div>
-      </div> -->
-      <div class="flex flex-auto">
-        <!-- 工具栏 -->
-        <!-- 这里展示动态的view -->
-        <!-- <div class="flex"> -->
-        <div class="mr-5 flex flex-col" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
-          <TaskList
-            @open-detail="showTaskDetail"
-            :title="getStatusName(type)?.name"
-            :list="tasks.value"
-            :status="type"
-            @change="drapStatusChange"
-          >
-            <template v-if="type === Status.new">
-              <div class="shadow bg-light-50" @click="addTask">
-                <div class="text-center"><PlusOutlined /></div>
-              </div>
+
+        <!-- 如何分列查看 -->
+        <div class="flex setting ml-auto items-center">
+          <!-- 搜索标题和ID -->
+          <div class="">
+            <Input v-model:value="searchValue" placeholder="搜索标题" @change="searchTask">
+              <template #prefix>
+                <SearchOutlined />
+              </template>
+            </Input>
+          </div>
+          <Dropdown class="ml-3" :trigger="['click']">
+            <a class="ant-dropdown-link" @click.prevent>
+              <FilterOutlined />
+              {{ `${filterTypeName}分列` }}
+              <span class="filter"></span>
+            </a>
+            <template #overlay>
+              <Menu @click="searchTypeChange">
+                <template v-for="item in FILTER_DROP_DOWN_MENU" :key="item.id">
+                  <MenuItem>
+                    <div class="flex justify-between">
+                      <span>{{ item.name }}</span>
+                      <span v-if="isActiveType === item.id"></span>
+                    </div>
+                  </MenuItem>
+                </template>
+              </Menu>
             </template>
-          </TaskList>
+          </Dropdown>
         </div>
-        <!-- </div> -->
-        <!-- <router-view v-slot="{ Component }">
+      </div>
+      <div class="flex h-full bg-gray-100 pr-6.5">
+        <div class="w-5 h-full task-list-handler">
+          <SideTaskPanel
+            v-if="!isVisiblePanel"
+            class="task-list-panel fixed w-320px"
+          ></SideTaskPanel>
+        </div>
+        <div class="flex flex-auto h-full w-full">
+          <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
+            <TaskList
+              @open-detail="showTaskDetail"
+              :title="getStatusName(type)?.name"
+              :list="tasks.value"
+              :status="type"
+              @change="drapStatusChange"
+            >
+              <template v-if="type === Status.new">
+                <div class="shadow bg-light-50" @click="addTask">
+                  <div class="text-center"><PlusOutlined /></div>
+                </div>
+              </template>
+            </TaskList>
+          </div>
+          <!-- </div> -->
+          <!-- <router-view v-slot="{ Component }">
         <component :is="Component" />
       </router-view> -->
+        </div>
       </div>
     </div>
-    <!-- 创建任务弹出层 -->
-    <CreateTaskModal @on-visible="showCreateModal" :visible="isShowCreateModal"></CreateTaskModal>
-    <UpdateTaskModal
-      v-if="isShowUpdateModal"
-      :detail="taskdetail"
-      @on-visible="updateTaskList"
-      :visible="isShowUpdateModal"
-    ></UpdateTaskModal>
   </div>
+
+  <!-- 创建任务弹出层 -->
+  <CreateTaskModal @on-visible="showCreateModal" :visible="isShowCreateModal"></CreateTaskModal>
+  <UpdateTaskModal
+    v-if="isShowUpdateModal"
+    :detail="taskdetail"
+    @on-visible="updateTaskList"
+    :visible="isShowUpdateModal"
+  ></UpdateTaskModal>
 </template>
 
 <script setup lang="ts">
   import { computed, ref, onMounted, reactive } from 'vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem, Checkbox, Input } from 'ant-design-vue';
-  import { PlusOutlined, FilterOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons-vue';
+  import {
+    PlusOutlined,
+    FilterOutlined,
+    DownOutlined,
+    SearchOutlined,
+    DoubleLeftOutlined,
+    DoubleRightOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+  } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
-  import { Status, TaskItem } from '../../types';
   import { getTaskStatusTypes, getTaskList, updateTask } from '@apis';
+  import { TaskList, SideTaskPanel } from '@components';
   import CreateTaskModal from './components/createTaskModal.vue';
   import UpdateTaskModal from './components/updateTaskModal.vue';
   import { FILTER_DROP_DOWN_MENU, type FilterType, SIDER_MENU } from './constants';
-  import { TaskList } from '@components';
   import { useTaskBusiness } from './hooks';
+  import { Status, TaskItem } from '../../types';
+
   const route = useRoute();
   const router = useRouter();
   const projectId = route.params.projectId;
@@ -236,10 +256,27 @@
     console.log(`output->`, taskdetail);
     isShowUpdateModal.value = true;
   };
+
+  const isVisiblePanel = ref(false);
+  // 打开 taskpanel
+  const openTaskPanel = () => {
+    isVisiblePanel.value = !isVisiblePanel.value;
+  };
 </script>
 
 <style scoped>
   .task-sidebar {
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
+  }
+  .task-list-panel {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    top: 130px;
+    transition: all 0.2s ease-in-out;
+    transform: translateX(-320px);
+  }
+  .task-list-handler:hover .task-list-panel {
+    transform: translateX(80px);
   }
 </style>

@@ -2,8 +2,8 @@ import { createApp } from 'vue';
 import router from './router';
 import App from './App.vue';
 import { createPinia } from 'pinia';
-import './style.css';
 import 'virtual:windi.css';
+import './style.css';
 const pinia = createPinia();
 
 createApp(App)

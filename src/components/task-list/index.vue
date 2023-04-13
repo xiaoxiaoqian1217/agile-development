@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
   import { computed, ref, onMounted, reactive, watch } from 'vue';
-  import { Checkbox } from 'ant-design-vue';
+  import { Checkbox, Drawer } from 'ant-design-vue';
   import { FileTextOutlined, CheckSquareOutlined } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { Status, TaskItem } from '../../types';

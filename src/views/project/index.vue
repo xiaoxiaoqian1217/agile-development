@@ -27,31 +27,6 @@
         <span class="user" @click="showMembers"><UserOutlined /></span>
       </div>
     </div>
-    <!-- 工具栏 -->
-    <!-- <div class="tool-bar flex h-48px px-24px py-12px">
-        <div class="setting ml-auto">
-          <Dropdown :trigger="['click']">
-            <a class="ant-dropdown-link" @click.prevent>
-              <FilterOutlined />
-              {{ filterTypeName }}
-              <span class="filter"></span>
-            </a>
-            <template #overlay>
-              <Menu @click="searchTypeChange">
-                <template v-for="item in ['1', '2']" :key="item">
-                  <MenuItem>
-                    <div class="flex justify-between">
-                      <span>{{ item }}</span>
-                      <span v-if="isActiveType === item"></span>
-                    </div>
-                  </MenuItem>
-                </template>
-              </Menu>
-            </template>
-          </Dropdown>
-        </div>
-      </div> -->
-    <!-- 项目下的tab切换 -->
     <router-view v-slot="{ Component }">
       <component :is="Component" />
     </router-view>
