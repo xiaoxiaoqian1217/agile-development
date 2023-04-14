@@ -5,7 +5,7 @@
       v-if="isVisiblePanel"
       class="w-300px flex-none task-sidebar absolute h-full z-40 bg-light-50"
     >
-      <SideTaskPanel></SideTaskPanel>
+      <SideTaskPanel @task-panel-change="sidePanelChange"></SideTaskPanel>
     </div>
     <div class="w-full">
       <!-- 顶部操作栏 -->
@@ -28,7 +28,7 @@
           <template #overlay>
             <Menu>
               <template v-for="menu in SIDER_MENU" :key="menu.id">
-                <MenuItem @click="searchTypeChange(menu)">
+                <MenuItem @click="sidePanelChange(menu)">
                   <div class="flex justify-between">
                     <span>{{ menu.name }}</span>
                     <span v-if="activeMenuId === menu.id"></span>
@@ -42,7 +42,7 @@
         <div class="flex flex-auto setting justify-center items-center">
           <!-- 搜索标题和ID -->
           <div class="">
-            <Input v-model:value="searchValue" placeholder="搜索标题" @change="searchTask">
+            <Input v-model:value="searchValue" placeholder="搜索标题" @change="searchFromName">
               <template #prefix>
                 <SearchOutlined />
               </template>
@@ -138,7 +138,7 @@
   import { TaskList, SideTaskPanel } from '@/components';
   import CreateTaskModal from './components/createTaskModal.vue';
   import UpdateTaskModal from './components/updateTaskModal.vue';
-  import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU } from './constants';
+  import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU, type SideMenuItem } from './constants';
   import { useProjectApi, useCommonApis } from '@/hooks';
 
   import { useTaskBusiness } from './hooks';
@@ -151,16 +151,18 @@
   const { memberList, fetchMembers } = useCommonApis();
 
   const {
-    filterTask,
+    searchTask,
     fetchTask,
     initTaskList,
-    filterTaskList,
+    searchTaskList,
     getTaskLevel,
     getTrackerTypes,
     taskStatusTypes,
     levels,
     trackers,
     status,
+    filterTask,
+    filterList,
   } = useTaskBusiness();
 
   const activeFilterMenu = reactive({ ...FILTER_DROP_DOWN_MENU[0] });
@@ -176,18 +178,18 @@
     // todo 优化成循环并发
     await fetchTask();
     await taskStatusTypes();
-    await getVersion();
-    await fetchMembers();
-    await getTaskLevel();
-    await getTrackerTypes();
-    await toAllTask();
+    getVersion();
+    fetchMembers();
+    getTaskLevel();
+    getTrackerTypes();
+    toAllTask();
     fetchProjectList();
     searchTypeChange(activeFilterMenu);
   });
-  const searchTask = () => {
+  const searchFromName = () => {
     const value = searchValue.value;
-    filterTask({ subject: value });
-    classifyTask(filterTaskList.value);
+    searchTask({ subject: value });
+    classifyTask(searchTaskList.value);
   };
 
   const toAllTask = (viewId = 1) => {
@@ -228,9 +230,9 @@
       activeFilterMenu[key] = menuItem[key];
     });
     // 根据任务状态筛选任务列表
-    if (searchValue.value) filterTask({ subject: searchValue.value });
+    if (searchValue.value) searchTask({ subject: searchValue.value });
 
-    classifyTask(searchValue.value ? filterTaskList.value : initTaskList.value);
+    classifyTask(searchValue.value ? searchTaskList.value : initTaskList.value);
   };
   const classifyTask = async (list) => {
     const { field } = activeFilterMenu;
@@ -265,7 +267,7 @@
     isShowUpdateModal.value = flag;
     if (!flag) refeshTaskList();
   };
-  const refeshTaskList = async (params: { [key: string]: string }) => {
+  const refeshTaskList = async () => {
     await fetchTask();
     searchTypeChange(activeFilterMenu);
   };
@@ -279,9 +281,7 @@
   const drapStatusChange = async (todo: TaskItem) => {
     await updateTask({
       token: localStorage.getItem('token'),
-      pid: projectId,
       ...todo,
-      ...defaultUpdateParams,
     });
     await fetchTask();
     searchTypeChange(activeFilterMenu);
@@ -290,9 +290,7 @@
 
   const taskdetail = reactive({});
   const showTaskDetail = (detail) => {
-    console.log(`output->showTaskDetail`, detail);
     Object.keys(detail).forEach((key) => {
-      console.log(`output->`, key);
       taskdetail[key] = detail[key];
     });
     isShowUpdateModal.value = true;
@@ -302,6 +300,16 @@
   // 打开 taskpanel
   const openTaskPanel = () => {
     isVisiblePanel.value = !isVisiblePanel.value;
+  };
+
+  const sidePanelChange = ({ tag, id, name }: SideMenuItem) => {
+    activeMenuId.value = id;
+    filterTask({
+      tag,
+    });
+    console.log(`output->filterList`, filterList.value);
+    if (searchValue.value) searchTask({ subject: searchValue.value });
+    classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
   };
 </script>
 

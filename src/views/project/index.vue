@@ -12,12 +12,30 @@
         </div>
         <div class>
           <div>
-            <div class="inline-block">{{ projectName }}</div>
-            <span class="ml-3"> <ExclamationCircleOutlined /> </span>
-            <span class="ml-3"> <StarOutlined /> </span>
+            <Dropdown :trigger="['click']">
+              <a class="ant-dropdown-link" @click.prevent>
+                {{ projectName }}
+                <DownOutlined class="ml-1" />
+              </a>
+              <template #overlay>
+                <Menu>
+                  <template v-for="project in projectList" :key="project.id">
+                    <MenuItem @click="projectChange(project.id)">
+                      <div class="flex justify-between">
+                        <span>{{ project.name }}</span>
+                        <!-- <span v-if="curProjectId === project.id"></span> -->
+                      </div>
+                    </MenuItem>
+                  </template>
+                </Menu>
+              </template>
+            </Dropdown>
+            <!-- <span class="ml-3"> <ExclamationCircleOutlined /> </span>
+            <span class="ml-3"> <StarOutlined /> </span> -->
           </div>
           <Tabs v-model:activeKey="activeTab" @change="toTask" sise="small">
-            <TabPane v-for="item in tabsRoutes" :key="item?.name" :tab="item.meta?.title"> </TabPane>
+            <TabPane v-for="item in tabsRoutes" :key="item?.name" :tab="item.meta?.title">
+            </TabPane>
           </Tabs>
         </div>
         <!--  tab-routes-切换 -->
@@ -35,7 +53,9 @@
       <div>
         <template v-for="userInfo in userList" :key="userInfo.id">
           <div class="flex px-5 items-center">
-            <div class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white">
+            <div
+              class="w-8 h-8 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white"
+            >
               <span>{{ userInfo.user.name?.slice(0, 2) }}</span>
             </div>
             <span class="truncate font-500 text-neutral-800">{{ userInfo?.user.name }}</span>
@@ -48,23 +68,29 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted } from 'vue';
-  import { ExclamationCircleOutlined, StarOutlined, UserOutlined, LeftOutlined } from '@ant-design/icons-vue';
+  import { computed, ref, onMounted, inject } from 'vue';
+  import {
+    ExclamationCircleOutlined,
+    DownOutlined,
+    UserOutlined,
+    LeftOutlined,
+  } from '@ant-design/icons-vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
 
-  import { useRouter, useRoute } from 'vue-router';
+  import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
   import { Key } from 'ant-design-vue/lib/_util/type';
   import { getMembers, getTaskStatusTypes } from '../../apis';
   import { useUserStore } from '../../stores';
   import { UserItem } from '../../types';
   import { PAGE_ROUTE_NAME } from '../../router/router.d';
-  import { useProjectApi } from '@hooks';
+  import { useProjectApi } from '@/hooks';
 
   const TabPane = Tabs.TabPane;
   const activeTab = ref<string>(PAGE_ROUTE_NAME.TASK);
   const router = useRouter();
   const route = useRoute();
   console.log(`output->route`, route.query);
+  const reloadRoute = inject('reloadRoute');
   const curPath = computed(() => {
     return router.currentRoute.value;
   });
@@ -72,7 +98,9 @@
     return router.currentRoute.value.matched;
   });
   const tabsRoutes = computed(() => {
-    const curRoutes = router.currentRoute?.value.matched.filter((item) => item.name === PAGE_ROUTE_NAME.PROJECT);
+    const curRoutes = router.currentRoute?.value.matched.filter(
+      (item) => item.name === PAGE_ROUTE_NAME.PROJECT
+    );
     return curRoutes[0].children;
   });
   const backToHome = () => {
@@ -105,6 +133,7 @@
         ? activeTab.value
         : matchedRoutes.value[matchedRoutes.value.length];
     activeTab.value = activeRoute as string;
+    console.log(`output->activeRoute`, activeRoute);
     toTask(activeRoute as Key);
   });
   //  获取项目成员相关
@@ -123,6 +152,17 @@
       token: userStore.token,
     });
     userList.value = resp.users;
+  };
+  const projectId = ref();
+  const projectChange = (id: number) => {
+    projectId.value = id;
+    router.push({
+      name: 'project',
+      params: {
+        projectId: id,
+      },
+    });
+    reloadRoute?.();
   };
 </script>
 

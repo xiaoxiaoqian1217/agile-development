@@ -35,7 +35,7 @@
       </Dropdown>
     </div>
     <div class="layout-container">
-      <router-view v-slot="{ Component }">
+      <router-view v-if="isRouterAlive" v-slot="{ Component }">
         <component :is="Component" />
       </router-view>
     </div>
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
+  import { onMounted, provide, ref, nextTick } from 'vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
   import { PieChartOutlined, DesktopOutlined, LogoutOutlined } from '@ant-design/icons-vue';
   import { useRouter } from 'vue-router';
@@ -55,6 +55,14 @@
       name: 'login',
     });
   };
+  const isRouterAlive = ref(true);
+  const reload = () => {
+    isRouterAlive.value = false;
+    nextTick(() => {
+      isRouterAlive.value = true;
+    });
+  };
+  provide('reloadRoute', reload);
 </script>
 
 <style scoped>

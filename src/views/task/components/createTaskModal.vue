@@ -279,17 +279,18 @@
 
   // 校验提交的内容
   const validate = (type = 'error', title = '失败', tip = '标题不能为空') => {
-    if (!formModel['subject'])
+    if (!formModel['subject']) {
       notification.error({
         message: title,
         placement: 'bottomLeft',
         description: tip,
       });
-    return false;
+      return false;
+    } else return true;
   };
 
   const handleOk = async () => {
-    validate();
+    if (!validate()) return false;
     loading.value = true;
     const start_date = dayjs(formModel.start_date).format('YYYY-MM-DD');
     const due_date = dayjs(formModel.due_date).format('YYYY-MM-DD');

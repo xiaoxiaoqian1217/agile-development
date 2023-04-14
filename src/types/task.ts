@@ -22,7 +22,14 @@ export enum Color {
   warning = 'warning',
   error = 'error',
 }
-
+export type SidePanelMapType = 'author' | 'assigned_to_id' | 'all';
+// export enum PanelMenuType {
+//   all = 'all',
+//   processing = 'author',
+//   success = 'success',
+//   warning = 'warning',
+//   error = 'error',
+// }
 export interface TaskItem {
   author: number;
   description: string;
@@ -31,4 +38,5 @@ export interface TaskItem {
   status: number;
   subject: string;
   tracker: number;
+  assigned_to_id: number;
 }

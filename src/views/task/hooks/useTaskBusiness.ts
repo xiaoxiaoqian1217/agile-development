@@ -6,27 +6,50 @@ import {
   fetchTrackerTypes,
 } from '@/apis';
 import { computed, ref, onMounted, reactive } from 'vue';
-import { TaskItem } from '@/types';
+import { TaskItem, SidePanelMapType } from '@/types';
 import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '@/stores';
+import { SideTaskPanel } from '@/components';
 
 export const useTaskBusiness = () => {
   const route = useRoute();
   const router = useRouter();
+  const userStore = useUserStore();
   const projectId = route.params.projectId;
   const taskList = ref();
-  const filterTaskList = ref();
+  const searchTaskList = ref(); // 根据标题收索
+  const filterList = ref(); // 根据侧边面板筛选
   const levels = ref();
-
-  const filterTask = (params: { id?: number; subject: string }) => {
-    console.log(`output-params`, params);
-    if (params.id)
-      filterTaskList.value = taskList.value.filter((item: TaskItem) => item.id === params.id);
-    else if (params.subject) {
+  const activePanelMenu = ref('all');
+  const searchTask = (params: {
+    id?: number;
+    subject: string;
+    // author: number;
+    // assigned_to_id: number;
+  }) => {
+    const list = activePanelMenu.value !== 'all' ? filterList : taskList;
+    console.log(`output->filterList`, filterList, taskList);
+    if (params.subject) {
       const str = new RegExp(`${params.subject}`, 'g');
-      filterTaskList.value = taskList.value.filter((item: TaskItem) => str.test(item.subject));
+      searchTaskList.value = list.value.filter((item: TaskItem) => str.test(item.subject));
     }
-    if (!params.id && !params.subject) filterTaskList.value = taskList.value;
+    if (!params.subject) searchTaskList.value = list.value;
     // else taskList.value = [];
+  };
+  // : { author?: number; assigned_to_id?: number }
+  const filterTask = ({ tag }: { tag: SidePanelMapType }) => {
+    console.log(`output->TAG`, tag);
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    console.log(`output->userInfo`, userInfo);
+    activePanelMenu.value = tag;
+    if (tag == 'all') filterList.value = taskList.value;
+    else {
+      filterList.value = taskList.value.filter((item: TaskItem) => {
+        console.log(`output->item[tag]`, item[tag], userInfo.id);
+        return item[tag] === userInfo.id;
+      });
+    }
+    console.log(`output->filterList`, filterList);
   };
 
   const fetchTask = async () => {
@@ -37,6 +60,7 @@ export const useTaskBusiness = () => {
     });
     taskList.value = taskResp.issues;
   };
+
   const trackers = ref();
   // 获取任务类型
   const getTrackerTypes = async () => {
@@ -62,9 +86,9 @@ export const useTaskBusiness = () => {
     // taskBoard.statusType = resp.tracker;
   };
   return {
-    filterTask,
+    searchTask,
     fetchTask,
-    filterTaskList,
+    searchTaskList,
     initTaskList: taskList,
     getTaskLevel,
     getTrackerTypes,
@@ -72,5 +96,7 @@ export const useTaskBusiness = () => {
     trackers,
     levels,
     status,
+    filterTask,
+    filterList,
   };
 };

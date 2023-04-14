@@ -108,7 +108,7 @@
     const todo = evt.added?.element;
     if (todo && todo[field] !== props.fieldId) {
       console.log(`output->dragChange`, field, todo[field], props.fieldId);
-      emits('change', { ...todo, [computedfield.value]: computedfieldiD.value });
+      emits('change', { id: todo.id, [computedfield.value]: computedfieldiD.value });
     }
   };
   const openTaskDetail = (detail) => {

@@ -178,11 +178,10 @@
   import { useRoute } from 'vue-router';
   import dayjs, { Dayjs } from 'dayjs';
   import {
-    MenuItem,
-    Menu,
     Divider,
     Modal,
-    Button,
+    MenuItem,
+    Menu,
     Dropdown,
     Textarea,
     Tag,
@@ -293,8 +292,7 @@
     const [start_date, due_date] = date;
     formModel.start_date = start_date;
     formModel.due_date = due_date;
-
-    updateTaskDetail({ start_date, due_date });
+    updateTaskDetail({ start_date: dateString[0], due_date: dateString[1] });
   };
 </script>
 
