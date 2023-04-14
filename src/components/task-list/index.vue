@@ -97,7 +97,8 @@
   const memberList = inject('memberList');
 
   const assignedMember = (element) => {
-    return memberList.value?.find((userInfo) => element.author === userInfo.user.id)?.user.name;
+    return memberList.value?.find((userInfo) => element.assigned_to_id === userInfo.user.id)?.user
+      .name;
   };
   const getVersionName = (id) => {
     return versionList.value?.find((item) => item.id === id)?.name;

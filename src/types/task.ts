@@ -7,6 +7,21 @@ export enum Status {
   reject = 6,
   check = 7,
 }
+export enum Level {
+  low = 1,
+  default = 2,
+  high = 3,
+  urgent = 4,
+  rightNow = 5,
+}
+
+export enum Color {
+  default = 'default',
+  processing = 'processing',
+  success = 'success',
+  warning = 'warning',
+  error = 'error',
+}
 
 export interface TaskItem {
   author: number;

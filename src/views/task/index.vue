@@ -106,11 +106,16 @@
   </div>
 
   <!-- 创建任务弹出层 -->
-  <CreateTaskModal @on-visible="showCreateModal" :visible="isShowCreateModal"></CreateTaskModal>
+
+  <CreateTaskModal
+    v-if="isShowCreateModal"
+    @on-visible="showCreateModal"
+    :visible="isShowCreateModal"
+  ></CreateTaskModal>
   <UpdateTaskModal
     v-if="isShowUpdateModal"
     :detail="taskdetail"
-    @on-visible="updateTaskList"
+    @on-visible="showUpdateModal"
     :visible="isShowUpdateModal"
   ></UpdateTaskModal>
 </template>
@@ -142,7 +147,7 @@
   const route = useRoute();
   const router = useRouter();
   const projectId = route.params.projectId;
-  const { getVersion, versionList } = useProjectApi();
+  const { getVersion, versionList, projectList, fetchProjectList } = useProjectApi();
   const { memberList, fetchMembers } = useCommonApis();
 
   const {
@@ -165,14 +170,18 @@
   provide('levelList', levels);
   provide('trackersList', trackers);
   provide('statusList', status);
+  provide('projectList', projectList);
 
   onMounted(async () => {
+    // todo 优化成循环并发
     await fetchTask();
     await taskStatusTypes();
-    getVersion();
-    fetchMembers();
-    getTrackerTypes();
-    toAllTask();
+    await getVersion();
+    await fetchMembers();
+    await getTaskLevel();
+    await getTrackerTypes();
+    await toAllTask();
+    fetchProjectList();
     searchTypeChange(activeFilterMenu);
   });
   const searchTask = () => {
@@ -208,11 +217,11 @@
       taskBoard.statusType = status.value;
     }
     if (menuItem.id === FilterType.category) {
-      await getTrackerTypes();
+      // await getTrackerTypes();
       taskBoard.statusType = trackers.value;
     }
     if (menuItem.id === FilterType.level) {
-      await getTaskLevel();
+      // await getTaskLevel();
       taskBoard.statusType = levels.value;
     }
     Object.keys(menuItem).forEach((key) => {
@@ -252,9 +261,12 @@
     if (!flag) await fetchTask();
     searchTypeChange(activeFilterMenu);
   };
-  const updateTaskList = async (flag: boolean) => {
+  const showUpdateModal = (flag: boolean) => {
     isShowUpdateModal.value = flag;
-    if (!flag) await fetchTask();
+    if (!flag) refeshTaskList();
+  };
+  const refeshTaskList = async (params: { [key: string]: string }) => {
+    await fetchTask();
     searchTypeChange(activeFilterMenu);
   };
   // 更新任务状态

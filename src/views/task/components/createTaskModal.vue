@@ -11,19 +11,19 @@
         <Button key="submit" type="primary" :loading="loading" @click="handleOk">完成</Button>
       </template>
       <Textarea class="w-full" v-model:value="formModel.subject" placeholder="输入标题" :rows="4" />
-      <div>
-        <div class="member">
-          <SelectMember></SelectMember>
-        </div>
-      </div>
-      <div class="flex">
-        <div class="mr-5 project-name"></div>
-        <div class="mr-5 tracker">
+
+      <div class="flex py-2 my-3">
+        <div class="project-name"></div>
+        <div class="tracker">
           <Dropdown :trigger="['click']">
-            <a class="ant-dropdown-link" @click.prevent>
+            <div class="flex" @click.prevent>
+              <img
+                class="w-20px h-20px mr-1"
+                :src="iconTypes[`type${formModel.tracker_id}`] || iconTypes.type3"
+              />
               {{ seletedTrackerName }}
-              <span class="filter"></span>
-            </a>
+              <span class="px-1">·</span>
+            </div>
             <template #overlay>
               <Menu @click="trackerChange">
                 <template v-for="tracker in trackers" :key="tracker.id">
@@ -60,12 +60,24 @@
         </div>
       </div>
       <Divider />
+
       <!-- label项 -->
       <div class="">
+        <div class="flex py-2 my-3 items-center">
+          <div class="inline-block w-30"><span class="label">执行者</span></div>
+          <div class="flex-auto">
+            <SelectMember @on-change="assignedMemeberChange"></SelectMember>
+          </div>
+        </div>
         <div class="flex py-2 my-3">
           <div class="w-30"><span class="label">备注</span></div>
           <div>
-            <Textarea v-model:value="formModel.description" placeholder="添加备注" :rows="4" />
+            <Textarea
+              class="w-250px"
+              v-model:value="formModel.description"
+              placeholder="添加备注"
+              :rows="4"
+            />
           </div>
         </div>
         <!-- <div>
@@ -73,13 +85,16 @@
           <div></div>
         </div> -->
         <div class="flex py-2 my-3 items-center">
-          <div class="inline-block w-30"><span class="label">优先级</span></div>
+          <div class="inline-block w-30"><span class="label">优先级 </span></div>
+
           <div class="flex-auto">
-            <Dropdown :trigger="['click']">
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ seletedLevelName }}
-                <span class="filter"></span>
-              </a>
+            <Dropdown :trigger="['click']" class="w-250px">
+              <div @click.prevent>
+                <Tag v-if="seletedLevelName" :color="LevelType[formModel?.priority_id]">
+                  {{ seletedLevelName }}
+                </Tag>
+                <span v-else> 待添加</span>
+              </div>
               <template #overlay>
                 <Menu @click="levelChange">
                   <template v-for="level in levels" :key="level.id">
@@ -98,14 +113,14 @@
         <div class="flex py-2 my-3 items-center">
           <div class="inline-block w-30"><span class="label">目标版本</span></div>
           <div class="flex-auto">
-            <Dropdown :trigger="['click']">
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ seletedVersionName }}
-                <span class="filter"></span>
+            <Dropdown :trigger="['click']" class="w-250px">
+              <a class="inline-block" @click.prevent>
+                <span v-if="seletedVersionName">{{ seletedVersionName }}</span>
+                <span v-else> 待添加</span>
               </a>
               <template #overlay>
                 <Menu @click="versionChange">
-                  <MenuItem key="0">
+                  <MenuItem key="">
                     <div class="flex justify-between">
                       <span>无</span>
                     </div>
@@ -123,18 +138,28 @@
             </Dropdown>
           </div>
         </div>
-        <div class="flex py-2 my-3 items-center">
+        <!-- <div class="flex py-2 my-3 items-center">
           <div class="w-30"><span class="label">开始日期</span></div>
-          <div class="flex-auto"><DatePicker v-model:value="formModel.start_date" /></div>
-        </div>
+          <div class="flex-auto">
+            <DatePicker class="w-250px" v-model:value="formModel.start_date" />
+          </div>
+        </div> -->
         <div class="flex py-2 my-3">
           <div class="w-30"><span class="label">计划完成日期</span></div>
-          <div class="flex-auto"><DatePicker v-model:value="formModel.due_date" /></div>
+          <div class="flex-auto">
+            <RangePicker
+              :disabled-date="disabledDate"
+              class="w-250px"
+              v-model:value="computedDateRange"
+              @change="onRangeChange"
+            />
+          </div>
         </div>
         <div class="flex py-2 my-3 items-center">
           <div class="w-30"><span class="label">预期时间</span></div>
           <div class="flex-auto">
             <InputNumber
+              class="w-250px"
               placeholder="请输入计划工时（小时）"
               v-model:value="formModel.estimated_hours"
               :min="0"
@@ -171,9 +196,13 @@
     DatePicker,
     InputNumber,
     notification,
+    Tag,
+    RangePicker,
   } from 'ant-design-vue';
   import { createTask } from '@apis/index';
   import { SelectMember } from '@/components';
+  import { iconTypes } from '@/components/task-list/icon';
+  import { LevelType } from '../constants';
 
   const route = useRoute();
   const projectId = route.params.projectId;
@@ -191,17 +220,17 @@
     description: '',
     priority: 2,
     subject: '',
-    tracker_id: 1,
+    tracker_id: 1, // 任务类型
     status_id: 1,
-    priority_id: 1,
-    category_id: 11,
-    fixed_version_id: '',
+    priority_id: 1, // 私有还是共有，默认是私有
+    category_id: '',
+    fixed_version_id: '', // 修改没有版本会错误
     is_private: 1,
-    assigned_to_id: '',
+    assigned_to_id: -1,
     estimated_hours: '',
-    done_ratio: '81',
-    start_date: dayjs('2023-04-01'),
-    due_date: dayjs('2023-04-02'),
+    done_ratio: '',
+    start_date: dayjs(),
+    due_date: dayjs(),
     watcher_user_ids: '',
     parent_issue_id: '',
   });
@@ -211,7 +240,7 @@
   const trackers = inject('trackersList');
   const versionList = inject('versionList');
   const memberList = inject('memberList');
-  console.log(`output->trackers`, trackers);
+  console.log(`output->trackers`, trackers, levels);
 
   const defaultStatus = computed(() => {
     return statusList.value[0];
@@ -242,10 +271,7 @@
 
   // 获取版本列表
   const seletedVersionName = computed(() => {
-    return (
-      versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name ||
-      '待添加'
-    );
+    return versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name;
   });
   const versionChange = ({ item, key }) => {
     formModel.fixed_version_id = key;
@@ -280,6 +306,21 @@
 
   const handleCancel = () => {
     emits('onVisible', false);
+  };
+  const assignedMemeberChange = (value: string) => {
+    formModel.assigned_to_id = Number(value);
+  };
+  const computedDateRange = computed(() => {
+    return [dayjs(formModel.start_date), dayjs(formModel.due_date)];
+  });
+  const disabledDate = (current: Dayjs) => {
+    return current && current < dayjs().endOf('day');
+  };
+
+  const onRangeChange = (date: [Dayjs, Dayjs], dateString: [string, string]) => {
+    const [start_date, due_date] = date;
+    formModel.start_date = start_date;
+    formModel.due_date = due_date;
   };
 </script>
 
