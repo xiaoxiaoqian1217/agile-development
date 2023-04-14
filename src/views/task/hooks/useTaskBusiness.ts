@@ -38,18 +38,14 @@ export const useTaskBusiness = () => {
   };
   // : { author?: number; assigned_to_id?: number }
   const filterTask = ({ tag }: { tag: SidePanelMapType }) => {
-    console.log(`output->TAG`, tag);
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-    console.log(`output->userInfo`, userInfo);
     activePanelMenu.value = tag;
     if (tag == 'all') filterList.value = taskList.value;
     else {
       filterList.value = taskList.value.filter((item: TaskItem) => {
-        console.log(`output->item[tag]`, item[tag], userInfo.id);
         return item[tag] === userInfo.id;
       });
     }
-    console.log(`output->filterList`, filterList);
   };
 
   const fetchTask = async () => {

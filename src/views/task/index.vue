@@ -5,7 +5,10 @@
       v-if="isVisiblePanel"
       class="w-300px flex-none task-sidebar absolute h-full z-40 bg-light-50"
     >
-      <SideTaskPanel @task-panel-change="sidePanelChange"></SideTaskPanel>
+      <SideTaskPanel
+        :activePanelMenuId="activePanelMenuId"
+        @task-panel-change="sidePanelChange"
+      ></SideTaskPanel>
     </div>
     <div class="w-full">
       <!-- 顶部操作栏 -->
@@ -31,7 +34,7 @@
                 <MenuItem @click="sidePanelChange(menu)">
                   <div class="flex justify-between">
                     <span>{{ menu.name }}</span>
-                    <span v-if="activeMenuId === menu.id"></span>
+                    <span v-if="activePanelMenuId === menu.id"></span>
                   </div>
                 </MenuItem>
               </template>
@@ -76,6 +79,8 @@
         <div class="pl-5 h-full task-list-handler">
           <SideTaskPanel
             v-if="!isVisiblePanel"
+            @task-panel-change="sidePanelChange"
+            :activePanelMenuId="activePanelMenuId"
             class="task-list-panel absolute w-320px"
           ></SideTaskPanel>
         </div>
@@ -205,12 +210,12 @@
     statusType: [],
     groupMap: new Map(),
   });
-  const activeMenuId = ref(SIDER_MENU[0]?.id);
+  const activePanelMenuId = ref(SIDER_MENU[0]?.id);
   const filterTypeName = computed(() => {
     return FILTER_DROP_DOWN_MENU.find((item) => item.id === activeFilterMenu.id)?.name;
   });
   const curSideMenuName = computed(() => {
-    return SIDER_MENU.find((item) => item.id === activeMenuId.value)?.name;
+    return SIDER_MENU.find((item) => item.id === activePanelMenuId.value)?.name;
   });
 
   const searchTypeChange = async (menuItem) => {
@@ -232,7 +237,13 @@
     // 根据任务状态筛选任务列表
     if (searchValue.value) searchTask({ subject: searchValue.value });
 
-    classifyTask(searchValue.value ? searchTaskList.value : initTaskList.value);
+    classifyTask(
+      searchValue.value
+        ? searchTaskList.value
+        : activePanelMenuId.value === 1
+        ? initTaskList.value
+        : filterList
+    );
   };
   const classifyTask = async (list) => {
     const { field } = activeFilterMenu;
@@ -271,13 +282,6 @@
     await fetchTask();
     searchTypeChange(activeFilterMenu);
   };
-  // 更新任务状态
-  const defaultUpdateParams = {
-    fixed_version_id: '',
-    is_private: '',
-    assigned_to_id: 24,
-    estimated_hours: 0,
-  };
   const drapStatusChange = async (todo: TaskItem) => {
     await updateTask({
       token: localStorage.getItem('token'),
@@ -303,13 +307,13 @@
   };
 
   const sidePanelChange = ({ tag, id, name }: SideMenuItem) => {
-    activeMenuId.value = id;
+    activePanelMenuId.value = id;
     filterTask({
       tag,
     });
-    console.log(`output->filterList`, filterList.value);
-    if (searchValue.value) searchTask({ subject: searchValue.value });
-    classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
+    searchValue.value = '';
+    // if (searchValue.value) searchTask({ subject: searchValue.value });
+    classifyTask(filterList.value);
   };
 </script>
 
