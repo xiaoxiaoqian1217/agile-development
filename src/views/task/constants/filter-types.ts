@@ -2,6 +2,7 @@ export enum FilterType {
   status = 1,
   category = 2,
   level = 3,
+  date = 4,
 }
 
 export const FILTER_DROP_DOWN_MENU = [

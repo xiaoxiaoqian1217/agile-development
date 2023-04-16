@@ -2,7 +2,6 @@
   <Select
     @change="handleChange"
     v-model:value="computedValue"
-    style="width: 250px"
     placeholder="待添加"
     :options="computedMemberList"
     :filterOption="filterOption"
@@ -31,7 +30,6 @@
 <script setup lang="ts">
   import { inject, computed, unref, ref, defineProps } from 'vue';
   import { Select, Tag, type SelectProps } from 'ant-design-vue';
-  import { number, string } from 'yargs';
 
   const memberList = inject('memberList');
   const filterList = ref(unref(memberList));

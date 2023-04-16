@@ -73,6 +73,7 @@
               </Menu>
             </template>
           </Dropdown>
+          <TaskFilterGroup @on-change="filterGroupChange"></TaskFilterGroup>
         </div>
       </div>
       <div class="flex h-full bg-gray-100 pr-6.5 w-full overflow-x-auto">
@@ -140,7 +141,7 @@
   } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { updateTask } from '@/apis';
-  import { TaskList, SideTaskPanel } from '@/components';
+  import { TaskList, SideTaskPanel, TaskFilterGroup } from '@/components';
   import CreateTaskModal from './components/createTaskModal.vue';
   import UpdateTaskModal from './components/updateTaskModal.vue';
   import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU, type SideMenuItem } from './constants';
@@ -314,6 +315,10 @@
     searchValue.value = '';
     // if (searchValue.value) searchTask({ subject: searchValue.value });
     classifyTask(filterList.value);
+  };
+
+  const filterGroupChange = (values: any) => {
+    console.log(`output->value`, values);
   };
 </script>
 
