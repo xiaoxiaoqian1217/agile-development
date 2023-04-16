@@ -1,9 +1,9 @@
 <template>
   <div class="bg-light-50">
-    <template v-for="sideItem in SIDER_MENU" :key="sideItem.id">
+    <template v-for="sideItem in SIDER_MENU" :key="sideItem.tag">
       <div
         class="flex px-4 py-2 items-center text-14px"
-        :class="activePanelMenuId === sideItem.id && 'bg-sky-100'"
+        :class="activePanelMenuId === sideItem.tag && 'bg-sky-100'"
         @click="changeMenu(sideItem)"
       >
         <div class="w-6 h-6 bg-amber-200 mr-3 rounded-1/2"></div>
@@ -19,7 +19,7 @@
   const emits = defineEmits(['taskPanelChange']);
   const props = defineProps({
     visible: Boolean,
-    activePanelMenuId: Number,
+    activePanelMenuId: String,
   });
   const activePanelMenuId = computed(() => {
     console.log(`output-> props.activePanelMenuId`, props.activePanelMenuId);

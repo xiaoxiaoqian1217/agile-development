@@ -44,7 +44,9 @@
             }}</span>
           </div>
 
-          <div v-if="element.estimated_hours">预期时间: {{ element?.estimated_hours }}小时</div>
+          <div v-if="element.estimated_hours" class="text-12px mt-1">
+            预期时间: {{ element?.estimated_hours }}小时
+          </div>
         </div>
         <div class="ml-auto">
           <div

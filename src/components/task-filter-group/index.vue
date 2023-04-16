@@ -201,11 +201,10 @@
   const versionList = inject('versionList');
   const memberList = inject('memberList');
   interface Props {
-    author?: number;
-    assigned_to_id?: number;
+    activePanelMenuId: string;
   }
   const props = defineProps<Props>();
-  const emits = defineEmits(['on-change']);
+  const emits = defineEmits(['change']);
   const typesOptions = computed(() => {
     return [
       {
@@ -241,7 +240,7 @@
             label: '执行者',
             value: FilterTypeField.assigned_to_id,
           },
-        ],
+        ].filter((item) => item.value !== props.activePanelMenuId),
         // field: [FilterTypeField.assigned_to_id, FilterTypeField.author],
       },
       {
@@ -272,6 +271,7 @@
   };
   const deleteOption = (id: number) => {
     optionGroup.value = optionGroup.value.filter((item) => item.id !== id);
+    emits('change', {}, unref(optionGroup));
   };
   const isShow = ref(false);
   const openFilter = () => {
@@ -279,19 +279,19 @@
   };
   const memeberChange = (group: optionConfig, value) => {
     group.type.value = value;
-    emits('on-change', group, unref(optionGroup));
+    emits('change', group, unref(optionGroup));
   };
 
   const dateChange = (group: optionConfig, date: [Dayjs, Dayjs], dateString: [string, string]) => {
     group.type.value = date;
-    emits('on-change', group, unref(optionGroup));
+    emits('change', group, unref(optionGroup));
   };
 
   const orAndFlagChange = (group: optionConfig, value: string) => {
     // group.orAndFlag.value = value;
     group.orAndFlag.value = value;
     optionGroup.value.forEach((item) => (item.orAndFlag.value = value));
-    emits('on-change', group, unref(optionGroup));
+    emits('change', group, unref(optionGroup));
   };
 </script>
 

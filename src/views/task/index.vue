@@ -30,11 +30,11 @@
           </a>
           <template #overlay>
             <Menu>
-              <template v-for="menu in SIDER_MENU" :key="menu.id">
+              <template v-for="menu in SIDER_MENU" :key="menu.tag">
                 <MenuItem @click="sidePanelChange(menu)">
                   <div class="flex justify-between">
                     <span>{{ menu.name }}</span>
-                    <span v-if="activePanelMenuId === menu.id"></span>
+                    <span v-if="activePanelMenuId === menu.tag"></span>
                   </div>
                 </MenuItem>
               </template>
@@ -73,16 +73,19 @@
               </Menu>
             </template>
           </Dropdown>
-          <TaskFilterGroup @on-change="filterGroupChange"></TaskFilterGroup>
+          <TaskFilterGroup
+            :activePanelMenuId="activePanelMenuId"
+            @change="filterGroupChange"
+          ></TaskFilterGroup>
         </div>
       </div>
       <div class="flex h-full bg-gray-100 pr-6.5 w-full overflow-x-auto">
-        <div class="pl-5 h-full task-list-handler">
+        <div class="pl-5 h-full task-list-handler relative">
           <SideTaskPanel
             v-if="!isVisiblePanel"
             @task-panel-change="sidePanelChange"
             :activePanelMenuId="activePanelMenuId"
-            class="task-list-panel absolute w-320px"
+            class="task-list-panel absolute w-320px -left-full"
           ></SideTaskPanel>
         </div>
         <div class="flex flex-auto w-full">
@@ -169,6 +172,7 @@
     status,
     filterTask,
     filterList,
+    moreFilterType,
   } = useTaskBusiness();
 
   const activeFilterMenu = reactive({ ...FILTER_DROP_DOWN_MENU[0] });
@@ -211,12 +215,12 @@
     statusType: [],
     groupMap: new Map(),
   });
-  const activePanelMenuId = ref(SIDER_MENU[0]?.id);
+  const activePanelMenuId = ref(SIDER_MENU[0]?.tag);
   const filterTypeName = computed(() => {
     return FILTER_DROP_DOWN_MENU.find((item) => item.id === activeFilterMenu.id)?.name;
   });
   const curSideMenuName = computed(() => {
-    return SIDER_MENU.find((item) => item.id === activePanelMenuId.value)?.name;
+    return SIDER_MENU.find((item) => item.tag === activePanelMenuId.value)?.name;
   });
 
   const searchTypeChange = async (menuItem) => {
@@ -237,11 +241,10 @@
     });
     // 根据任务状态筛选任务列表
     if (searchValue.value) searchTask({ subject: searchValue.value });
-
     classifyTask(
       searchValue.value
         ? searchTaskList.value
-        : activePanelMenuId.value === 1
+        : activePanelMenuId.value === 'all'
         ? initTaskList.value
         : filterList
     );
@@ -308,17 +311,34 @@
   };
 
   const sidePanelChange = ({ tag, id, name }: SideMenuItem) => {
-    activePanelMenuId.value = id;
-    filterTask({
-      tag,
-    });
+    activePanelMenuId.value = tag;
     searchValue.value = '';
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    if (tag === 'all') classifyTask(initTaskList.value);
+    else {
+      filterTask({
+        field: tag,
+        value: userInfo.id,
+      });
+
+      classifyTask(filterList.value);
+    }
     // if (searchValue.value) searchTask({ subject: searchValue.value });
-    classifyTask(filterList.value);
   };
 
-  const filterGroupChange = (values: any) => {
-    console.log(`output->value`, values);
+  const filterGroupChange = (values: any, filters) => {
+    const params = getFilterListParams(filters);
+    console.log(`output->params`, params);
+    moreFilterType(params);
+    // classifyTask(filterList.value);
+  };
+  const getFilterListParams = (values: any) => {
+    const filterArr = values.map((value) => ({
+      flag: value.flag.value,
+      orAnd: value.orAndFlag.value,
+      type: value.type,
+    }));
+    return filterArr;
   };
 </script>
 
