@@ -81,6 +81,17 @@
           </div>
         </div>
         <div class="flex py-2 my-3 items-center">
+          <div class="w-30"><span class="label">备注</span></div>
+          <div>
+            <Textarea
+              class="w-250px"
+              v-model:value="formModel.description"
+              placeholder="添加备注"
+              :rows="4"
+            />
+          </div>
+        </div>
+        <div class="flex py-2 my-3 items-center">
           <div class="w-30"><span class="label">优先级</span></div>
           <div class="flex-auto">
             <Dropdown :trigger="['click']" class="w-250px">

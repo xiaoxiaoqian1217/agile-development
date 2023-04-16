@@ -107,11 +107,7 @@ export const useTaskBusiness = () => {
   const moreFilterType = (params) => {
     console.log(`output->params`, params);
     // if (activePanelMenu.value !== 'all' && params.length === 1)
-    const list = activePanelMenu.field !== 'all' ? filterList : taskList;
-    const copyList = cloneDeep(unref(list));
-    // // 1 且 0 或
-    const one = params.length === 1 ? 'and' : params[1]?.orAnd;
-    const obj = {};
+
     const resetFlag = params.every((param) => !param.type.value);
     //
     if (resetFlag) {
@@ -120,6 +116,10 @@ export const useTaskBusiness = () => {
       else filterList.value = taskList.value;
       return false;
     }
+    const list = activePanelMenu.field !== 'all' ? filterList : taskList;
+    const copyList = cloneDeep(unref(list));
+    // // 1 且 0 或
+    const one = params.length === 1 ? 'and' : params[1]?.orAnd;
     console.log(`output->one`, one);
     if (one === 'and') {
       const list = multiFilter(copyList, params);
