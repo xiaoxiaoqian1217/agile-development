@@ -42,17 +42,22 @@
           </template>
         </Dropdown>
 
-        <div class="flex flex-auto setting justify-center items-center">
+        <div class="flex flex-1 setting items-center justify-center">
           <!-- 搜索标题和ID -->
-          <div class="">
-            <Input v-model:value="searchValue" placeholder="搜索标题" @change="searchFromName">
-              <template #prefix>
-                <SearchOutlined />
-              </template>
-            </Input>
-          </div>
+          <Input
+            class="w-300px"
+            v-model:value="searchValue"
+            placeholder="搜索标题"
+            @change="searchFromName"
+          >
+            <template #prefix>
+              <SearchOutlined />
+            </template>
+          </Input>
           <!-- 如何分列查看 -->
-          <Dropdown class="ml-3" :trigger="['click']">
+        </div>
+        <div class="flex justify-end">
+          <Dropdown class="mr-3" :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
               <FilterOutlined />
               {{ `${filterTypeName}分列` }}
@@ -85,7 +90,7 @@
             v-if="!isVisiblePanel"
             @task-panel-change="sidePanelChange"
             :activePanelMenuId="activePanelMenuId"
-            class="task-list-panel absolute w-320px -left-full"
+            class="task-list-panel absolute w-320px"
           ></SideTaskPanel>
         </div>
         <div class="flex flex-auto w-full">
@@ -98,8 +103,14 @@
               :fieldId="type"
               @change="drapStatusChange"
             >
-              <template v-if="type === Status.new">
-                <div class="shadow bg-light-50" @click="addTask">
+              <template
+                v-if="
+                  type === Status.new ||
+                  activeFilterMenu.id === FilterType.category ||
+                  activeFilterMenu.id === FilterType.level
+                "
+              >
+                <div class="shadow bg-light-50 h-25px" @click="addTask">
                   <div class="text-center"><PlusOutlined /></div>
                 </div>
               </template>
@@ -353,7 +364,9 @@
     bottom: 0;
     left: 0;
     position: absolute;
-    top: 60px;
+    /* visibility: hidden; */
+    /* left: -100%; */
+    top: 0px;
     transition: all 0.2s ease-in-out;
     transform: translateX(-900px);
     z-index: 30;
@@ -361,5 +374,17 @@
   }
   .task-list-handler:hover .task-list-panel {
     transform: translateX(0px);
+    /* visibility: visible; */
   }
+  /* .reference {
+    position: relative;
+  }
+  .popout-menu {
+    position: absolute;
+    visibility: hidden;
+    left: 100%;
+  }
+  .reference:hover > .popout-menu {
+    visibility: visible;
+  } */
 </style>

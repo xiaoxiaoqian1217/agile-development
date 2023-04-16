@@ -66,7 +66,7 @@
         <div class="flex py-2 my-3 items-center">
           <div class="inline-block w-30"><span class="label">执行者</span></div>
           <div class="flex-auto">
-            <SelectMember @on-change="assignedMemeberChange"></SelectMember>
+            <SelectMember class="w-250px" @on-change="assignedMemeberChange"></SelectMember>
           </div>
         </div>
         <div class="flex py-2 my-3">

@@ -133,12 +133,7 @@
             </Dropdown>
           </div>
         </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">开始日期</span></div>
-          <div class="flex-auto">
-            <DatePicker class="w-250px" v-model:value="formModel.start_date" />
-          </div>
-        </div>
+
         <div class="flex py-2 my-3">
           <div class="w-30"><span class="label">日期</span></div>
           <div class="flex-auto">

@@ -38,13 +38,13 @@
               class="w-20px h-20px"
               :src="iconTypes[`type${element.status_id}`] || iconTypes.type3"
             />
-            <span class="ml-1" v-if="element.description"><FileTextOutlined /></span>
-            <span v-if="element.fixed_version_id">{{
+            <span class="ml-1 text-gray-500" v-if="element.description"><FileTextOutlined /></span>
+            <span v-if="element.fixed_version_id" class="text-12px text-gray-500">{{
               getVersionName(element?.fixed_version_id)
             }}</span>
           </div>
 
-          <div v-if="element.estimated_hours" class="text-12px mt-1">
+          <div v-if="element.estimated_hours" class="text-12px text-gray-500 mt-1">
             预期时间: {{ element?.estimated_hours }}小时
           </div>
         </div>
