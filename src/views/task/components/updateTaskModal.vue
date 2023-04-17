@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed, defineProps, toRaw, inject } from 'vue';
+  import { ref, reactive, onMounted, computed,  toRaw, inject } from 'vue';
   import { useRoute } from 'vue-router';
   import dayjs, { Dayjs } from 'dayjs';
   import {
