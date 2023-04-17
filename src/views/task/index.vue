@@ -77,15 +77,18 @@
               </Menu>
             </template>
           </Dropdown>
+          <!-- 多条件筛选 -->
           <div>
             <TaskFilterGroup
+              @onVisible="(visible:boolean) => filterVisible= visible"
+              :visible="filterVisible"
               :activePanelMenuId="activePanelMenuId"
               @change="filterGroupChange"
             ></TaskFilterGroup>
           </div>
         </div>
       </div>
-      <div class="flex bg-gray-100 pr-6.5 w-full overflow-x-auto task-board scroll-smooth">
+      <div class="flex pr-6.5 w-full overflow-x-auto task-board scroll-smooth bg-gray-100">
         <div class="pl-5 task-list-handler relative">
           <SideTaskPanel
             v-if="!isVisiblePanel"
@@ -184,7 +187,7 @@
     status,
     filterTask,
     filterList,
-    moreFilterType,
+    multFilterType,
   } = useTaskBusiness();
 
   const activeFilterMenu = reactive({ ...FILTER_DROP_DOWN_MENU[0] });
@@ -326,23 +329,19 @@
     activePanelMenuId.value = tag;
     searchValue.value = '';
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-    if (tag === 'all') classifyTask(initTaskList.value);
-    else {
-      filterTask({
-        field: tag,
-        value: userInfo.id,
-      });
+    filterTask({
+      field: tag,
+      value: userInfo.id,
+    });
 
-      classifyTask(filterList.value);
-    }
-    // if (searchValue.value) searchTask({ subject: searchValue.value });
+    classifyTask(filterList.value);
   };
 
   const filterGroupChange = (values: any, filters) => {
     const params = getFilterListParams(filters);
     console.log(`output->params`, params);
-    moreFilterType(params);
-    // classifyTask(filterList.value);
+    multFilterType(params);
+    classifyTask(filterList.value);
   };
   const getFilterListParams = (values: any) => {
     const filterArr = values.map((value) => ({
@@ -352,6 +351,7 @@
     }));
     return filterArr;
   };
+  const filterVisible = ref(false);
 </script>
 
 <style scoped>

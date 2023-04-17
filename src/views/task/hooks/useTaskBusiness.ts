@@ -31,11 +31,12 @@ export const useTaskBusiness = () => {
     // author: number;
     // assigned_to_id: number;
   }) => {
-    const list = activePanelMenu.field !== 'all' ? filterList : taskList;
-    console.log(`output->filterList`, activePanelMenu.value);
     const str = new RegExp(`${params.subject}`, 'g');
-    searchTaskList.value = list.value.filter((item: TaskItem) => str.test(item.subject));
-    if (!params.subject) searchTaskList.value = list.value;
+    searchTaskList.value = filterList.value.filter((item: TaskItem) => {
+      return item.subject.includes(params.subject);
+      // str.test(item.subject);
+    });
+    if (!params.subject) searchTaskList.value = filterList.value;
   };
   // else taskList.value = [];
 
@@ -43,10 +44,11 @@ export const useTaskBusiness = () => {
   const filterTask = (fieldItem) => {
     activePanelMenu.field = fieldItem.field;
     activePanelMenu.value = fieldItem.value;
-    filterList.value = taskList.value.filter((item: TaskItem) => {
-      return item[fieldItem.field] === fieldItem.value;
-    });
-    console.log(`output-> filterList.value`, filterList.value);
+    if (fieldItem.field == 'all') filterList.value = taskList.value;
+    else
+      filterList.value = taskList.value.filter((item: TaskItem) => {
+        return item[fieldItem.field] === fieldItem.value;
+      });
   };
 
   function multiFilter(array, filters) {
@@ -72,7 +74,6 @@ export const useTaskBusiness = () => {
     });
   }
   function multiFilter2(array, filters) {
-    const filterKeys = Object.keys(filters);
     // filters all elements passing the criteria
     return array.filter((item) => {
       // dynamically validate all filter criteria
@@ -81,14 +82,14 @@ export const useTaskBusiness = () => {
         // if (!filterKeys.length) return true;
         if (!filter.type.value) return true;
 
-        // console.log(
-        //   `output->filters[key]`,
-        //   filter.flag,
-        //   filter.type.value,
-        //   item[filter.type.field],
-        //   filter.type.value === item[filter.type.field]
-        // );
-        if (filters[key].flag === 0 || filters[key].flag === 1)
+        console.log(
+          `output->filters[key]`,
+          filter.flag,
+          filter.type.value,
+          item[filter.type.field],
+          filter.type.value === item[filter.type.field]
+        );
+        if (filter.flag === 0 || filter.flag === 1)
           return filter.flag
             ? filter.type.value === item[filter.type.field]
             : filter.type.value !== item[filter.type.field];
@@ -104,30 +105,28 @@ export const useTaskBusiness = () => {
   //   orAnd: value.orAndFlag.value,
   //   type: value.type,
   // }]
-  const moreFilterType = (params) => {
+  const multFilterType = (params) => {
     console.log(`output->params`, params);
     // if (activePanelMenu.value !== 'all' && params.length === 1)
 
     const resetFlag = params.every((param) => !param.type.value);
     //
     if (resetFlag) {
-      if (activePanelMenu.field !== 'all')
-        filterTask({ field: activePanelMenu.field, value: activePanelMenu.value });
-      else filterList.value = taskList.value;
+      filterTask({ field: activePanelMenu.field, value: activePanelMenu.value });
       return false;
     }
-    const list = activePanelMenu.field !== 'all' ? filterList : taskList;
-    const copyList = cloneDeep(unref(list));
+    const copyList = cloneDeep(unref(filterList));
     // // 1 且 0 或
     const one = params.length === 1 ? 'and' : params[1]?.orAnd;
-    console.log(`output->one`, one);
     if (one === 'and') {
       const list = multiFilter(copyList, params);
-      console.log(`output->list one1`, list);
+      console.log(`output->list one1`, one, list);
+      filterList.value = list;
     } else {
       // or
-      const list = multiFilter2(copyList, params);
+      const list = multiFilter2(taskList.value, params);
       console.log(`output->list one2 `, list);
+      filterList.value = list;
     }
   };
 
@@ -138,6 +137,7 @@ export const useTaskBusiness = () => {
       sort: 'status:desc',
     });
     taskList.value = taskResp.issues;
+    filterList.value = taskResp.issues;
   };
 
   const trackers = ref();
@@ -177,6 +177,6 @@ export const useTaskBusiness = () => {
     status,
     filterTask,
     filterList,
-    moreFilterType,
+    multFilterType,
   };
 };

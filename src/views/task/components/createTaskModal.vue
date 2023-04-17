@@ -146,13 +146,19 @@
         </div> -->
         <div class="flex py-2 my-3">
           <div class="w-30"><span class="label">计划完成日期</span></div>
-          <div class="flex-auto">
+          <div class="flex-auto items-center">
             <RangePicker
               :disabled-date="disabledDate"
               class="w-250px"
               v-model:value="computedDateRange"
               @change="onRangeChange"
             />
+            <!-- <RangePicker
+              :disabled-date="disabledDate"
+              class="w-250px"
+              v-model:value="computedDateRange"
+              @change="onRangeChange"
+            /> -->
           </div>
         </div>
         <div class="flex py-2 my-3 items-center">
@@ -193,11 +199,11 @@
     Button,
     Dropdown,
     Textarea,
-    DatePicker,
     InputNumber,
     notification,
     Tag,
     RangePicker,
+    DatePicker,
   } from 'ant-design-vue';
   import { createTask } from '@apis/index';
   import { SelectMember } from '@/components';
@@ -229,8 +235,8 @@
     assigned_to_id: -1,
     estimated_hours: '',
     done_ratio: '',
-    start_date: dayjs(),
-    due_date: dayjs(),
+    start_date: undefined,
+    due_date: undefined,
     watcher_user_ids: '',
     parent_issue_id: '',
   });
@@ -278,20 +284,27 @@
   };
 
   // 校验提交的内容
-  const validate = (type = 'error', title = '失败', tip = '标题不能为空') => {
+  const validate = (title = '创建失败', tip = '标题不能为空') => {
     if (!formModel['subject']) {
       notification.error({
         message: title,
         placement: 'bottomLeft',
         description: tip,
       });
+      if (!formModel['assigned_to_id']) {
+        notification.error({
+          message: title,
+          placement: 'bottomLeft',
+          description: tip,
+        });
+      }
       return false;
     } else return true;
   };
 
   const handleOk = async () => {
     if (!validate()) return false;
-    loading.value = true;
+    // loading.value = true;
     const start_date = dayjs(formModel.start_date).format('YYYY-MM-DD');
     const due_date = dayjs(formModel.due_date).format('YYYY-MM-DD');
     await createTask({
@@ -301,7 +314,7 @@
       start_date,
       due_date,
     });
-    loading.value = false;
+    // loading.value = false;
     emits('onVisible', false);
   };
 
@@ -312,6 +325,7 @@
     formModel.assigned_to_id = Number(value);
   };
   const computedDateRange = computed(() => {
+    if (!formModel.start_date && !formModel.due_date) return [];
     return [dayjs(formModel.start_date), dayjs(formModel.due_date)];
   });
   const disabledDate = (current: Dayjs) => {

@@ -12,7 +12,7 @@
         class="bg-gray-50 w-full h-12"
         contenteditable
         spellcheck="false"
-        @blur="validate"
+        @blur="subjectChange"
       >
         {{ formModel.subject }}
       </div>
@@ -281,10 +281,22 @@
   };
 
   const titleElement = ref(null);
+  const validate = (title = '更新失败', tip = '标题不能为空') => {
+    if (!formModel['subject']) {
+      notification.error({
+        message: title,
+        placement: 'bottomLeft',
+        description: tip,
+      });
+      return false;
+    } else return true;
+  };
+  function subjectChange() {
+    const text = titleElement.value.innerText.trim();
+    formModel.subject = text;
+    if (!validate()) return false;
 
-  function validate() {
-    if (!titleElement.value.innerText.trim()) return false;
-    formModel.subject = titleElement.value.innerText.trim();
+    updateTaskDetail({ subject: formModel.subject });
   }
   const computedDateRange = computed(() => {
     return [dayjs(formModel.start_date), dayjs(formModel.due_date)];

@@ -24,7 +24,7 @@
 
       <Dropdown class="mb-30px mt-auto" placement="topLeft">
         <div
-          class="w-8 h-8 cursor-pointer bg-amber-200 rounded-1/2 flex items-center justify-center text-xs text-light-50"
+          class="w-8 h-8 cursor-pointer rounded-1/2 flex items-center justify-center text-xs text-light-50 bg-amber-200"
         >
           <span>{{ userInfo?.name?.slice(0, 1) }}</span>
         </div>

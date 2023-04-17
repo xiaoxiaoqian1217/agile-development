@@ -1,9 +1,13 @@
 <template>
   <div class="relative">
-    <span class="flex items-center" @click="openFilter"> <FilterOutlined class="mr-1" /> 筛选</span>
+    <span class="flex items-center" @click="openFilter">
+      <FilterOutlined class="mr-1" :class="filterNum && 'text-sky-500'" />
+      <span v-if="filterNum" class="text-sky-500">{{ filterNum }}</span>
+      <span v-else>筛选</span>
+    </span>
     <div
-      v-if="isShow"
-      class="absolute top-full -left-600px z-30 flex flex-col bg-light-50 py-16px px-20px mt-14px shadow-md"
+      v-if="computedIsShow"
+      class="absolute top-full mt-15px -left-654px z-30 flex flex-col bg-light-50 py-16px px-20px shadow-lg"
     >
       <template v-for="(group, index) in optionGroup" :key="group.id">
         <div class="flex items-center mb-4">
@@ -56,7 +60,12 @@
               </SelectOption>
             </Select>
 
-            <Select v-else class="mr-14px w-85px" v-model:value="group.flag.value">
+            <Select
+              v-else
+              class="mr-14px w-85px"
+              v-model:value="group.flag.value"
+              @change="(value) => yesOrNoChange(group, value)"
+            >
               <SelectOption v-for="flag in Flags" :value="flag.value" :key="flag.value">
                 {{ flag.label }}
               </SelectOption>
@@ -118,15 +127,17 @@
         </div>
       </template>
 
-      <div>
-        <PlusOutlined /><a class="ant-down-link text-sky-300" @click="addCondition">添加条件</a>
+      <div class="">
+        <a class="flex items-center ant-btn-link text-link-50" @click="addCondition">
+          <PlusOutlined class="mr-2" />添加条件</a
+        >
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, computed, reactive, unref } from 'vue';
+  import { ref, inject, computed, reactive, unref, defineProps, defineEmits } from 'vue';
   import { Select, SelectOption, SelectOptGroup, RangePicker } from 'ant-design-vue';
   import { cloneDeep } from 'lodash';
   import { FilterTypeField, type FieldItem } from '@/types';
@@ -135,6 +146,12 @@
   import dayjs, { Dayjs } from 'dayjs';
   import { useTaskBusiness } from '@/views/task/hooks';
 
+  interface Props {
+    activePanelMenuId: string;
+    visible: boolean;
+  }
+  const props = defineProps<Props>();
+  const emits = defineEmits(['change', 'on-visible']);
   const DateList = [
     {
       label: '开始时间',
@@ -202,11 +219,7 @@
   const trackers = inject('trackersList');
   const versionList = inject('versionList');
   const memberList = inject('memberList');
-  interface Props {
-    activePanelMenuId: string;
-  }
-  const props = defineProps<Props>();
-  const emits = defineEmits(['change']);
+
   const typesOptions = computed(() => {
     return [
       {
@@ -252,7 +265,6 @@
       },
     ];
   });
-  const curAddOption = ref(cloneDeep(filterOptionConfig));
   const handleChange = (value: string, typeItem: optionConfig) => {
     console.log(`selected ${value}`, typeItem);
     typeItem.value = dayjs();
@@ -266,18 +278,29 @@
     if (type === FilterTypeField.fixed_version_id) return versionList.value;
     if (type === FilterTypeField.status_id) return statusList.value;
   };
+  const filterNum = computed(() => {
+    return optionGroup.value.filter((item) => item.type.value)?.length;
+  });
 
   const optionGroup = ref([cloneDeep(filterOptionConfig)]);
   const addCondition = () => {
     optionGroup.value.push({ ...cloneDeep(filterOptionConfig), id: Date.now() });
+    if (optionGroup.value.length > 0)
+      optionGroup.value.forEach((item) => {
+        console.log(`output->orAndFlag`, optionGroup.value[1].orAndFlag.value);
+        item.orAndFlag.value = optionGroup.value[1].orAndFlag.value;
+      });
   };
   const deleteOption = (id: number) => {
     optionGroup.value = optionGroup.value.filter((item) => item.id !== id);
+    if (optionGroup.value.length === 1) optionGroup.value[0].flag = 'and';
+
     emits('change', {}, unref(optionGroup));
   };
   const isShow = ref(false);
   const openFilter = () => {
-    isShow.value = !isShow.value;
+    emits('on-visible', !computedIsShow.value);
+    // isShow.value = !isShow.value;
   };
   const memeberChange = (group: optionConfig, value) => {
     group.type.value = value;
@@ -292,8 +315,21 @@
   const orAndFlagChange = (group: optionConfig, value: string) => {
     // group.orAndFlag.value = value;
     group.orAndFlag.value = value;
-    optionGroup.value.forEach((item) => (item.orAndFlag.value = value));
+    if (optionGroup.value.length > 0)
+      optionGroup.value.forEach((item) => (item.orAndFlag.value = value));
+
+    // emits('change', group, unref(optionGroup));
+  };
+  const computedIsShow = computed(() => {
+    return props.visible;
+  });
+  const yesOrNoChange = (group: optionConfig, value: string) => {
+    console.log(`output->group`, value);
+    group.flag.value = value;
     emits('change', group, unref(optionGroup));
+  };
+  const handleVisible = () => {
+    emits('on-visible');
   };
 </script>
 
