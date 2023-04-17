@@ -2,15 +2,14 @@
   <div class="px-24px">
     <Tabs v-model:activeKey="activeKey">
       <TabPane key="1" tab="我的项目">
-        <div class="flex flex-wrap items-start">
+        <div class="flex flex-wrap items-start pb-20px">
           <template v-for="project in projectList" :key="project.id">
-            <div class="w-224px animate-none m-2" @click="toProject(project)">
-              <div>
-                <img
-                  src="https://tcs-ga.teambition.net/thumbnail/111tef9a0fbcb8a22b1ea0de47d85b9a52e0/w/600/h/300"
-                  alt=""
-                />
-              </div>
+            <div
+              class="w-213px shadow-md rounded-1xl m-2 overflow-hidden project-item"
+              @click="toProject(project)"
+            >
+              <div class="project-img-wrap"></div>
+              <!-- <img :src="projectImg" alt="" class="rounded-2xl" /> -->
               <div class="py-2.5 px-4">
                 <span class="font-600 truncate">{{ project.name }}</span>
               </div>
@@ -18,10 +17,10 @@
           </template>
         </div>
       </TabPane>
-      <TabPane key="2" tab="项目">项目</TabPane>
-      <template #rightExtra>
+      <!-- <TabPane key="2" tab="项目">项目</TabPane> -->
+      <!-- <template #rightExtra>
         <span>Right Extra Action</span>
-      </template>
+      </template> -->
     </Tabs>
   </div>
 </template>
@@ -30,8 +29,9 @@
   import { Tabs, TabPane } from 'ant-design-vue';
   import { onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
-  import { useUserStore } from '../../stores';
   import { useProjectApi } from '@/hooks';
+  import projectImg from '@/assets/project.png';
+
   const router = useRouter();
   const activeKey = ref('1');
   const { projectList, fetchProjectList } = useProjectApi();
@@ -52,4 +52,10 @@
   });
 </script>
 
-<style scoped></style>
+<style scoped>
+  .project-img-wrap {
+    height: 90px;
+    background-size: cover;
+    background-image: url('../../assets/project.png');
+  }
+</style>

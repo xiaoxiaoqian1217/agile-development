@@ -9,7 +9,7 @@
     <!-- <span>...</span> -->
   </div>
   <draggable
-    class="w-272px min-h-300px"
+    class="w-272px min-h-400px draggable-container overflow-y-auto h-full"
     v-model="computedList"
     group="taskList"
     @change="dragChange"
@@ -121,5 +121,7 @@
 <style scoped>
   .done {
     color: #8c8c8c;
+  }
+  .dr {
   }
 </style>

@@ -2,3 +2,35 @@
 #app{
   height: 100%;
 }
+
+*::-webkit-scrollbar {
+  background-color: transparent;
+  height: 12px;
+  width: 12px
+}
+
+* {
+  scrollbar-width: thin
+}
+
+*::-webkit-scrollbar-thumb {
+  transition: background .2s ease-in-out;
+  border: 3px solid transparent;
+  -webkit-background-clip: content-box;
+  background-clip: content-box;
+  --tw-bg-opacity: 1;
+  background-color: rgba(229,231,235,var(--tw-bg-opacity));
+  border-radius: 9999px
+}
+
+
+*::-webkit-scrollbar-thumb:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(209,213,219,var(--tw-bg-opacity))
+}
+
+
+
+*::-webkit-scrollbar-corner {
+  background-color: transparent
+}

@@ -1,10 +1,8 @@
 <template>
   <div class="flex w-full relative">
     <!-- 侧栏 -->
-    <div
-      v-if="isVisiblePanel"
-      class="w-300px flex-none task-sidebar absolute h-full z-40 bg-light-50"
-    >
+    <div v-if="isVisiblePanel" class="task-sidebar w-300px flex-none absolute z-40 bg-light-50">
+      <div class="h-48px pl-20px flex items-center">视图</div>
       <SideTaskPanel
         :activePanelMenuId="activePanelMenuId"
         @task-panel-change="sidePanelChange"
@@ -14,25 +12,27 @@
       <!-- 顶部操作栏 -->
       <div class="tool-bar flex h-48px px-24px py-12px" :class="isVisiblePanel && 'pl-310px'">
         <!-- 控制任面板图标 -->
-        <div>
-          <span class="cursor-pointer" @click="openTaskPanel">
-            <MenuUnfoldOutlined v-if="isVisiblePanel" />
-            <MenuFoldOutlined v-else />
-            <!-- <DoubleLeftOutlined v-if="isVisiblePanel" />
+        <span class="cursor-pointer flex items-center" @click="openTaskPanel">
+          <DoubleLeftOutlined v-if="isVisiblePanel" />
+          <MenuOutlined v-else />
+          <!-- <DoubleLeftOutlined v-if="isVisiblePanel" />
             <DoubleRightOutlined v-else /> -->
-          </span>
-        </div>
+        </span>
         <Dropdown class="ml-4" :trigger="['click']">
-          <a class="ant-dropdown-link" @click.prevent>
-            {{ curSideMenuName }}
+          <a class="ant-dropdown-link flex items-center" @click.prevent>
+            <!-- two-tone-color="#41b7fd" -->
+            <ProjectTwoTone class="mr-2" />
+            <span>{{ curSideMenuName }}</span>
             <DownOutlined class="mt-0.5 ml-1" />
             <span class=""> </span>
           </a>
           <template #overlay>
-            <Menu>
+            <Menu class="p-10px w-250px right-16px">
               <template v-for="menu in SIDER_MENU" :key="menu.tag">
-                <MenuItem @click="sidePanelChange(menu)">
-                  <div class="flex justify-between">
+                <MenuItem class="my-4px px-6px" @click="sidePanelChange(menu)">
+                  <div class="flex items-center">
+                    <ProjectTwoTone class="mr-2" />
+
                     <span>{{ menu.name }}</span>
                     <span v-if="activePanelMenuId === menu.tag"></span>
                   </div>
@@ -56,12 +56,11 @@
           </Input>
           <!-- 如何分列查看 -->
         </div>
-        <div class="flex justify-end">
+        <div class="flex items-center justify-end">
           <Dropdown class="mr-3" :trigger="['click']">
-            <a class="ant-dropdown-link" @click.prevent>
-              <FilterOutlined />
+            <a class="ant-dropdown-link flex items-center" @click.prevent>
+              <i class="mr-1 iconfont icon-ic24-column-2-vertical"></i>
               {{ `${filterTypeName}分列` }}
-              <span class="filter"></span>
             </a>
             <template #overlay>
               <Menu>
@@ -78,14 +77,16 @@
               </Menu>
             </template>
           </Dropdown>
-          <TaskFilterGroup
-            :activePanelMenuId="activePanelMenuId"
-            @change="filterGroupChange"
-          ></TaskFilterGroup>
+          <div>
+            <TaskFilterGroup
+              :activePanelMenuId="activePanelMenuId"
+              @change="filterGroupChange"
+            ></TaskFilterGroup>
+          </div>
         </div>
       </div>
-      <div class="flex h-full bg-gray-100 pr-6.5 w-full overflow-x-auto">
-        <div class="pl-5 h-full task-list-handler relative">
+      <div class="flex bg-gray-100 pr-6.5 w-full overflow-x-auto task-board scroll-smooth">
+        <div class="pl-5 task-list-handler relative">
           <SideTaskPanel
             v-if="!isVisiblePanel"
             @task-panel-change="sidePanelChange"
@@ -93,7 +94,7 @@
             class="task-list-panel absolute w-320px"
           ></SideTaskPanel>
         </div>
-        <div class="flex flex-auto w-full">
+        <div class="flex flex-auto w-full mb-2">
           <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
             <TaskList
               @open-detail="showTaskDetail"
@@ -149,9 +150,9 @@
     DownOutlined,
     SearchOutlined,
     DoubleLeftOutlined,
-    DoubleRightOutlined,
-    MenuFoldOutlined,
+    MenuOutlined,
     MenuUnfoldOutlined,
+    ProjectTwoTone,
   } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { updateTask } from '@/apis';
@@ -356,9 +357,10 @@
 <style scoped>
   .task-sidebar {
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
+    height: calc(100vh - 85px);
   }
   .task-board {
-    width: calc(100% - 80px);
+    height: calc(100vh - 120px);
   }
   .task-list-panel {
     bottom: 0;

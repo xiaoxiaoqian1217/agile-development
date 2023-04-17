@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <span @click="openFilter">筛选</span>
+    <span class="flex items-center" @click="openFilter"> <FilterOutlined class="mr-1" /> 筛选</span>
     <div
       v-if="isShow"
       class="absolute top-full -left-600px z-30 flex flex-col bg-light-50 py-16px px-20px mt-14px shadow-md"
@@ -118,7 +118,9 @@
         </div>
       </template>
 
-      <div><span @click="addCondition">添加条件</span></div>
+      <div>
+        <PlusOutlined /><a class="ant-down-link text-sky-300" @click="addCondition">添加条件</a>
+      </div>
     </div>
   </div>
 </template>
@@ -128,7 +130,7 @@
   import { Select, SelectOption, SelectOptGroup, RangePicker } from 'ant-design-vue';
   import { cloneDeep } from 'lodash';
   import { FilterTypeField, type FieldItem } from '@/types';
-  import { CloseOutlined } from '@ant-design/icons-vue';
+  import { CloseOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons-vue';
   import { SelectMember } from '..';
   import dayjs, { Dayjs } from 'dayjs';
   import { useTaskBusiness } from '@/views/task/hooks';

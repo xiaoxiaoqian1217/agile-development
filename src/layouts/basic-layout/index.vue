@@ -1,28 +1,32 @@
 <template>
   <div class="flex h-full">
-    <div style="width: 80px" class="side-menu flex flex-col items-center justify-between">
-      <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">
-        <template #overflowedIndicator> </template>
-        <MenuItem key="1" title="项目">
-          <template #icon>
-            <div class="flex flex-col justify-center">
-              <PieChartOutlined />
-              <div class="w-full" :style="{ opacity: 1 }">项目</div>
-            </div>
-          </template>
-        </MenuItem>
-        <MenuItem key="2">
-          <template #icon>
-            <DesktopOutlined />
-          </template>
-          <span>Option 2</span>
-        </MenuItem>
-      </Menu>
-      <Dropdown placement="topLeft">
+    <div style="width: 80px" class="side-menu flex flex-col items-center">
+      <div class="h-70px"></div>
+      <div>
+        <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">
+          <template #overflowedIndicator> </template>
+          <MenuItem key="1" title="项目">
+            <template #icon>
+              <div class="flex flex-col justify-center">
+                <AppstoreOutlined />
+                <div class="w-full" :style="{ opacity: 1 }">项目</div>
+              </div>
+            </template>
+          </MenuItem>
+          <MenuItem key="2">
+            <template #icon>
+              <DesktopOutlined />
+            </template>
+            <span>Option 2</span>
+          </MenuItem>
+        </Menu>
+      </div>
+
+      <Dropdown class="mb-30px mt-auto" placement="topLeft">
         <div
           class="w-8 h-8 cursor-pointer bg-amber-200 rounded-1/2 flex items-center justify-center text-xs text-light-50"
         >
-          <span>{{ 1 }}</span>
+          <span>{{ userInfo?.name?.slice(0, 1) }}</span>
         </div>
 
         <template #overlay>
@@ -45,10 +49,11 @@
 <script setup lang="ts">
   import { onMounted, provide, ref, nextTick } from 'vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
-  import { PieChartOutlined, DesktopOutlined, LogoutOutlined } from '@ant-design/icons-vue';
+  import { AppstoreOutlined, DesktopOutlined, LogoutOutlined } from '@ant-design/icons-vue';
   import { useRouter } from 'vue-router';
   const selectedKeys = ref(['1']);
   const router = useRouter();
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
   const logOut = () => {
     localStorage.removeItem('token');
     router.push({

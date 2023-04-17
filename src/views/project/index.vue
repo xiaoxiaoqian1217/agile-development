@@ -1,49 +1,49 @@
 <template>
   <div class="h-full divide-y divide-gray-500 divide-opacity-10">
     <!--global-header -->
-    <div class="global-nav flex h-70px px-24px py-12px">
+    <div class="global-nav flex h-70px pr-24px py-12px">
       <!-- left -->
-      <div class="flex">
+      <!-- <div class="flex"> -->
+      <div class="flex h-full w-24px justify-center items-center">
+        <span @click="backToHome">
+          <LeftOutlined />
+        </span>
         <!-- 项目图片 -->
-        <div class="flex h-full w-10 items-center">
-          <span @click="backToHome">
-            <LeftOutlined />
-          </span>
-        </div>
-        <div class>
-          <div>
-            <Dropdown :trigger="['click']">
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ projectName }}
-                <DownOutlined class="ml-1" />
-              </a>
-              <template #overlay>
-                <Menu>
-                  <template v-for="project in projectList" :key="project.id">
-                    <MenuItem @click="projectChange(project.id)">
-                      <div class="flex justify-between">
-                        <span>{{ project.name }}</span>
-                        <!-- <span v-if="curProjectId === project.id"></span> -->
-                      </div>
-                    </MenuItem>
-                  </template>
-                </Menu>
+      </div>
+      <div class="w-48px h-48px rounded-3xl">
+        <img class="w-full h-full rounded-3xl" :src="projectImg" alt="" />
+      </div>
+      <div class="ml-12px">
+        <Dropdown :trigger="['click']">
+          <a class="ant-dropdown-link text-14px" @click.prevent>
+            {{ projectName }}
+            <DownOutlined class="ml-1" />
+          </a>
+          <template #overlay>
+            <Menu>
+              <template v-for="project in projectList" :key="project.id">
+                <MenuItem @click="projectChange(project.id)">
+                  <div class="flex justify-between">
+                    <span>{{ project.name }}</span>
+                    <!-- <span v-if="curProjectId === project.id"></span> -->
+                  </div>
+                </MenuItem>
               </template>
-            </Dropdown>
-            <!-- <span class="ml-3"> <ExclamationCircleOutlined /> </span>
+            </Menu>
+          </template>
+        </Dropdown>
+        <!-- <span class="ml-3"> <ExclamationCircleOutlined /> </span>
             <span class="ml-3"> <StarOutlined /> </span> -->
-          </div>
-          <Tabs v-model:activeKey="activeTab" @change="toTask" sise="small">
-            <TabPane v-for="item in tabsRoutes" :key="item?.name" :tab="item.meta?.title">
-            </TabPane>
-          </Tabs>
-        </div>
-        <!--  tab-routes-切换 -->
+        <Tabs v-model:activeKey="activeTab" @change="toTask" sise="small">
+          <TabPane v-for="item in tabsRoutes" :key="item?.name" :tab="item.meta?.title"> </TabPane>
+        </Tabs>
       </div>
+      <!--  tab-routes-切换 -->
+      <!-- </div> -->
       <!-- right -->
-      <div class="ml-auto">
+      <!-- <div class="ml-auto">
         <span class="user" @click="showMembers"><UserOutlined /></span>
-      </div>
+      </div> -->
     </div>
     <router-view v-slot="{ Component }">
       <component :is="Component" />
@@ -84,6 +84,7 @@
   import { UserItem } from '../../types';
   import { PAGE_ROUTE_NAME } from '../../router/router.d';
   import { useProjectApi } from '@/hooks';
+  import projectImg from '@/assets/project.png';
 
   const TabPane = Tabs.TabPane;
   const activeTab = ref<string>(PAGE_ROUTE_NAME.TASK);

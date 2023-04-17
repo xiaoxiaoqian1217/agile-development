@@ -1,0 +1,37 @@
+{
+  "id": "4019906",
+  "name": "长安望江",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1375504",
+      "name": "running",
+      "font_class": "running",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "11981408",
+      "name": "chart_bar_4",
+      "font_class": "chart_bar_",
+      "unicode": "e93d",
+      "unicode_decimal": 59709
+    },
+    {
+      "icon_id": "19761504",
+      "name": "ic24-column-2-vertical",
+      "font_class": "ic24-column-2-vertical",
+      "unicode": "f2f5",
+      "unicode_decimal": 62197
+    },
+    {
+      "icon_id": "23562389",
+      "name": "Columns",
+      "font_class": "Columns",
+      "unicode": "e643",
+      "unicode_decimal": 58947
+    }
+  ]
+}
