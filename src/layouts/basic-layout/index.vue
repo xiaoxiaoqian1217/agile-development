@@ -3,8 +3,8 @@
     <div style="width: 80px" class="side-menu flex flex-col items-center">
       <div class="h-70px"></div>
       <div>
-        <div class="flex flex-col text-center pt-8px w-60px text-12px hover:bg-gray-50">
-                <AppstoreOutlined class="text-24px" />
+        <div class="flex flex-col text-center py-8px w-60px text-12px bg-gray-50 text-blue-400 rounded-xl">
+                <AppstoreOutlined class="text-20px" />
                 <div class="w-full mt-1 " :style="{ opacity: 1 }">项目</div>
        </div>
         <!-- <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">

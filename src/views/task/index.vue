@@ -89,7 +89,7 @@
         </div>
       </div>
       <div class="flex  task-board  pr-6.5 w-full overflow-x-auto bg-gray-100">
-        <div class="pl-5 task-list-handler relative">
+        <div class="pl-5 task-list-handler relative mt-2">
           <SideTaskPanel
             v-if="!isVisiblePanel"
             @task-panel-change="sidePanelChange"

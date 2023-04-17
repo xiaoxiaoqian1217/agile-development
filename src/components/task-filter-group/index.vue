@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <span class="flex items-center" @click="openFilter">
-      <FilterOutlined class="mr-1" :class="filterNum && 'text-sky-500'" />
+      <FilterOutlined class="mr-1" :class="filterNum && 'text-blue-400'" />
       <span v-if="filterNum" class="text-sky-500">{{ filterNum }}</span>
       <span v-else>筛选</span>
     </span>
