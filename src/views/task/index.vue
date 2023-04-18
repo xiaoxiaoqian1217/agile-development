@@ -80,8 +80,6 @@
           <!-- 多条件筛选 -->
           <div>
             <TaskFilterGroup
-              @onVisible="(visible:boolean) => filterVisible= visible"
-              :visible="filterVisible"
               :activePanelMenuId="activePanelMenuId"
               @change="filterGroupChange"
             ></TaskFilterGroup>
@@ -328,6 +326,8 @@
   const sidePanelChange = ({ tag, id, name }: SideMenuItem) => {
     activePanelMenuId.value = tag;
     searchValue.value = '';
+    // 这里需要重置筛选框中保留的参数
+
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     filterTask({
       field: tag,

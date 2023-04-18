@@ -1,12 +1,12 @@
 <template>
-  <div class="relative">
+  <div class="relative" ref="boxRef">
     <span class="flex items-center" @click="openFilter">
       <FilterOutlined class="mr-1" :class="filterNum && 'text-sky-500'" />
       <span v-if="filterNum" class="text-sky-500">{{ filterNum }}</span>
       <span v-else>筛选</span>
     </span>
     <div
-      v-if="computedIsShow"
+      v-if="isShow"
       class="absolute top-full mt-15px -left-654px z-30 flex flex-col bg-light-50 py-16px px-20px shadow-lg"
     >
       <template v-for="(group, index) in optionGroup" :key="group.id">
@@ -137,7 +137,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, inject, computed, reactive, unref, defineProps, defineEmits } from 'vue';
+  import { ref, inject, computed, reactive, unref, watch, onMounted, onUnmounted } from 'vue';
   import { Select, SelectOption, SelectOptGroup, RangePicker } from 'ant-design-vue';
   import { cloneDeep } from 'lodash';
   import { FilterTypeField, type FieldItem } from '@/types';
@@ -148,7 +148,6 @@
 
   interface Props {
     activePanelMenuId: string;
-    visible: boolean;
   }
   const props = defineProps<Props>();
   const emits = defineEmits(['change', 'on-visible']);
@@ -219,7 +218,14 @@
   const trackers = inject('trackersList');
   const versionList = inject('versionList');
   const memberList = inject('memberList');
-
+  watch(
+    () => props.activePanelMenuId,
+    (newValue: string, oldValue: string) => {
+      if (newValue !== oldValue) {
+        optionGroup.value = [cloneDeep(filterOptionConfig)];
+      }
+    }
+  );
   const typesOptions = computed(() => {
     return [
       {
@@ -299,8 +305,7 @@
   };
   const isShow = ref(false);
   const openFilter = () => {
-    emits('on-visible', !computedIsShow.value);
-    // isShow.value = !isShow.value;
+    isShow.value = !isShow.value;
   };
   const memeberChange = (group: optionConfig, value) => {
     group.type.value = value;
@@ -328,6 +333,25 @@
     group.flag.value = value;
     emits('change', group, unref(optionGroup));
   };
+
+  // 点击组件以外的元素需要隐藏下拉框
+  let handler: (e: any) => void;
+  const boxRef = ref();
+  onMounted(() => {
+    handler = (e) => {
+      // 记得在.select-box那边加上ref="selectBox"
+      const selectBox = boxRef.value;
+      // 重点来了：selectBox里是否包含点击的元素，不包含点击的元素就隐藏面板
+      if (!selectBox.contains(e.target)) {
+        isShow.value = false;
+      }
+    };
+    document.addEventListener('click', handler);
+  });
+  onUnmounted(() => {
+    document.removeEventListener('click', handler);
+  });
+
   const handleVisible = () => {
     emits('on-visible');
   };
