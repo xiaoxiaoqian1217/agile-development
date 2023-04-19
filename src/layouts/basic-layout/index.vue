@@ -3,23 +3,19 @@
     <div style="width: 80px" class="side-menu flex flex-col items-center">
       <div class="h-70px"></div>
       <div>
-        <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">
+        <div class="flex flex-col text-center py-8px w-60px text-12px bg-gray-50 text-blue-400 rounded-xl">
+                <AppstoreOutlined class="text-20px" />
+                <div class="w-full mt-1 " :style="{ opacity: 1 }">项目</div>
+       </div>
+        <!-- <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">
           <template #overflowedIndicator> </template>
           <MenuItem key="1" title="项目">
             <template #icon>
-              <div class="flex flex-col justify-center">
-                <AppstoreOutlined />
-                <div class="w-full" :style="{ opacity: 1 }">项目</div>
-              </div>
+             
             </template>
           </MenuItem>
-          <MenuItem key="2">
-            <template #icon>
-              <DesktopOutlined />
-            </template>
-            <span>Option 2</span>
-          </MenuItem>
-        </Menu>
+       
+        </Menu> -->
       </div>
 
       <Dropdown class="mb-30px mt-auto" placement="topLeft">

@@ -86,8 +86,8 @@
           </div>
         </div>
       </div>
-      <div class="flex pr-6.5 w-full overflow-x-auto task-board scroll-smooth bg-gray-100">
-        <div class="pl-5 task-list-handler relative">
+      <div class="flex  task-board  pr-6.5 w-full overflow-x-auto bg-gray-100">
+        <div class="pl-5 task-list-handler relative mt-2">
           <SideTaskPanel
             v-if="!isVisiblePanel"
             @task-panel-change="sidePanelChange"
@@ -95,7 +95,7 @@
             class="task-list-panel absolute w-320px"
           ></SideTaskPanel>
         </div>
-        <div class="flex flex-auto w-full mb-2">
+        <div class="flex flex-auto w-full mb-2 ">
           <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
             <TaskList
               @open-detail="showTaskDetail"

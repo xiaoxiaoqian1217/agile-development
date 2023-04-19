@@ -2,21 +2,21 @@
   <div class="bg-light-50">
     <template v-for="sideItem in SIDER_MENU" :key="sideItem.tag">
       <div
-        class="flex px-4 py-1 items-center text-14px cursor-pointer"
-        :class="activePanelMenuId === sideItem.tag && 'bg-sky-100'"
+        class="flex px-4 py-1 mt-1 items-center text-14px cursor-pointer hover:bg-gray-50"
+        :class="activePanelMenuId === sideItem.tag && 'bg-gray-50'"
         @click="changeMenu(sideItem)"
       >
         <div class="mr-3 py-1">
           <ProjectTwoTone />
         </div>
-        <span class="truncate font-500 text-neutral-800">{{ sideItem.name }}</span>
+        <span class="truncate text-neutral-800">{{ sideItem.name }}</span>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, defineProps } from 'vue';
+  import { ref, computed } from 'vue';
   import { SIDER_MENU, type SideMenuItem } from '../../views/task/constants';
   import { ProjectTwoTone, HeartTwoTone, CheckCircleTwoTone } from '@ant-design/icons-vue';
 

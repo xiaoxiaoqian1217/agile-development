@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-  import { inject, computed, unref, ref, defineProps } from 'vue';
+  import { inject, computed, unref, ref } from 'vue';
   import { Select, Tag, type SelectProps } from 'ant-design-vue';
 
   const memberList = inject('memberList');
