@@ -257,9 +257,7 @@
     classifyTask(
       searchValue.value
         ? searchTaskList.value
-        : activePanelMenuId.value === 'all'
-        ? initTaskList.value
-        : filterList
+        : filterList.value
     );
   };
   const classifyTask = async (list) => {

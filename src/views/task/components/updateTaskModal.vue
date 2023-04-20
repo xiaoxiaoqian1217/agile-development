@@ -85,6 +85,8 @@
           <div>
             <Textarea
               class="w-250px"
+              @blur="(value) => onChange(formModel.description, 'description')"
+
               v-model:value="formModel.description"
               placeholder="添加备注"
               :rows="4"

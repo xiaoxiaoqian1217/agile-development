@@ -35,10 +35,10 @@
           <span class="text-14px block pt-4px">{{ element.subject }}</span>
           <div class="flex items-center mt-2">
             <img
-              class="w-20px h-20px"
+              class="w-20px h-20px inline-block"
               :src="iconTypes[`type${element.status_id}`] || iconTypes.type3"
             />
-            <span class="ml-1 text-gray-500" v-if="element.description"><FileTextOutlined /></span>
+<FileTextOutlined v-if="element.description" class="ml-1 text-gray-500" />
             <span v-if="element.fixed_version_id" class="text-12px text-gray-500">{{
               getVersionName(element?.fixed_version_id)
             }}</span>

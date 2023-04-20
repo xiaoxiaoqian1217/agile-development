@@ -10,7 +10,7 @@ import { TaskItem, SidePanelMapType } from '@/types';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '@/stores';
 import { SideTaskPanel } from '@/components';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, filter } from 'lodash-es';
 
 export const useTaskBusiness = () => {
   const route = useRoute();
@@ -41,13 +41,15 @@ export const useTaskBusiness = () => {
   // else taskList.value = [];
 
   // : { author?: number; assigned_to_id?: number }
-  const filterTask = (fieldItem) => {
-    activePanelMenu.field = fieldItem.field;
-    activePanelMenu.value = fieldItem.value;
-    if (fieldItem.field == 'all') filterList.value = taskList.value;
+  const filterTask = (fieldItem? : {field: string, value: string}) => {
+    if(fieldItem?.field && fieldItem?.field){
+      activePanelMenu.field = fieldItem.field 
+      activePanelMenu.value = fieldItem.value
+    }
+    if (activePanelMenu.field == 'all') filterList.value = taskList.value;
     else
       filterList.value = taskList.value.filter((item: TaskItem) => {
-        return item[fieldItem.field] === fieldItem.value;
+        return item[activePanelMenu.field] === fieldItem.value;
       });
   };
 
@@ -57,30 +59,32 @@ export const useTaskBusiness = () => {
     // filters all elements passing the criteria
     return array.filter((item) => {
       // dynamically validate all filter criteria
-      return filters.every((filter) => {
+      const arr =  filters.every((filter) => {
         //ignore when the filter is empty Anne
-        if (!filter.type.value) return true;
+        if (typeof filter.type.value === 'undefined' ) return true;
         console.log(
           `output->filters[key]`,
           filter.flag,
           filter.type.value,
           item[filter.type.field],
-          filter.type.value === item[filter.type.field]
+          filter.type.value === item[filter.type.field],
+          filter.type.value !== item[filter.type.field]
         );
         return filter.flag
           ? filter.type.value === item[filter.type.field]
           : filter.type.value !== item[filter.type.field];
       });
+      return arr;
     });
   }
   function multiFilter2(array, filters) {
     // filters all elements passing the criteria
     return array.filter((item) => {
       // dynamically validate all filter criteria
-      return filters.some((filter) => {
+      const arr=  filters.some((filter) => {
         //ignore when the filter is empty Anne
         // if (!filterKeys.length) return true;
-        if (!filter.type.value) return true;
+        if (typeof filter.type.value === 'undefined' ) return true;
 
         console.log(
           `output->filters[key]`,
@@ -98,6 +102,7 @@ export const useTaskBusiness = () => {
         //     ? !!~filters[key].value === item[key]
         //     : !!~filters[key].value !== item[key];
       });
+      return arr
     });
   }
   // [{
@@ -115,16 +120,22 @@ export const useTaskBusiness = () => {
       filterTask({ field: activePanelMenu.field, value: activePanelMenu.value });
       return false;
     }
-    const copyList = cloneDeep(unref(filterList));
     // // 1 且 0 或
     const one = params.length === 1 ? 'and' : params[1]?.orAnd;
     if (one === 'and') {
-      const list = multiFilter(copyList, params);
+      filterTask({field: activePanelMenu.field,
+        value: activePanelMenu.value})
+      const list = multiFilter(filterList.value, params);
+      
       console.log(`output->list one1`, one, list);
       filterList.value = list;
     } else {
       // or
-      const list = multiFilter2(taskList.value, params);
+      filterTask({
+        field: activePanelMenu.field,
+      value: activePanelMenu.value
+      })
+      const list = multiFilter2(filterList.value, params);
       console.log(`output->list one2 `, list);
       filterList.value = list;
     }
