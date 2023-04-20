@@ -81,10 +81,10 @@ export const useTaskBusiness = () => {
           if (filter.flag === 1 && item[filter.type.field]) {
             console.log(
               `output->start_date, due_date`,
-              item,
-              dayjs(item[filter.type.field]).format('YYYY-MM-DD'),
-              start_date,
-              start_date <= dayjs(item[filter.type.field])
+              item
+              // dayjs(item[filter.type.field]).format('YYYY-MM-DD'),
+              // start_date,
+              // start_date <= dayjs(item[filter.type.field])
             );
             return (
               dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&

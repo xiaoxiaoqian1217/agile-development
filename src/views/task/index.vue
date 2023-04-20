@@ -275,7 +275,7 @@
   };
   const showUpdateModal = (flag: boolean) => {
     isShowUpdateModal.value = flag;
-    // if (!flag) refeshTaskList();
+    if (!flag) refeshTaskList();
   };
   const refeshTaskList = async () => {
     await fetchTask();

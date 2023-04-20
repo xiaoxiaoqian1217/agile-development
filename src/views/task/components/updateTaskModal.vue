@@ -195,9 +195,10 @@
 
   const defaultDetail = {
     ...props.detail,
-    start_date: detail.start_date ? dayjs(detail.start_date) : undefined,
+    start_date: detail?.start_date ? dayjs(detail.start_date) : undefined,
     due_date: detail?.due_date ? dayjs(detail?.due_date) : undefined,
   };
+
   const formModel = reactive(defaultDetail);
   const levels = inject('levelList');
   const statusList = inject('statusList');
@@ -257,18 +258,22 @@
     updateTaskDetail({ subject: formModel.subject });
   }
   const computedDateRange = computed(() => {
-    return [dayjs(formModel.start_date), dayjs(formModel.due_date)];
+    return [formModel.start_date, formModel.due_date];
   });
   const disabledDate = (current: Dayjs) => {
     return current && current < dayjs().endOf('day');
   };
 
   const onRangeChange = (date: [Dayjs, Dayjs], dateString: [string, string]) => {
-    console.log(date, dateString);
-    const [start_date, due_date] = date;
+    let start_date = undefined;
+    let due_date = undefined;
+    if (date) {
+      start_date = date[0];
+      due_date = date[1];
+    }
     formModel.start_date = start_date;
     formModel.due_date = due_date;
-    updateTaskDetail({ start_date: dateString[0], due_date: dateString[1] });
+    date && updateTaskDetail({ start_date: dateString[0], due_date: dateString[1] });
   };
 </script>
 

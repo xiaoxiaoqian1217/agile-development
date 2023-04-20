@@ -308,9 +308,8 @@
   };
 
   const onRangeChange = (date: [Dayjs, Dayjs], dateString: [string, string]) => {
-    const [start_date, due_date] = date;
-    formModel.start_date = start_date;
-    formModel.due_date = due_date;
+    formModel.start_date = date ? date?.[0] : undefined;
+    formModel.due_date = date ? date?.[1] : undefined;
   };
 </script>
 
