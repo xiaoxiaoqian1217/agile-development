@@ -2,7 +2,6 @@
   <div class="flex w-full relative">
     <!-- 侧栏 -->
     <div v-if="isVisiblePanel" class="task-sidebar w-300px flex-none absolute z-40 bg-light-50">
-      
       <SideTaskPanel
         :activePanelMenuId="activePanelMenuId"
         @task-panel-change="sidePanelChange"
@@ -15,8 +14,6 @@
         <span class="cursor-pointer flex items-center" @click="openTaskPanel">
           <DoubleLeftOutlined v-if="isVisiblePanel" />
           <MenuOutlined v-else />
-          <!-- <DoubleLeftOutlined v-if="isVisiblePanel" />
-            <DoubleRightOutlined v-else /> -->
         </span>
         <Dropdown class="ml-4" :trigger="['click']">
           <a class="ant-dropdown-link flex items-center" @click.prevent>
@@ -118,10 +115,6 @@
               </template>
             </TaskList>
           </div>
-          <!-- </div> -->
-          <!-- <router-view v-slot="{ Component }">
-        <component :is="Component" />
-      </router-view> -->
         </div>
       </div>
     </div>
@@ -144,22 +137,19 @@
 
 <script setup lang="ts">
   import { computed, ref, onMounted, reactive, provide } from 'vue';
-  import { Tabs, Drawer, Dropdown, Menu, MenuItem, Checkbox, Input } from 'ant-design-vue';
+  import { Dropdown, Menu, MenuItem, Input } from 'ant-design-vue';
   import {
     PlusOutlined,
-    FilterOutlined,
     DownOutlined,
     SearchOutlined,
     DoubleLeftOutlined,
     MenuOutlined,
-    MenuUnfoldOutlined,
     ProjectTwoTone,
   } from '@ant-design/icons-vue';
   import { useRouter, useRoute } from 'vue-router';
   import { updateTask } from '@/apis';
   import { TaskList, SideTaskPanel, TaskFilterGroup } from '@/components';
-  import CreateTaskModal from './components/createTaskModal.vue';
-  import UpdateTaskModal from './components/updateTaskModal.vue';
+  import { CreateTaskModal, UpdateTaskModal } from './components';
   import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU, type SideMenuItem } from './constants';
   import { useProjectApi, useCommonApis } from '@/hooks';
   import { useTaskBusiness } from './hooks';
@@ -168,7 +158,6 @@
 
   const route = useRoute();
   const router = useRouter();
-  const projectId = route.params.projectId;
   const { getVersion, versionList, projectList, fetchProjectList } = useProjectApi();
   const { memberList, fetchMembers } = useCommonApis();
 
@@ -258,7 +247,6 @@
   };
   const classifyTask = async (list) => {
     const { field } = activeFilterMenu;
-    console.log(`output->initTaskList.value`, list);
     const groupMap = new Map();
     taskBoard.statusType?.forEach((type) => {
       if (!groupMap.has(type.id)) groupMap.set(type.id, ref([]));
@@ -287,7 +275,7 @@
   };
   const showUpdateModal = (flag: boolean) => {
     isShowUpdateModal.value = flag;
-    if (!flag) refeshTaskList();
+    // if (!flag) refeshTaskList();
   };
   const refeshTaskList = async () => {
     await fetchTask();
