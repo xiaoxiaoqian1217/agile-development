@@ -74,23 +74,15 @@ export const useTaskBusiness = () => {
 
           if (filter.flag === 0 && item[filter.type.field]) {
             return (
-              start_date > dayjs(item[filter.type.field]) ||
-              dayjs(item[filter.type.field]) > due_date
+              dayjs(item[filter.type.field]).isBefore(start_date) ||
+              dayjs(item[filter.type.field]).isAfter(dayjs(due_date))
             );
           }
           if (filter.flag === 1 && item[filter.type.field]) {
-            console.log(
-              `output->start_date, due_date`,
-              item
-              // dayjs(item[filter.type.field]).format('YYYY-MM-DD'),
-              // start_date,
-              // start_date <= dayjs(item[filter.type.field])
-            );
             return (
               dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&
               dayjs(item[filter.type.field]).isBefore(due_date)
             );
-            // return start_date <= dayjs(item[filter.type.field]) <= due_date;
           }
           if (filter.flag == 2 && item[filter.type.field]) {
             return dayjs(item[filter.type.field]) <= start_date;
