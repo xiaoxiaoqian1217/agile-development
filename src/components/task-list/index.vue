@@ -41,9 +41,11 @@
               :src="iconTypes[`type${element.tracker_id}`] || iconTypes.type3"
             />
             <FileTextOutlined v-if="element.description" class="ml-1 text-gray-500" />
-            <span v-if="element.fixed_version_id" class="text-12px text-gray-500">{{
-              getVersionName(element?.fixed_version_id)
-            }}</span>
+
+            <span v-if="element.fixed_version_id" class="text-12px text-gray-500">
+              <i class="iconfont icon-running text-gray-400 ml-1"></i
+              >{{ getVersionName(element?.fixed_version_id) }}</span
+            >
           </div>
 
           <div v-if="element.estimated_hours" class="text-12px text-gray-500 mt-1">

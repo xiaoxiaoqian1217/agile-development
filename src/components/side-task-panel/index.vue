@@ -1,5 +1,8 @@
 <template>
   <div class="bg-light-50">
+    <div class="h-48px pl-20px flex items-center">视图</div>
+    <div class="h-1px bg-gray-100" />
+
     <template v-for="sideItem in SIDER_MENU" :key="sideItem.tag">
       <div
         class="flex px-4 py-1 mt-1 items-center text-14px cursor-pointer hover:bg-gray-50"

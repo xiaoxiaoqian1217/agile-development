@@ -12,7 +12,7 @@
       </template>
       <Textarea class="w-full" v-model:value="formModel.subject" placeholder="输入标题" :rows="4" />
 
-      <div class="flex py-2 my-3">
+      <div class="flex py-2 my-2">
         <div class="project-name"></div>
         <div class="flex tracker">
           <TaskTypeSelect :tracker_id="formModel.tracker_id" @change="handleTrackerChange">
@@ -40,11 +40,11 @@
           </Dropdown>
         </div>
       </div>
-      <Divider />
+      <div class="h-1px bg-gray-100" />
 
       <!-- label项 -->
       <div class="">
-        <div class="flex py-2 my-3 items-center">
+        <div class="flex py-2 my-1 items-center">
           <div class="inline-block w-30">
             <span class="label">执行者</span>
           </div>
@@ -52,7 +52,7 @@
             <SelectMember class="w-250px" @on-change="assignedMemeberChange"></SelectMember>
           </div>
         </div>
-        <div class="flex py-2 my-3">
+        <div class="flex py-2 my-1">
           <div class="w-30"><span class="label">备注</span></div>
           <div>
             <Textarea
@@ -67,7 +67,7 @@
           <div><span class="label">状态</span></div>
           <div></div>
         </div> -->
-        <div class="flex py-2 my-3 items-center">
+        <div class="flex py-2 my-1 items-center">
           <div class="inline-block w-30">
             <span class="label">优先级 </span>
           </div>
@@ -95,7 +95,7 @@
             </Dropdown>
           </div>
         </div>
-        <div class="flex py-2 my-3 items-center">
+        <div class="flex py-2 my-1 items-center">
           <div class="inline-block w-30">
             <span class="label">目标版本</span>
           </div>
@@ -125,7 +125,7 @@
             </Dropdown>
           </div>
         </div>
-        <div class="flex py-2 my-3">
+        <div class="flex py-2 my-1">
           <div class="w-30">
             <span class="label">计划完成日期</span>
           </div>
@@ -137,7 +137,7 @@
             />
           </div>
         </div>
-        <div class="flex py-2 my-3 items-center">
+        <div class="flex py-2 my-1 items-center">
           <div class="w-30"><span class="label">预期时间</span></div>
           <div class="flex-auto">
             <InputNumber
@@ -150,7 +150,7 @@
             />
           </div>
         </div>
-        <div class="flex py-2 my-3 items-center">
+        <div class="flex py-2 my-1 items-center">
           <div class="w-30"><span class="label"></span></div>
           <div class="flex-auto"></div>
         </div>

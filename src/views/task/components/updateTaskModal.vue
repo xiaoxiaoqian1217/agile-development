@@ -16,7 +16,7 @@
       >
         {{ formModel.subject }}
       </div>
-      <div class="flex py-2 my-3 items-center">
+      <div class="flex py-2 my-1 items-center">
         <div class="w-30"><span class="label">任务类型</span></div>
         <div class="flex-auto">
           <TaskTypeSelect
@@ -25,7 +25,7 @@
           ></TaskTypeSelect>
         </div>
       </div>
-      <div class="flex py-2 my-3 items-center">
+      <div class="flex py-2 my-1 items-center">
         <div class="w-30"><span class="label">状态</span></div>
         <div class="flex-auto">
           <Dropdown :trigger="['click']">
@@ -50,7 +50,7 @@
           </Dropdown>
         </div>
       </div>
-      <div class="flex py-2 my-3 items-center">
+      <div class="flex py-2 my-1 items-center">
         <div class="w-30"><span class="label">执行者</span></div>
         <div class="flex-auto">
           <SelectMember
@@ -60,7 +60,7 @@
           ></SelectMember>
         </div>
       </div>
-      <div class="flex py-2 my-3 items-center">
+      <div class="flex py-2 my-1 items-center">
         <div class="w-30"><span class="label">备注</span></div>
         <div>
           <Textarea
@@ -72,7 +72,7 @@
           />
         </div>
       </div>
-      <div class="flex py-2 my-3 items-center">
+      <div class="flex py-2 my-1 items-center">
         <div class="w-30"><span class="label">优先级</span></div>
         <div class="flex-auto">
           <Dropdown :trigger="['click']" class="w-150px">
@@ -99,7 +99,7 @@
           </Dropdown>
         </div>
       </div>
-      <div class="flex py-2 my-3 items-center">
+      <div class="flex py-2 my-1 items-center">
         <div class="inline-block w-30"><span class="label">目标版本</span></div>
         <div class="flex-auto">
           <Dropdown :trigger="['click']">
@@ -130,7 +130,7 @@
         </div>
       </div>
 
-      <div class="flex py-2 my-3">
+      <div class="flex py-2 my-1">
         <div class="w-30"><span class="label">日期</span></div>
         <div class="flex-auto">
           <RangePicker
@@ -141,7 +141,7 @@
           />
         </div>
       </div>
-      <div class="flex py-2 my-3 items-center">
+      <div class="flex py-2 my-1 items-center">
         <div class="w-30"><span class="label">预计工时</span></div>
         <div class="flex-auto">
           <InputNumber

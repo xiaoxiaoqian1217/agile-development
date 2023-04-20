@@ -2,7 +2,7 @@
   <div class="flex w-full relative">
     <!-- 侧栏 -->
     <div v-if="isVisiblePanel" class="task-sidebar w-300px flex-none absolute z-40 bg-light-50">
-      <div class="h-48px pl-20px flex items-center">视图</div>
+      
       <SideTaskPanel
         :activePanelMenuId="activePanelMenuId"
         @task-panel-change="sidePanelChange"
@@ -86,7 +86,7 @@
           </div>
         </div>
       </div>
-      <div class="flex  task-board  pr-6.5 w-full overflow-x-auto bg-gray-100">
+      <div class="flex task-board pr-6.5 w-full overflow-x-auto bg-gray-100">
         <div class="pl-5 task-list-handler relative mt-2">
           <SideTaskPanel
             v-if="!isVisiblePanel"
@@ -95,7 +95,7 @@
             class="task-list-panel absolute w-320px"
           ></SideTaskPanel>
         </div>
-        <div class="flex flex-auto w-full mb-2 ">
+        <div class="flex flex-auto w-full mb-2">
           <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
             <TaskList
               @open-detail="showTaskDetail"
@@ -164,7 +164,7 @@
   import { useProjectApi, useCommonApis } from '@/hooks';
   import { useTaskBusiness } from './hooks';
   import { Status, TaskItem } from '../../types';
-  import 'ant-design-vue/lib/date-picker/style'; 
+  import 'ant-design-vue/lib/date-picker/style';
 
   const route = useRoute();
   const router = useRouter();
@@ -254,11 +254,7 @@
     });
     // 根据任务状态筛选任务列表
     if (searchValue.value) searchTask({ subject: searchValue.value });
-    classifyTask(
-      searchValue.value
-        ? searchTaskList.value
-        : filterList.value
-    );
+    classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
   };
   const classifyTask = async (list) => {
     const { field } = activeFilterMenu;
