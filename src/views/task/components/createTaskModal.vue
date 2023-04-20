@@ -14,43 +14,24 @@
 
       <div class="flex py-2 my-3">
         <div class="project-name"></div>
-        <div class="tracker">
-          <Dropdown :trigger="['click']">
-            <div class="flex" @click.prevent>
-              <img
-                class="w-20px h-20px mr-1"
-                :src="iconTypes[`type${formModel.tracker_id}`] || iconTypes.type3"
-              />
-              {{ seletedTrackerName }}
-              <span class="px-1">·</span>
-            </div>
-            <template #overlay>
-              <Menu @click="trackerChange">
-                <template v-for="tracker in trackers" :key="tracker.id">
-                  <MenuItem>
-                    <div class="flex justify-between">
-                      <span>{{ tracker.name }}</span>
-                      <span v-if="formModel.tracker_id === tracker.id"></span>
-                    </div>
-                  </MenuItem>
-                </template>
-              </Menu>
-            </template>
-          </Dropdown>
+        <div class="flex tracker">
+          <TaskTypeSelect :tracker_id="formModel.tracker_id" @change="handleTrackerChange">
+            <span class="px-1">·</span>
+          </TaskTypeSelect>
         </div>
         <div class="mr-5 status">
           <Dropdown :trigger="['click']">
-            <a class="ant-dropdown-link" @click.prevent>
-              {{ defaultStatus?.name }}
+            <a class="ant-dropdown-link text-14px" @click.prevent>
+              {{ computedStatusName }}
               <span class="filter"></span>
             </a>
             <template #overlay>
-              <Menu @click="statusChange">
-                <template v-for="status in [defaultStatus]" :key="status.id">
+              <Menu @click="statusChange" class="w-150px">
+                <template v-for="status in getDefaultStatus()" :key="status.id">
                   <MenuItem>
                     <div class="flex justify-between">
-                      <span>{{ status.name }}</span>
-                      <span v-if="formModel.status_id === status.id"></span>
+                      <span>{{ status?.name }}</span>
+                      <span v-if="formModel.status_id === status?.id"></span>
                     </div>
                   </MenuItem>
                 </template>
@@ -64,7 +45,9 @@
       <!-- label项 -->
       <div class="">
         <div class="flex py-2 my-3 items-center">
-          <div class="inline-block w-30"><span class="label">执行者</span></div>
+          <div class="inline-block w-30">
+            <span class="label">执行者</span>
+          </div>
           <div class="flex-auto">
             <SelectMember class="w-250px" @on-change="assignedMemeberChange"></SelectMember>
           </div>
@@ -85,7 +68,9 @@
           <div></div>
         </div> -->
         <div class="flex py-2 my-3 items-center">
-          <div class="inline-block w-30"><span class="label">优先级 </span></div>
+          <div class="inline-block w-30">
+            <span class="label">优先级 </span>
+          </div>
 
           <div class="flex-auto">
             <Dropdown :trigger="['click']" class="w-250px">
@@ -111,7 +96,9 @@
           </div>
         </div>
         <div class="flex py-2 my-3 items-center">
-          <div class="inline-block w-30"><span class="label">目标版本</span></div>
+          <div class="inline-block w-30">
+            <span class="label">目标版本</span>
+          </div>
           <div class="flex-auto">
             <Dropdown :trigger="['click']" class="w-250px">
               <a class="inline-block" @click.prevent>
@@ -138,27 +125,16 @@
             </Dropdown>
           </div>
         </div>
-        <!-- <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">开始日期</span></div>
-          <div class="flex-auto">
-            <DatePicker class="w-250px" v-model:value="formModel.start_date" />
-          </div>
-        </div> -->
         <div class="flex py-2 my-3">
-          <div class="w-30"><span class="label">计划完成日期</span></div>
-          <div class="flex-auto items-center">
+          <div class="w-30">
+            <span class="label">计划完成日期</span>
+          </div>
+          <div class="w-250px items-center">
             <RangePicker
               :disabled-date="disabledDate"
-              class="w-250px"
               v-model:value="computedDateRange"
               @change="onRangeChange"
             />
-            <!-- <RangePicker
-              :disabled-date="disabledDate"
-              class="w-250px"
-              v-model:value="computedDateRange"
-              @change="onRangeChange"
-            /> -->
           </div>
         </div>
         <div class="flex py-2 my-3 items-center">
@@ -188,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed,  toRaw, inject } from 'vue';
+  import { ref, reactive, onMounted, computed, toRaw, inject, type Ref } from 'vue';
   import { useRoute } from 'vue-router';
   import dayjs, { Dayjs } from 'dayjs';
   import {
@@ -203,13 +179,11 @@
     notification,
     Tag,
     RangePicker,
-    DatePicker,
   } from 'ant-design-vue';
   import { createTask } from '@apis/index';
-  import { SelectMember } from '@/components';
-  import { iconTypes } from '@/components/task-list/icon';
+  import { SelectMember, TaskTypeSelect } from '@/components';
   import { LevelType } from '../constants';
-
+  import { FieldItem, Status, TrackerType } from '@/types';
   const route = useRoute();
   const projectId = route.params.projectId;
   const props = defineProps({
@@ -224,7 +198,7 @@
   const formModel = reactive({
     author: '',
     description: '',
-    priority: 2,
+    priority: '',
     subject: '',
     tracker_id: 1, // 任务类型
     status_id: 1,
@@ -232,7 +206,7 @@
     category_id: '',
     fixed_version_id: '', // 修改没有版本会错误
     is_private: 1,
-    assigned_to_id: -1,
+    assigned_to_id: '',
     estimated_hours: '',
     done_ratio: '',
     start_date: undefined,
@@ -242,25 +216,28 @@
   });
 
   const levels = inject('levelList');
-  const statusList = inject('statusList');
+  const statusList = inject<Ref<FieldItem[]>>('statusList');
   const trackers = inject('trackersList');
   const versionList = inject('versionList');
-  const memberList = inject('memberList');
-  console.log(`output->trackers`, trackers, levels);
 
-  const defaultStatus = computed(() => {
-    return statusList.value[0];
+  const computedStatusName = computed(() => {
+    return getDefaultStatus()?.[0]?.name;
   });
+  const getDefaultStatus = () => {
+    if (formModel.tracker_id === TrackerType.error)
+      return statusList?.value.filter(
+        (item) => item.id === Status.new || item.id === Status.doing || item.id === Status.check
+      );
+    if (formModel.tracker_id === TrackerType.feature)
+      return statusList?.value.filter((item) => item.id === Status.check);
+    else return statusList?.value;
+  };
   const seletedTrackerName = computed(() => {
     return trackers.value?.find((tracker) => formModel.tracker_id === tracker.id)?.name;
   });
-  const trackerChange = ({ item, key }) => {
+  const handleTrackerChange = (key: number) => {
     formModel.tracker_id = key;
   };
-
-  // const seletedStatusName = computed(() => {
-  //   return statusList.value?.find((status) => formModel.status_id === status.id)?.name;
-  // });
   const statusChange = ({ item, key }) => {
     formModel.status_id = key;
   };
@@ -284,29 +261,27 @@
   };
 
   // 校验提交的内容
-  const validate = (title = '创建失败', tip = '标题不能为空') => {
+  const validateTitle = () => {
     if (!formModel['subject']) {
       notification.error({
-        message: title,
+        message: '创建失败',
         placement: 'bottomLeft',
-        description: tip,
+        description: '标题不能为空',
       });
-      if (!formModel['assigned_to_id']) {
-        notification.error({
-          message: title,
-          placement: 'bottomLeft',
-          description: tip,
-        });
-      }
       return false;
-    } else return true;
+    }
+    return true;
   };
 
   const handleOk = async () => {
-    if (!validate()) return false;
-    // loading.value = true;
-    const start_date = dayjs(formModel.start_date).format('YYYY-MM-DD');
-    const due_date = dayjs(formModel.due_date).format('YYYY-MM-DD');
+    if (!validateTitle()) return false;
+    loading.value = true;
+    const start_date = formModel.start_date
+      ? dayjs(formModel.start_date).format('YYYY-MM-DD')
+      : undefined;
+    const due_date = formModel.due_date
+      ? dayjs(formModel.due_date).format('YYYY-MM-DD')
+      : undefined;
     await createTask({
       pid: projectId,
       token: localStorage.getItem('token'),
@@ -314,7 +289,7 @@
       start_date,
       due_date,
     });
-    // loading.value = false;
+    loading.value = false;
     emits('onVisible', false);
   };
 

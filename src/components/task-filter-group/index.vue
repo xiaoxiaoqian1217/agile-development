@@ -5,9 +5,8 @@
       <div><span v-if="filterNum" class="text-sky-500">{{ filterNum }}</span>
         <span v-else>筛选</span>
       </div>
-
     </div>
-    <div >
+    <div>
       <div class="absolute w-705px top-full mt-15px -left-654px z-30 flex flex-col bg-light-50 py-16px px-20px shadow-lg"
         v-show="isShow">
         <template v-if="!optionGroup.length">
@@ -263,10 +262,10 @@ const filterNum = computed(() => {
 
 const optionGroup = ref([cloneDeep(filterOptionConfig)]);
 const addCondition = () => {
-  const cc= reactive({ ...cloneDeep(filterOptionConfig), id: Date.now() })
+  const cc = reactive({ ...cloneDeep(filterOptionConfig), id: Date.now() })
   optionGroup.value.push(reactive({ ...cloneDeep(filterOptionConfig), id: Date.now() }));
   console.log(`output-> optionGroup.value`, optionGroup.value)
-  if (optionGroup.value.length < 2) optionGroup.value[0].orAndFlag = {value: 'and'};
+  if (optionGroup.value.length < 2) optionGroup.value[0].orAndFlag = { value: 'and' };
   else
     optionGroup.value.forEach((item) => {
       item.orAndFlag = optionGroup.value[1].orAndFlag;
@@ -276,7 +275,7 @@ const deleteOption = (e: any, id: number) => {
   console.log(`output->e`, e, id);
   e.stopPropagation();
   optionGroup.value = optionGroup.value.filter((item) => item.id !== id);
-  if (optionGroup.value.length === 1) optionGroup.value[0].orAndFlag = {value: 'and'};
+  if (optionGroup.value.length === 1) optionGroup.value[0].orAndFlag = { value: 'and' };
   emits('change', {}, unref(optionGroup));
 };
 const isShow = ref(false);
@@ -319,18 +318,18 @@ onMounted(() => {
   handler = (e) => {
     // 记得在.select-box那边加上ref="selectBox"
     // nextTick(() => {
-      const node = document.querySelector('.filter-box')
-      const selectBox = boxRef.value;
-      const dropDownNode= document.querySelector('.ant-select-dropdown')
-      const visualList = document.querySelector('.vsc-initialized')
-      console.log(`output->e`,document.querySelector('.ant-select-dropdown'), e)
-      if(dropDownNode?.contains(e.target) || node.contains(e.target) || visualList?.contains(e.target) ) {
-        isShow.value = true;
-      }
-      if (!node.contains(e.target) ) {
-        isShow.value = false;
-      }
-      
+    const node = document.querySelector('.filter-box')
+    const selectBox = boxRef.value;
+    const dropDownNode = document.querySelector('.ant-select-dropdown')
+    const visualList = document.querySelector('.vsc-initialized')
+    console.log(`output->e`, document.querySelector('.ant-select-dropdown'), e)
+    if (dropDownNode?.contains(e.target) || node.contains(e.target) || visualList?.contains(e.target)) {
+      isShow.value = true;
+    }
+    if (!node.contains(e.target)) {
+      isShow.value = false;
+    }
+
     // })
 
     // 重点来了：selectBox里是否包含点击的元素，不包含点击的元素就隐藏面板

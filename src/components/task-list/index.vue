@@ -4,7 +4,9 @@
       <span class="mr-3 font-700 text-14px">
         {{ computedtitle }}
       </span>
-      <span class="text-12px text-gray-500"> {{ computedList.length }} </span>
+      <span class="text-12px text-gray-500">
+        {{ computedList.length }}
+      </span>
     </div>
     <!-- <span>...</span> -->
   </div>
@@ -36,9 +38,9 @@
           <div class="flex items-center mt-2">
             <img
               class="w-20px h-20px inline-block"
-              :src="iconTypes[`type${element.status_id}`] || iconTypes.type3"
+              :src="iconTypes[`type${element.tracker_id}`] || iconTypes.type3"
             />
-<FileTextOutlined v-if="element.description" class="ml-1 text-gray-500" />
+            <FileTextOutlined v-if="element.description" class="ml-1 text-gray-500" />
             <span v-if="element.fixed_version_id" class="text-12px text-gray-500">{{
               getVersionName(element?.fixed_version_id)
             }}</span>
@@ -48,7 +50,7 @@
             预期时间: {{ element?.estimated_hours }}小时
           </div>
         </div>
-        <div class="ml-auto">
+        <div class="ml-auto" v-if="assignedMember(element)">
           <div
             class="w-6 h-6 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-xs text-light-50"
           >
@@ -75,12 +77,8 @@
   import { useRouter, useRoute } from 'vue-router';
   import { Status, TaskItem } from '../../types';
   import draggable from 'vuedraggable';
-  import { type1, type2, type3 } from './icon';
-  const iconTypes = {
-    type1,
-    type2,
-    type3,
-  };
+  import { iconTypes } from './icon';
+
   interface TaskListProps {
     field: string;
     title: string;
@@ -110,7 +108,10 @@
     const todo = evt.added?.element;
     if (todo && todo[field] !== props.fieldId) {
       console.log(`output->dragChange`, field, todo[field], props.fieldId);
-      emits('change', { id: todo.id, [computedfield.value]: computedfieldiD.value });
+      emits('change', {
+        id: todo.id,
+        [computedfield.value]: computedfieldiD.value,
+      });
     }
   };
   const openTaskDetail = (detail) => {
@@ -122,6 +123,7 @@
   .done {
     color: #8c8c8c;
   }
+
   .dr {
   }
 </style>

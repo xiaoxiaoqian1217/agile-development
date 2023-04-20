@@ -162,9 +162,9 @@
   import UpdateTaskModal from './components/updateTaskModal.vue';
   import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU, type SideMenuItem } from './constants';
   import { useProjectApi, useCommonApis } from '@/hooks';
-
   import { useTaskBusiness } from './hooks';
   import { Status, TaskItem } from '../../types';
+  import 'ant-design-vue/lib/date-picker/style'; 
 
   const route = useRoute();
   const router = useRouter();

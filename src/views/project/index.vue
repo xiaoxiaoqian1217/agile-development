@@ -10,8 +10,8 @@
         </span>
         <!-- 项目图片 -->
       </div>
-      <div class="w-48px h-48px rounded-3xl">
-        <img class="w-full h-full rounded-3xl" :src="projectImg" alt="" />
+      <div class="w-48px h-48px">
+        <img class="w-full h-full rounded-md" :src="projectImg" alt="" />
       </div>
       <div class="ml-12px">
         <Dropdown :trigger="['click']">
@@ -76,7 +76,6 @@
     LeftOutlined,
   } from '@ant-design/icons-vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
-
   import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
   import { Key } from 'ant-design-vue/lib/_util/type';
   import { getMembers, getTaskStatusTypes } from '../../apis';
@@ -134,7 +133,7 @@
         ? activeTab.value
         : matchedRoutes.value[matchedRoutes.value.length];
     activeTab.value = activeRoute as string;
-    console.log(`output->activeRoute`, activeRoute);
+    console.log(`output->activeRoute`,  activeRoute);
     toTask(activeRoute as Key);
   });
   //  获取项目成员相关

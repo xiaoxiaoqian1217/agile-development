@@ -2,10 +2,10 @@ export enum Status {
   new = 1,
   doing = 2,
   solve = 3,
-  feedback = 4,
+  feedback = 4, // 反馈
   close = 5,
-  reject = 6,
-  check = 7,
+  reject = 6, // 已拒绝
+  check = 7, // 待查验
 }
 export enum Level {
   low = 1,
@@ -13,6 +13,13 @@ export enum Level {
   high = 3,
   urgent = 4,
   rightNow = 5,
+}
+// 任务类型
+export enum TrackerType {
+  error = 1,
+  feature = 2,
+  support = 3,
+  localization = 4,
 }
 
 export enum Color {
@@ -44,7 +51,7 @@ export interface TaskItem {
 
 export enum FilterTypeField {
   status_id = 'status_id', // 状态
-  tracker_id = 'tracker_id', //　任务类型
+  tracker_id = 'tracker_id', //任务类型
   priority_id = 'priority_id', // 优先级
   start_date = 'start_date', // 开始日期
   due_date = 'due_date', //  预期完成时间

@@ -9,172 +9,150 @@
       <!-- 可编辑的标题 -->
       <div
         ref="titleElement"
-        class="bg-gray-50 w-full h-12"
+        class="bg-gray-50 w-full h-12 p-2 outline-none"
         contenteditable
         spellcheck="false"
         @blur="subjectChange"
       >
         {{ formModel.subject }}
       </div>
-      <div class="">
-        <!-- <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">项目</span></div>
-          <div class="flex-auto"></div>
-        </div> -->
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">任务类型</span></div>
-          <div class="flex-auto">
-            <Dropdown :trigger="['click']">
-              <div class="flex" @click.prevent>
-                <img
-                  class="w-20px h-20px mr-1"
-                  :src="iconTypes[`type${formModel.tracker_id}`] || iconTypes.type3"
-                />
-                {{ seletedTrackerName }}
-              </div>
-              <template #overlay>
-                <Menu @click="({ key }) => onChange(key, 'tracker_id')">
-                  <template v-for="tracker in trackers" :key="tracker.id">
-                    <MenuItem>
-                      <div class="flex justify-between">
-                        <span>{{ tracker.name }}</span>
-                        <span v-if="formModel.tracker_id === tracker.id"></span>
-                      </div>
-                    </MenuItem>
-                  </template>
-                </Menu>
-              </template>
-            </Dropdown>
-          </div>
+      <div class="flex py-2 my-3 items-center">
+        <div class="w-30"><span class="label">任务类型</span></div>
+        <div class="flex-auto">
+          <TaskTypeSelect
+            :tracker_id="formModel.tracker_id"
+            @change="handleTrackerChange"
+          ></TaskTypeSelect>
         </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">状态</span></div>
-          <div class="flex-auto">
-            <Dropdown :trigger="['click']" class="w-250px">
-              <a class="ant-dropdown-link" @click.prevent>
-                {{ seletedStatusName }}
-                <span class="filter"></span>
-              </a>
-              <template #overlay>
-                <Menu class="w-250px" @click="({ key }) => onChange(key, 'status_id')">
-                  <template v-for="status in statusList" :key="status.id">
-                    <MenuItem>
-                      <div class="flex justify-between">
-                        <span>{{ status.name }}</span>
-                        <span v-if="formModel.status_id === status.id"></span>
-                      </div>
-                    </MenuItem>
-                  </template>
-                </Menu>
-              </template>
-            </Dropdown>
-          </div>
-        </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">执行者</span></div>
-          <div class="flex-auto">
-            <SelectMember
-              class="w-250px"
-              @on-change="(value) => onChange(value, 'assigned_to_id')"
-              :value="formModel.assigned_to_id"
-            ></SelectMember>
-          </div>
-        </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">备注</span></div>
-          <div>
-            <Textarea
-              class="w-250px"
-              @blur="(value) => onChange(formModel.description, 'description')"
-
-              v-model:value="formModel.description"
-              placeholder="添加备注"
-              :rows="4"
-            />
-          </div>
-        </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">优先级</span></div>
-          <div class="flex-auto">
-            <Dropdown :trigger="['click']" class="w-250px">
-              <div>
-                <Tag v-if="seletedLevelName" :color="LevelType[formModel?.priority_id]">
-                  {{ seletedLevelName }}
-                </Tag>
-              </div>
-
-              <template #overlay>
-                <Menu @click="({ key }) => onChange(key, 'priority_id')">
-                  <template v-for="level in levels" :key="level.id">
-                    <MenuItem>
-                      <div class="flex justify-between">
-                        <span>{{ level.name }}</span>
-                        <span v-if="formModel.priority_id === level.id"></span>
-                      </div>
-                    </MenuItem>
-                  </template>
-                </Menu>
-              </template>
-            </Dropdown>
-          </div>
-        </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="inline-block w-30"><span class="label">目标版本</span></div>
-          <div class="flex-auto">
-            <Dropdown :trigger="['click']" class="w-250px">
-              <a class="ant-dropdown-link" @click.prevent>
-                <span v-if="seletedVersionName">{{ seletedVersionName }}</span>
-                <span v-else> 待添加</span>
-              </a>
-              <template #overlay>
-                <Menu @click="({ key }) => onChange(key, 'fixed_version_id')">
-                  <MenuItem key="">
+      </div>
+      <div class="flex py-2 my-3 items-center">
+        <div class="w-30"><span class="label">状态</span></div>
+        <div class="flex-auto">
+          <Dropdown :trigger="['click']">
+            <a class="ant-dropdown-link" @click.prevent>
+              {{ seletedStatusName }}
+              <span class="filter"></span>
+            </a>
+            <template #overlay>
+              <Menu class="w-200px" @click="({ key }) => onChange(key, 'status_id')">
+                <template v-for="status in statusList" :key="status.id">
+                  <MenuItem>
                     <div class="flex justify-between">
-                      <span>无</span>
+                      <span>{{ status.name }}</span>
+                      <span v-if="formModel.status_id === status.id">
+                        <CheckOutlined />
+                      </span>
                     </div>
                   </MenuItem>
-                  <template v-for="version in versionList" :key="version.id">
-                    <MenuItem class="w-250px">
-                      <div class="flex justify-between">
-                        <span>{{ version.name }}</span>
-                        <span v-if="formModel.fixed_version_id === version.id"></span>
-                      </div>
-                    </MenuItem>
-                  </template>
-                </Menu>
-              </template>
-            </Dropdown>
-          </div>
+                </template>
+              </Menu>
+            </template>
+          </Dropdown>
         </div>
+      </div>
+      <div class="flex py-2 my-3 items-center">
+        <div class="w-30"><span class="label">执行者</span></div>
+        <div class="flex-auto">
+          <SelectMember
+            class="w-250px"
+            @on-change="(value) => onChange(value, 'assigned_to_id')"
+            :value="formModel.assigned_to_id"
+          ></SelectMember>
+        </div>
+      </div>
+      <div class="flex py-2 my-3 items-center">
+        <div class="w-30"><span class="label">备注</span></div>
+        <div>
+          <Textarea
+            class="w-250px"
+            @blur="(value) => onChange(formModel.description, 'description')"
+            v-model:value="formModel.description"
+            placeholder="添加备注"
+            :rows="4"
+          />
+        </div>
+      </div>
+      <div class="flex py-2 my-3 items-center">
+        <div class="w-30"><span class="label">优先级</span></div>
+        <div class="flex-auto">
+          <Dropdown :trigger="['click']" class="w-150px">
+            <div>
+              <Tag v-if="seletedLevelName" :color="LevelType[formModel?.priority_id]">
+                {{ seletedLevelName }}
+              </Tag>
+            </div>
 
-        <div class="flex py-2 my-3">
-          <div class="w-30"><span class="label">日期</span></div>
-          <div class="flex-auto">
-            <RangePicker
-              :disabled-date="disabledDate"
-              class="w-250px"
-              v-model:value="computedDateRange"
-              @change="onRangeChange"
-            />
-          </div>
+            <template #overlay>
+              <Menu class="w-200px" @click="({ key }) => onChange(key, 'priority_id')">
+                <template v-for="level in levels" :key="level.id">
+                  <MenuItem>
+                    <div class="flex justify-between">
+                      <span>{{ level.name }}</span>
+                      <span v-if="formModel.priority_id === level.id">
+                        <CheckOutlined />
+                      </span>
+                    </div>
+                  </MenuItem>
+                </template>
+              </Menu>
+            </template>
+          </Dropdown>
         </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label">预期时间</span></div>
-          <div class="flex-auto">
-            <InputNumber
-              class="w-250px"
-              placeholder="请输入计划工时（小时）"
-              v-model:value="formModel.estimated_hours"
-              @change="(value) => onChange(value, 'estimated_hours')"
-              :min="0.5"
-              :formatter="(val) => `${val}小时`"
-              :parser="(val) => val.replace('小时', '')"
-            />
-          </div>
+      </div>
+      <div class="flex py-2 my-3 items-center">
+        <div class="inline-block w-30"><span class="label">目标版本</span></div>
+        <div class="flex-auto">
+          <Dropdown :trigger="['click']">
+            <a class="ant-dropdown-link" @click.prevent>
+              <span v-if="seletedVersionName">{{ seletedVersionName }}</span>
+              <span v-else> 待添加</span>
+            </a>
+            <template #overlay>
+              <Menu class="w-200px" @click="({ key }) => onChange(key, 'fixed_version_id')">
+                <MenuItem key="">
+                  <div class="flex justify-between">
+                    <span>无</span>
+                  </div>
+                </MenuItem>
+                <template v-for="version in versionList" :key="version.id">
+                  <MenuItem>
+                    <div class="flex justify-between">
+                      <span>{{ version.name }}</span>
+                      <span v-if="formModel.fixed_version_id === version.id">
+                        <CheckOutlined />
+                      </span>
+                    </div>
+                  </MenuItem>
+                </template>
+              </Menu>
+            </template>
+          </Dropdown>
         </div>
-        <div class="flex py-2 my-3 items-center">
-          <div class="w-30"><span class="label"></span></div>
-          <div class="flex-auto"></div>
+      </div>
+
+      <div class="flex py-2 my-3">
+        <div class="w-30"><span class="label">日期</span></div>
+        <div class="flex-auto">
+          <RangePicker
+            :disabled-date="disabledDate"
+            class="w-250px"
+            v-model:value="computedDateRange"
+            @change="onRangeChange"
+          />
+        </div>
+      </div>
+      <div class="flex py-2 my-3 items-center">
+        <div class="w-30"><span class="label">预计工时</span></div>
+        <div class="flex-auto">
+          <InputNumber
+            class="w-250px"
+            placeholder="请输入计划工时（小时）"
+            v-model:value="formModel.estimated_hours"
+            @change="(value) => onChange(value, 'estimated_hours')"
+            :min="0.5"
+            :formatter="(val) => `${val}小时`"
+            :parser="(val) => val.replace('小时', '')"
+          />
         </div>
       </div>
     </Modal>
@@ -182,23 +160,22 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed,  toRaw, inject } from 'vue';
+  import { ref, reactive, onMounted, computed, toRaw, inject } from 'vue';
   import { useRoute } from 'vue-router';
   import dayjs, { Dayjs } from 'dayjs';
   import {
-    Divider,
     Modal,
     MenuItem,
     Menu,
     Dropdown,
     Textarea,
     Tag,
-    DatePicker,
     InputNumber,
     notification,
     RangePicker,
   } from 'ant-design-vue';
-  import { SelectMember } from '@/components';
+  import { CheckOutlined } from '@ant-design/icons-vue';
+  import { SelectMember, TaskTypeSelect } from '@/components';
   import { updateTask } from '@apis/index';
   import { LevelType } from '../constants';
   import { iconTypes } from '@/components/task-list/icon';
@@ -218,8 +195,8 @@
 
   const defaultDetail = {
     ...props.detail,
-    start_date: dayjs(detail?.start_date),
-    due_date: dayjs(detail?.due_date),
+    start_date: detail.start_date ? dayjs(detail.start_date) : undefined,
+    due_date: detail?.due_date ? dayjs(detail?.due_date) : undefined,
   };
   const formModel = reactive(defaultDetail);
   const levels = inject('levelList');
@@ -241,34 +218,13 @@
     formModel[idKey] = value;
     updateTaskDetail({ [idKey]: formModel[idKey] });
   };
-  // const trackerChange = (value, idKey: string) => {
-  //   formModel[idKey] = value;
-  //   updateTaskDetail({ [idKey]: formModel[idKey] });
-  // };
-
-  // const statusChange = ({ item, key }) => {
-  //   formModel.status_id = key;
-
-  //   updateTaskDetail({ status_id: formModel.status_id });
-  // };
-  // const levelChange = () => {
-  //   formModel.priority_id = key;
-
-  //   updateTaskDetail({ priority_id: formModel.priority_id });
-  // };
-  // const versionChange = ({ item, key }) => {
-  //   formModel.fixed_version_id = key;
-
-  //   // emits('updateTaskList', { fixed_version_id: key });
-  //   updateTaskDetail({ fixed_version_id: formModel.fixed_version_id });
-  // };
+  const handleTrackerChange = (tracker_id: number) => {
+    formModel.tracker_id = tracker_id;
+    updateTaskDetail({ tracker_id: tracker_id });
+  };
   const seletedVersionName = computed(() => {
     return versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name;
   });
-
-  // const assignedMemeberChange = (value: string) => {
-  //   updateTaskDetail({ assigned_to_id: Number(value) });
-  // };
 
   const updateTaskDetail = async (params) => {
     await updateTask({
