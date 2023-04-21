@@ -97,6 +97,7 @@
                   />
                   <!-- 早于和晚于只能选择一个日期 -->
                   <DatePicker
+                    class="w-full"
                     v-else
                     v-model:value="group.type.value"
                     @change="(date, dateString) => dateChange(group, date, dateString)"
@@ -157,6 +158,7 @@
   import { FilterTypeField, type FieldItem } from '@/types';
   import type { FilterOptionConfig } from './type';
   import { filterOptionConfig } from './config';
+  import locale from 'ant-design-vue/es/date-picker/locale/zh_CN';
   interface Props {
     activePanelMenuId: string;
   }
@@ -197,23 +199,27 @@
       label: '晚于',
     },
   ];
+  const dateRanges = {
+    昨天: [dayjs().add(-1, 'day'), dayjs().add(-1, 'day')],
+    今天: [dayjs(), dayjs()],
+    上周: [dayjs().add(-1, 'week').startOf('week'), dayjs().add(-1, 'week').endOf('week')],
+    本周: [dayjs().startOf('week'), dayjs().endOf('week')],
+    下周: [dayjs().add(1, 'week').startOf('week'), dayjs().add(1, 'week').endOf('week')],
+    上月: [dayjs().add(-1, 'month').startOf('month'), dayjs().add(-1, 'month').endOf('month')],
+    本月: [dayjs().startOf('month'), dayjs().endOf('month')],
+    下月: [dayjs().add(1, 'month').startOf('month'), dayjs().add(1, 'month').endOf('month')],
+  };
 
   const date = reactive({
     start_date: {
       id: '',
       value: undefined,
-      ranges: {
-        今天: [dayjs(), dayjs()],
-        本月: [dayjs().startOf('month'), dayjs().endOf('month')],
-      },
+      ranges: { ...cloneDeep(dateRanges) },
     },
     due_date: {
       id: '',
       value: undefined,
-      ranges: {
-        今天: [dayjs(), dayjs()],
-        本月: [dayjs().startOf('month'), dayjs().endOf('month')],
-      },
+      ranges: { ...cloneDeep(dateRanges) },
     },
   });
   const levels = inject<FieldItem[]>('levelList');
@@ -305,13 +311,13 @@
   const openFilter = () => {
     isShow.value = !isShow.value;
   };
-  const memeberChange = (group: optionConfig, value) => {
+  const memeberChange = (group: FilterOptionConfig, value) => {
     group.type.value = value;
     emits('change', group, unref(optionGroup));
   };
 
   const dateChange = (
-    group: optionConfig,
+    group: FilterOptionConfig,
     date: [Dayjs, Dayjs] | Dayjs,
     dateString: [string, string] | string
   ) => {
@@ -320,7 +326,7 @@
     emits('change', group, unref(optionGroup));
   };
 
-  const orAndFlagChange = (group: optionConfig, value: string) => {
+  const orAndFlagChange = (group: FilterOptionConfig, value: string) => {
     group.orAndFlag.value = value;
     if (optionGroup.value.length > 0)
       optionGroup.value.forEach((item) => (item.orAndFlag.value = value));
@@ -329,8 +335,13 @@
   const computedIsShow = computed(() => {
     return props.visible;
   });
-  const yesOrNoChange = (group: optionConfig, value: number) => {
-    if (value === 2 || value === 3) group.type.value = undefined;
+  const yesOrNoChange = (group: FilterOptionConfig, value: number) => {
+    if (
+      group.type.field === FilterTypeField.start_date ||
+      group.type.field === FilterTypeField.due_date
+    ) {
+      group.type.value = undefined;
+    }
     group.flag.value = value;
     if (group.type.value !== undefined) emits('change', group, unref(optionGroup));
   };

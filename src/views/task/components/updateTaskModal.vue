@@ -1,6 +1,7 @@
 <template>
   <div>
     <Modal
+      style="top: 50px"
       v-model:visible="visible"
       :title="`${seletedTrackerName}`"
       @cancel="handleCancel"

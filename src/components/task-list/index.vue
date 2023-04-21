@@ -63,14 +63,16 @@
               />
               <!-- 显示日期 -->
               <span class="ml-1 text-12px text-gray-500 bg-gray-100 p-4px"
-                >{{ dayjs(element.start_date).format('MM-DD') }}-{{
+                >{{ dayjs(element.start_date).format('MM-DD') }}月-{{
                   dayjs(element.due_date).format('MM-DD')
-                }}</span
+                }}日</span
               >
-              <FileTextOutlined v-if="element.description" class="ml-1 text-gray-500 text-12px" />
-              <span v-if="element.fixed_version_id" class="text-12px text-gray-500 mt-3px">
-                <i class="iconfont icon-running text-gray-400 mt-1px"></i>
-                <span>{{ getVersionName(element?.fixed_version_id) }}</span>
+              <FileTextOutlined v-if="element.description" class="text-gray-500 text-12px" />
+              <span v-if="element.fixed_version_id" class="text-12px text-gray-500 mt-1px ml-1">
+                <i class="iconfont icon-running text-gray-400"></i>
+                <span class="-mt-2px inline-block">{{
+                  getVersionName(element?.fixed_version_id)
+                }}</span>
               </span>
               <span v-if="element.estimated_hours" class="ml-1 text-12px text-gray-500 mt-1">
                 预期时间: {{ element?.estimated_hours }}小时
@@ -95,7 +97,7 @@
   import { computed, inject, type Ref } from 'vue';
   import { Checkbox, Tag } from 'ant-design-vue';
   import { FileTextOutlined } from '@ant-design/icons-vue';
-  import { FieldItem, Status, TaskItem, Color, FilterTypeField } from '../../types';
+  import { FieldItem, Status, TaskItem, FilterTypeField } from '../../types';
   import draggable from 'vuedraggable';
   import { iconTypes } from './icon';
   import { LevelType, StatusColor } from '../../views/task/constants';

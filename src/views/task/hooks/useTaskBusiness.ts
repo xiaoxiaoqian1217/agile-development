@@ -74,13 +74,13 @@ export const useTaskBusiness = () => {
               return (
                 // 表示包含。 ( 表示排除
                 // dayjs('2016-10-30').isBetween('2016-01-01', '2016-10-30', null, '[)')
-                dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&
+                dayjs(item[filter.type.field]).isAfter(dayjs(start_date).subtract(1, 'days')) &&
                 dayjs(item[filter.type.field]).isBefore(due_date)
               );
             }
           } else {
             if (filter.flag == 2 && item[filter.type.field]) {
-              return dayjs(item[filter.type.field]).isBefore(filter.type.value, 'day');
+              return dayjs(item[filter.type.field]).isBefore(filter.type.value);
             }
             if (filter.flag == 3 && item[filter.type.field]) {
               return dayjs(item[filter.type.field]).isAfter(filter.type.value, 'day');
@@ -116,7 +116,7 @@ export const useTaskBusiness = () => {
           }
           if (filter.flag === 1 && item[filter.type.field]) {
             return (
-              dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&
+              dayjs(item[filter.type.field]).isAfter(start_date) &&
               dayjs(item[filter.type.field]).isBefore(due_date)
             );
           }

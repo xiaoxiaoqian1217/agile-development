@@ -38,16 +38,17 @@ export type SidePanelMapType = 'author' | 'assigned_to_id' | 'all';
 //   error = 'error',
 // }
 
-export interface TaskItem {
-  author: number;
-  description: string;
-  id: number;
-  priority_id: number;
-  status: number;
-  subject: string;
-  tracker: number;
-  assigned_to_id: number;
-}
+// export interface TaskItem {
+//   author: number;
+//   description: string;
+//   id: number;
+//   priority_id: number;
+//   status: number;
+//   subject: string;
+//   tracker: number;
+//   assigned_to_id: number;
+
+// }
 
 export enum FilterTypeField {
   status_id = 'status_id', // 状态
@@ -64,4 +65,23 @@ export enum FilterTypeField {
 export interface FieldItem {
   id: number;
   name: string;
+}
+export interface TaskItem {
+  author: string;
+  description: string;
+  id: number;
+  subject: string;
+  tracker_id: number;
+  status_id: number;
+  priority_id: number;
+  category_id: string;
+  fixed_version_id: number | string;
+  is_private: number;
+  assigned_to_id: string;
+  estimated_hours: string;
+  done_ratio: string;
+  start_date: undefined;
+  due_date: undefined;
+  watcher_user_ids: string;
+  parent_issue_id: string;
 }
