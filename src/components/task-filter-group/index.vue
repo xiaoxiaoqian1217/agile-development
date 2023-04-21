@@ -1,5 +1,6 @@
 <template>
-  <div class="relative filter-box" ref="boxRef">
+  <div class="mask fixed" v-if="isShow" @click="hideMask"></div>
+  <div class="relative filter-box">
     <div class="flex items-center" @click="openFilter">
       <FilterOutlined class="mr-1" :class="filterNum && 'text-blue-400'" />
       <div>
@@ -9,8 +10,8 @@
     </div>
     <div>
       <div
-        class="absolute w-705px top-full mt-15px -left-654px z-30 flex flex-col bg-light-50 py-16px px-20px shadow-lg"
-        v-show="isShow"
+        class="absolute w-705px top-full mt-15px -left-654px z-500 flex flex-col bg-light-50 py-16px px-20px shadow-lg"
+        v-if="isShow"
       >
         <template v-if="!optionGroup.length">
           <span>在这里添加筛选条件，精准过滤出你需要查看的任务</span>
@@ -147,25 +148,15 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    ref,
-    inject,
-    computed,
-    reactive,
-    unref,
-    watch,
-    onMounted,
-    onUnmounted,
-    nextTick,
-  } from 'vue';
+  import { ref, inject, computed, reactive, unref, watch } from 'vue';
   import { Select, SelectOption, SelectOptGroup, RangePicker, DatePicker } from 'ant-design-vue';
-  import { cloneDeep } from 'lodash';
-  import { FilterTypeField, type FieldItem } from '@/types';
   import { CloseOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons-vue';
-  import { SelectMember } from '..';
+  import { cloneDeep } from 'lodash';
   import dayjs, { Dayjs } from 'dayjs';
-  import { useTaskBusiness } from '@/views/task/hooks';
-
+  import { SelectMember } from '..';
+  import { FilterTypeField, type FieldItem } from '@/types';
+  import type { FilterOptionConfig } from './type';
+  import { filterOptionConfig } from './config';
   interface Props {
     activePanelMenuId: string;
   }
@@ -207,20 +198,6 @@
     },
   ];
 
-  type optionConfig = typeof filterOptionConfig;
-  const filterOptionConfig = {
-    type: {
-      value: undefined,
-      field: FilterTypeField.priority_id,
-    },
-    flag: {
-      value: 1,
-    },
-    orAndFlag: {
-      value: 'and',
-    },
-    id: Date.now(),
-  };
   const date = reactive({
     start_date: {
       id: '',
@@ -288,26 +265,14 @@
             value: FilterTypeField.assigned_to_id,
           },
         ].filter((item) => item.value !== props.activePanelMenuId),
-        // field: [FilterTypeField.assigned_to_id, FilterTypeField.author],
       },
       {
         label: '时间',
         options: DateList,
-        // field: [FilterTypeField.start_date, FilterTypeField.due_date],
       },
     ];
   });
-  const handleChange = (value: string, typeItem: optionConfig) => {
-    // let list = typeItem.type.f
-    // 切换时是日期需要重置
-    // if (
-    //   typeItem.type.field === FilterTypeField.start_date ||
-    //   typeItem.type.field === FilterTypeField.due_date
-    // ) {
-    //   date.start_date.value = undefined;
-    //   date.due_date.value = undefined;
-    // }
-  };
+  const handleChange = (value: string, typeItem: FilterOptionConfig) => {};
   const getOptions = (type: string) => {
     if (type === FilterTypeField.assigned_to_id) return memberList.value;
     if (type === FilterTypeField.priority_id) return levels.value;
@@ -350,16 +315,13 @@
     date: [Dayjs, Dayjs] | Dayjs,
     dateString: [string, string] | string
   ) => {
-    console.log(`output->dateChange`, date);
-    // group.type.value = date;
+    group.type.value = date;
     console.log(`output->dateString`, date, dateString);
     emits('change', group, unref(optionGroup));
   };
 
   const orAndFlagChange = (group: optionConfig, value: string) => {
-    // group.orAndFlag.value = value;
     group.orAndFlag.value = value;
-
     if (optionGroup.value.length > 0)
       optionGroup.value.forEach((item) => (item.orAndFlag.value = value));
     emits('change', group, unref(optionGroup));
@@ -368,49 +330,22 @@
     return props.visible;
   });
   const yesOrNoChange = (group: optionConfig, value: number) => {
-    console.log(`output->group`, value);
     if (value === 2 || value === 3) group.type.value = undefined;
     group.flag.value = value;
     if (group.type.value !== undefined) emits('change', group, unref(optionGroup));
-
-    // emits('change', group, unref(optionGroup));
   };
 
-  // 点击组件以外的元素需要隐藏下拉框
-  let handler: (e: any) => void;
-  const boxRef = ref();
-  onMounted(() => {
-    handler = (e) => {
-      // 记得在.select-box那边加上ref="selectBox"
-      // nextTick(() => {
-      const node = document.querySelector('.filter-box');
-      const selectBox = boxRef.value;
-      const dropDownNode = document.querySelector('.ant-select-dropdown');
-      const visualList = document.querySelector('.vsc-initialized');
-      console.log(`output->e`, document.querySelector('.ant-select-dropdown'), e);
-      if (
-        dropDownNode?.contains(e.target) ||
-        node.contains(e.target) ||
-        visualList?.contains(e.target)
-      ) {
-        isShow.value = true;
-      }
-      if (!node.contains(e.target)) {
-        isShow.value = false;
-      }
-
-      // })
-      // 重点来了：selectBox里是否包含点击的元素，不包含点击的元素就隐藏面板
-    };
-    // document.body.addEventListener('click', handler, false);
-  });
-  onUnmounted(() => {
-    document.body.removeEventListener('click', handler);
-  });
-
-  const handleVisible = () => {
-    emits('on-visible');
+  const hideMask = () => {
+    isShow.value = false;
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  .mask {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 500;
+  }
+</style>

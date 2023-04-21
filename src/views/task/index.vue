@@ -153,7 +153,8 @@
   import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU, type SideMenuItem } from './constants';
   import { useProjectApi, useCommonApis } from '@/hooks';
   import { useTaskBusiness } from './hooks';
-  import { Status, TaskItem } from '../../types';
+  import { Status, TaskItem } from '@/types';
+  import { FilterOptionConfig } from '@/components/task-filter-group/type';
   import 'ant-design-vue/lib/date-picker/style';
 
   const route = useRoute();
@@ -279,7 +280,12 @@
   };
   const refeshTaskList = async () => {
     await fetchTask();
-    searchTypeChange(activeFilterMenu);
+    if (savedFilterConfig.value?.length) {
+      const params = getFilterListParams(savedFilterConfig.value);
+      multFilterType(params);
+      classifyTask(filterList.value);
+    }
+    // searchTypeChange(activeFilterMenu);
   };
   const drapStatusChange = async (todo: TaskItem) => {
     await updateTask({
@@ -318,22 +324,23 @@
 
     classifyTask(filterList.value);
   };
+  const savedFilterConfig = ref<FilterOptionConfig[]>();
 
-  const filterGroupChange = (values: any, filters) => {
+  const filterGroupChange = (values: FilterOptionConfig, filters: FilterOptionConfig[]) => {
+    savedFilterConfig.value = filters;
     const params = getFilterListParams(filters);
     console.log(`output->params`, params);
     multFilterType(params);
     classifyTask(filterList.value);
   };
-  const getFilterListParams = (values: any) => {
-    const filterArr = values.map((value) => ({
+  const getFilterListParams = (values: FilterOptionConfig[]) => {
+    const filterArr = values.map((value: FilterOptionConfig) => ({
       flag: value.flag.value,
       orAnd: value.orAndFlag.value,
       type: value.type,
     }));
     return filterArr;
   };
-  const filterVisible = ref(false);
 </script>
 
 <style scoped>
@@ -348,8 +355,6 @@
     bottom: 0;
     left: 0;
     position: absolute;
-    /* visibility: hidden; */
-    /* left: -100%; */
     top: 0px;
     transition: all 0.2s ease-in-out;
     transform: translateX(-900px);
@@ -358,17 +363,5 @@
   }
   .task-list-handler:hover .task-list-panel {
     transform: translateX(0px);
-    /* visibility: visible; */
   }
-  /* .reference {
-    position: relative;
-  }
-  .popout-menu {
-    position: absolute;
-    visibility: hidden;
-    left: 100%;
-  }
-  .reference:hover > .popout-menu {
-    visibility: visible;
-  } */
 </style>

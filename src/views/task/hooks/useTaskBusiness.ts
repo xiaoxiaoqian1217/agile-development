@@ -23,7 +23,6 @@ export const useTaskBusiness = () => {
     // author: number;
     // assigned_to_id: number;
   }) => {
-    const str = new RegExp(`${params.subject}`, 'g');
     searchTaskList.value = filterList.value.filter((item: TaskItem) => {
       return item.subject.includes(params.subject);
       // str.test(item.subject);
@@ -75,7 +74,6 @@ export const useTaskBusiness = () => {
               return (
                 // 表示包含。 ( 表示排除
                 // dayjs('2016-10-30').isBetween('2016-01-01', '2016-10-30', null, '[)')
-
                 dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&
                 dayjs(item[filter.type.field]).isBefore(due_date)
               );
@@ -100,7 +98,6 @@ export const useTaskBusiness = () => {
     return array.filter((item) => {
       const arr = filters.some((filter) => {
         if (typeof filter.type.value === 'undefined') return false;
-
         // console.log(
         //   `output->filters[key]`,
         //   filter.flag,
