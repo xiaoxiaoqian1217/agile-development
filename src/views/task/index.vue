@@ -42,13 +42,13 @@
         <div class="flex flex-1 setting items-center justify-center">
           <!-- 搜索标题和ID -->
           <Input
-            class="w-300px"
+            class="custome-input w-300px bg-gray-light border-none"
             v-model:value="searchValue"
             placeholder="搜索标题"
             @change="searchFromName"
           >
             <template #prefix>
-              <SearchOutlined />
+              <SearchOutlined :style="{ color: '#8c8c8c' }" />
             </template>
           </Input>
           <!-- 如何分列查看 -->
@@ -343,7 +343,7 @@
   };
 </script>
 
-<style scoped>
+<style>
   .task-sidebar {
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
     height: calc(100vh - 85px);
@@ -363,5 +363,14 @@
   }
   .task-list-handler:hover .task-list-panel {
     transform: translateX(0px);
+  }
+  .custome-input .ant-input {
+    background-color: inherit;
+    border-radius: 6px;
+  }
+  .custome-input.ant-input-affix-wrapper:focus,
+  .ant-input-affix-wrapper-focused {
+    border-color: transparent;
+    box-shadow: none;
   }
 </style>
