@@ -42,7 +42,7 @@ export interface TaskItem {
   author: number;
   description: string;
   id: number;
-  priority: number;
+  priority_id: number;
   status: number;
   subject: string;
   tracker: number;

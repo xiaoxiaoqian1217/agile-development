@@ -29,16 +29,16 @@ export default [
           },
         ],
       },
-      {
-        path: 'test',
-        name: 'test',
-        meta: {
-          title: '测试',
-          // parentRouteName: 'project',
-        },
-        component: Test,
-        // redirect: '/project/:projectId/task/allTask',
-      },
+      // {
+      //   path: 'test',
+      //   name: 'test',
+      //   meta: {
+      //     title: '测试',
+      //     // parentRouteName: 'project',
+      //   },
+      //   component: Test,
+      //   // redirect: '/project/:projectId/task/allTask',
+      // },
     ],
   },
 ];

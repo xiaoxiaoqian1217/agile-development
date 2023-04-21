@@ -8,7 +8,6 @@
         {{ computedList.length }}
       </span>
     </div>
-    <!-- <span>...</span> -->
   </div>
   <draggable
     class="w-272px min-h-400px draggable-container overflow-y-auto h-full"
@@ -21,42 +20,62 @@
   >
     <template #item="{ element }">
       <div
-        class="mb-2 pl-3.5 pt-3.5 bg-light-50 h-105px flex"
+        class="mb-2 bg-light-50 flex task-item-wrap relative cursor-pointer"
         :class="element.status_id === Status.solve && 'done'"
         @click="openTaskDetail(element)"
       >
-        <div class="">
-          <Checkbox v-if="element.status_id === Status.solve" disabled checked />
-          <Checkbox
-            v-else
-            :checked="element.status_id === Status.close || element.status_id === Status.solve"
-          >
-          </Checkbox>
-        </div>
-        <div class="ml-2 flex-1">
-          <span class="text-14px block pt-4px">{{ element.subject }}</span>
-          <div class="flex items-center mt-2">
-            <img
-              class="w-20px h-20px inline-block"
-              :src="iconTypes[`type${element.tracker_id}`] || iconTypes.type3"
-            />
-            <FileTextOutlined v-if="element.description" class="ml-1 text-gray-500" />
-
-            <span v-if="element.fixed_version_id" class="text-12px text-gray-500">
-              <i class="iconfont icon-running text-gray-400 ml-1"></i
-              >{{ getVersionName(element?.fixed_version_id) }}</span
+        <div
+          class="pl-4px task-item-priority opacity-100"
+          :class="`bg-${LevelType[element.priority_id]}`"
+        ></div>
+        <div class="ml-3.5 py-14px h-105px flex flex-1 pr-2">
+          <div class="">
+            <Checkbox v-if="element.status_id === Status.solve" disabled checked />
+            <Checkbox
+              v-else
+              :checked="element.status_id === Status.close || element.status_id === Status.solve"
             >
+            </Checkbox>
           </div>
+          <div class="ml-2 flex-1">
+            <div class="text-14px pt-4px flex justify-between">
+              {{ element.subject }}
 
-          <div v-if="element.estimated_hours" class="text-12px text-gray-500 mt-1">
-            预期时间: {{ element?.estimated_hours }}小时
-          </div>
-        </div>
-        <div class="ml-auto" v-if="assignedMember(element)">
-          <div
-            class="w-6 h-6 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-xs text-light-50"
-          >
-            <span>{{ assignedMember(element)?.slice(0, 1) }}</span>
+              <div class="ml-auto align-top" v-if="assignedMember(element)">
+                <div
+                  class="w-5 h-5 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-xs text-light-50 -mt-8px"
+                >
+                  <span class="text-12px">{{ assignedMember(element)?.slice(0, 1) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center mt-2">
+              <Tag
+                v-if="computedfield !== FilterTypeField.status_id"
+                :color="StatusColor[element.status_id]"
+              >
+                {{ getStatusName(element.status_id) }}
+              </Tag>
+              <!-- <span :class="`text-${StatusColor[element.status_id]}`">{{}}</span> -->
+              <img
+                class="w-20px h-20px inline-block"
+                :src="iconTypes[`type${element.tracker_id}`] || iconTypes.type3"
+              />
+              <!-- 显示日期 -->
+              <span class="ml-1 text-12px text-gray-500 bg-gray-100 p-4px"
+                >{{ dayjs(element.start_date).format('MM-DD') }}-{{
+                  dayjs(element.due_date).format('MM-DD')
+                }}</span
+              >
+              <FileTextOutlined v-if="element.description" class="ml-1 text-gray-500 text-12px" />
+              <span v-if="element.fixed_version_id" class="text-12px text-gray-500 mt-3px">
+                <i class="iconfont icon-running text-gray-400 mt-1px"></i>
+                <span>{{ getVersionName(element?.fixed_version_id) }}</span>
+              </span>
+              <span v-if="element.estimated_hours" class="ml-1 text-12px text-gray-500 mt-1">
+                预期时间: {{ element?.estimated_hours }}小时
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -73,13 +92,14 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted, reactive, watch, inject } from 'vue';
-  import { Checkbox, Drawer } from 'ant-design-vue';
-  import { FileTextOutlined, CheckSquareOutlined } from '@ant-design/icons-vue';
-  import { useRouter, useRoute } from 'vue-router';
-  import { Status, TaskItem } from '../../types';
+  import { computed, inject, type Ref } from 'vue';
+  import { Checkbox, Tag } from 'ant-design-vue';
+  import { FileTextOutlined } from '@ant-design/icons-vue';
+  import { FieldItem, Status, TaskItem, Color, FilterTypeField } from '../../types';
   import draggable from 'vuedraggable';
   import { iconTypes } from './icon';
+  import { LevelType, StatusColor } from '../../views/task/constants';
+  import dayjs from 'dayjs';
 
   interface TaskListProps {
     field: string;
@@ -91,19 +111,24 @@
   const props = withDefaults(defineProps<TaskListProps>(), {});
   const emits = defineEmits(['change', 'openDetail']);
   const { field } = props;
+  console.log(`output->`, props);
   const computedList = computed(() => props.list);
   const computedtitle = computed(() => props.title);
   const computedfield = computed(() => props.field);
   const computedfieldiD = computed(() => props.fieldId);
-  const versionList = inject('versionList');
-  const memberList = inject('memberList');
+  const versionList = inject<Ref<FieldItem[]>>('versionList');
+  const memberList = inject<Ref<FieldItem[]>>('memberList');
+  const statusList = inject<Ref<FieldItem[]>>('statusList');
 
-  const assignedMember = (element) => {
-    return memberList.value?.find((userInfo) => element.assigned_to_id === userInfo.user.id)?.user
+  const assignedMember = (element: TaskItem) => {
+    return memberList?.value?.find((userInfo) => element.assigned_to_id === userInfo.user.id)?.user
       .name;
   };
-  const getVersionName = (id) => {
-    return versionList.value?.find((item) => item.id === id)?.name;
+  const getVersionName = (id: number) => {
+    return versionList?.value?.find((item) => item.id === id)?.name;
+  };
+  const getStatusName = (id: number) => {
+    return statusList?.value?.find((item) => item.id === id)?.name;
   };
   // 拖拽改变
   const dragChange = (evt) => {
@@ -125,7 +150,19 @@
   .done {
     color: #8c8c8c;
   }
-
-  .dr {
+  .task-item-priority {
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    /* bottom: 0;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: width 218ms ease-in;
+    width: 4px;
+    opacity: 0; */
   }
+  /* .task-item-wrap:hover .task-item-priority {
+    opacity: 1;
+    width: 8px;
+  } */
 </style>

@@ -284,7 +284,7 @@
       const params = getFilterListParams(savedFilterConfig.value);
       multFilterType(params);
       classifyTask(filterList.value);
-    }
+    } else classifyTask(filterList.value);
     // searchTypeChange(activeFilterMenu);
   };
   const drapStatusChange = async (todo: TaskItem) => {

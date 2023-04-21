@@ -87,7 +87,9 @@
                 <template v-for="level in levels" :key="level.id">
                   <MenuItem>
                     <div class="flex justify-between">
-                      <span>{{ level.name }}</span>
+                      <Tag :color="LevelType[level.id]">
+                        {{ level.name }}
+                      </Tag>
                       <span v-if="formModel.priority_id === level.id">
                         <CheckOutlined />
                       </span>

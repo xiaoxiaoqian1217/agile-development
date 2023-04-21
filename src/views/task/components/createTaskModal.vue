@@ -85,8 +85,12 @@
                   <template v-for="level in levels" :key="level.id">
                     <MenuItem>
                       <div class="flex justify-between">
-                        <span>{{ level.name }}</span>
-                        <span v-if="formModel.priority_id === level.id"></span>
+                        <Tag :color="LevelType[level.id]">
+                          {{ level.name }}
+                        </Tag>
+                        <span v-if="formModel.priority_id === level.id">
+                          <CheckOutlined />
+                        </span>
                       </div>
                     </MenuItem>
                   </template>
@@ -180,6 +184,8 @@
     Tag,
     RangePicker,
   } from 'ant-design-vue';
+  import { CheckOutlined } from '@ant-design/icons-vue';
+
   import { createTask } from '@apis/index';
   import { SelectMember, TaskTypeSelect } from '@/components';
   import { LevelType } from '../constants';

@@ -192,7 +192,7 @@ export const useTaskBusiness = () => {
       token: localStorage.getItem('token'),
       pid: projectId,
     });
-    levels.value = resp.priority;
+    levels.value = resp.priority.reverse();
   };
   const status = ref();
   const taskStatusTypes = async () => {
