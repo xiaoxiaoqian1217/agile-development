@@ -7,6 +7,7 @@ export default defineConfig({
         // 优先级颜色配置
         gray: {
           light: '#f7f7f7',
+          lightHex: '#f7f7f7cc',
         },
         default: '#8c8c8c',
         processing: '#1b9aee',

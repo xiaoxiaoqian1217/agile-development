@@ -1,7 +1,10 @@
 <template>
   <div class="flex w-full relative">
     <!-- 侧栏 -->
-    <div v-if="isVisiblePanel" class="task-sidebar w-300px flex-none absolute z-40 bg-light-50">
+    <div
+      class="task-sidebar flex-none absolute z-40 bg-light-50"
+      :class="isVisiblePanel && 'active'"
+    >
       <SideTaskPanel
         :activePanelMenuId="activePanelMenuId"
         @task-panel-change="sidePanelChange"
@@ -347,6 +350,18 @@
   .task-sidebar {
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
     height: calc(100vh - 85px);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    top: 0px;
+    transition: all 0.1s ease-in-out;
+    transform: translateX(-600px);
+    z-index: 30;
+    cursor: pointer;
+    width: 300px;
+  }
+  .task-sidebar.active {
+    transform: translateX(0px);
   }
   .task-board {
     height: calc(100vh - 120px);
@@ -356,8 +371,8 @@
     left: 0;
     position: absolute;
     top: 0px;
-    transition: all 0.2s ease-in-out;
-    transform: translateX(-900px);
+    transition: all 0.1s ease-in-out;
+    transform: translateX(-600px);
     z-index: 30;
     cursor: pointer;
   }

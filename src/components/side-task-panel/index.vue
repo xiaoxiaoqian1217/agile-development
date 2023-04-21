@@ -5,7 +5,7 @@
 
     <template v-for="sideItem in SIDER_MENU" :key="sideItem.tag">
       <div
-        class="flex px-4 py-1 mt-1 items-center text-14px cursor-pointer hover:bg-gray-50"
+        class="flex px-4 py-1 mt-1 items-center text-14px cursor-pointer hover:bg-gray-lightHex"
         :class="activePanelMenuId === sideItem.tag && 'bg-gray-50'"
         @click="changeMenu(sideItem)"
       >
