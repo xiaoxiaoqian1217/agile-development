@@ -61,6 +61,7 @@
                   "
                   class="mr-14px w-85px"
                   v-model:value="group.flag.value"
+                  @change="(value) => yesOrNoChange(group, value)"
                 >
                   <SelectOption v-for="flag in DateFlags" :value="flag.value" :key="flag.value">
                     {{ flag.label }}
@@ -87,10 +88,17 @@
                   "
                 >
                   <RangePicker
+                    v-if="group.flag.value === 0 || group.flag.value === 1"
                     class="w-full"
                     @change="(date, dateString) => dateChange(group, date, dateString)"
-                    v-model:value="date[group.type.field].value"
+                    v-model:value="group.type.value"
                     :ranges="date[group.type.field].ranges"
+                  />
+                  <!-- 早于和晚于只能选择一个日期 -->
+                  <DatePicker
+                    v-else
+                    v-model:value="group.type.value"
+                    @change="(date, dateString) => dateChange(group, date, dateString)"
                   />
                 </div>
                 <div
@@ -150,7 +158,7 @@
     onUnmounted,
     nextTick,
   } from 'vue';
-  import { Select, SelectOption, SelectOptGroup, RangePicker } from 'ant-design-vue';
+  import { Select, SelectOption, SelectOptGroup, RangePicker, DatePicker } from 'ant-design-vue';
   import { cloneDeep } from 'lodash';
   import { FilterTypeField, type FieldItem } from '@/types';
   import { CloseOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons-vue';
@@ -290,10 +298,15 @@
     ];
   });
   const handleChange = (value: string, typeItem: optionConfig) => {
-    console.log(`selected ${value}`, typeItem);
-    typeItem.value = dayjs();
     // let list = typeItem.type.f
-    // if(typeItem.field === )
+    // 切换时是日期需要重置
+    // if (
+    //   typeItem.type.field === FilterTypeField.start_date ||
+    //   typeItem.type.field === FilterTypeField.due_date
+    // ) {
+    //   date.start_date.value = undefined;
+    //   date.due_date.value = undefined;
+    // }
   };
   const getOptions = (type: string) => {
     if (type === FilterTypeField.assigned_to_id) return memberList.value;
@@ -332,9 +345,13 @@
     emits('change', group, unref(optionGroup));
   };
 
-  const dateChange = (group: optionConfig, date: [Dayjs, Dayjs], dateString: [string, string]) => {
-    console.log(`output->date`, date);
-    group.type.value = date;
+  const dateChange = (
+    group: optionConfig,
+    date: [Dayjs, Dayjs] | Dayjs,
+    dateString: [string, string] | string
+  ) => {
+    console.log(`output->dateChange`, date);
+    // group.type.value = date;
     console.log(`output->dateString`, date, dateString);
     emits('change', group, unref(optionGroup));
   };
@@ -350,7 +367,9 @@
   const computedIsShow = computed(() => {
     return props.visible;
   });
-  const yesOrNoChange = (group: optionConfig, value: string) => {
+  const yesOrNoChange = (group: optionConfig, value: number) => {
+    console.log(`output->group`, value);
+    if (value === 2 || value === 3) group.type.value = undefined;
     group.flag.value = value;
     if (group.type.value !== undefined) emits('change', group, unref(optionGroup));
 

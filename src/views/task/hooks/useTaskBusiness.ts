@@ -52,15 +52,7 @@ export const useTaskBusiness = () => {
       // dynamically validate all filter criteria
       const arr = filters.every((filter) => {
         //ignore when the filter is empty Anne
-        if (typeof filter.type.value === 'undefined') return true;
-        // console.log(
-        //   `output->filters[key]`,
-        //   filter.flag,
-        //   filter.type.value,
-        //   item[filter.type.field],
-        //   filter.type.value === item[filter.type.field],
-        //   filter.type.value !== item[filter.type.field]
-        // );
+        if (typeof filter.type.value === 'undefined') return false;
         if (
           filter.type.field !== FilterTypeField.start_date &&
           filter.type.field !== FilterTypeField.due_date
@@ -70,44 +62,44 @@ export const useTaskBusiness = () => {
             (filter.flag === 1 && filter.type.value == item[filter.type.field])
           );
         } else {
-          const [start_date, due_date] = filter.type.value;
+          if (filter.type.value instanceof Array) {
+            const [start_date, due_date] = filter.type.value;
 
-          if (filter.flag === 0 && item[filter.type.field]) {
-            return (
-              dayjs(item[filter.type.field]).isBefore(start_date) ||
-              dayjs(item[filter.type.field]).isAfter(dayjs(due_date))
-            );
-          }
-          if (filter.flag === 1 && item[filter.type.field]) {
-            return (
-              dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&
-              dayjs(item[filter.type.field]).isBefore(due_date)
-            );
-          }
-          if (filter.flag == 2 && item[filter.type.field]) {
-            return dayjs(item[filter.type.field]) <= start_date;
-          }
-          if (filter.flag == 3 && item[filter.type.field]) {
-            console.log(
-              `output->date`,
-              dayjs(item[filter.type.field]).format('YYYY-MM-DD'),
-              dayjs(start_date).format('YYYY-MM-DD')
-            );
-            return (
-              dayjs(item[filter.type.field]) > start_date &&
-              dayjs(item[filter.type.field]) < due_date
-            );
+            if (filter.flag === 0 && item[filter.type.field]) {
+              return (
+                dayjs(item[filter.type.field]).isBefore(start_date, 'day') ||
+                dayjs(item[filter.type.field]).isAfter(due_date, 'day')
+              );
+            }
+            if (filter.flag === 1 && item[filter.type.field]) {
+              return (
+                // 表示包含。 ( 表示排除
+                // dayjs('2016-10-30').isBetween('2016-01-01', '2016-10-30', null, '[)')
+
+                dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&
+                dayjs(item[filter.type.field]).isBefore(due_date)
+              );
+            }
+          } else {
+            if (filter.flag == 2 && item[filter.type.field]) {
+              return dayjs(item[filter.type.field]).isBefore(filter.type.value, 'day');
+            }
+            if (filter.flag == 3 && item[filter.type.field]) {
+              return dayjs(item[filter.type.field]).isAfter(filter.type.value, 'day');
+            }
           }
         }
       });
-      console.log(`output->multiFilter`, arr);
+      console.log(`output->arr`, arr);
+
       return arr;
     });
   }
+
   function multiFilter2(array, filters) {
     return array.filter((item) => {
       const arr = filters.some((filter) => {
-        if (typeof filter.type.value === 'undefined') return true;
+        if (typeof filter.type.value === 'undefined') return false;
 
         // console.log(
         //   `output->filters[key]`,
@@ -116,53 +108,29 @@ export const useTaskBusiness = () => {
         //   item[filter.type.field],
         //   filter.type.value === item[filter.type.field]
         // );
-        // if (filter.flag === 0 || filter.flag === 1)
-        //   return filter.flag
-        //     ? filter.type.value === item[filter.type.field]
-        //     : filter.type.value !== item[filter.type.field];
-        if (
-          filter.type.field !== FilterTypeField.start_date &&
-          filter.type.field !== FilterTypeField.due_date
-        ) {
-          return (
-            (filter.flag === 0 && filter.type.value !== item[filter.type.field]) ||
-            (filter.flag === 1 && filter.type.value == item[filter.type.field])
-          );
-        } else {
+        if (filter.type.value instanceof Array) {
           const [start_date, due_date] = filter.type.value;
 
-          if (filter.flag === 0) {
-            return start_date <= dayjs(item[filter.type.field]) <= due_date;
-          }
-          if (filter.flag === 1) {
+          if (filter.flag === 0 && item[filter.type.field]) {
             return (
-              start_date > dayjs(item[filter.type.field]) ||
-              dayjs(item[filter.type.field]) > due_date
+              dayjs(item[filter.type.field]).isBefore(start_date, 'day') ||
+              dayjs(item[filter.type.field]).isAfter(due_date, 'day')
             );
           }
-          if (filter.flag == 2) {
-            console.log(
-              `output->date`,
-              dayjs(item[filter.type.field]).format('YYYY-MM-DD'),
-              dayjs(start_date).format('YYYY-MM-DD')
-            );
-            return dayjs(item[filter.type.field]) <= start_date;
-          }
-          if (filter.flag == 3) {
-            console.log(
-              `output->date`,
-              dayjs(item[filter.type.field]).format('YYYY-MM-DD'),
-              dayjs(start_date).format('YYYY-MM-DD')
-            );
+          if (filter.flag === 1 && item[filter.type.field]) {
             return (
-              dayjs(item[filter.type.field]) > start_date &&
-              dayjs(item[filter.type.field]) < due_date
+              dayjs(item[filter.type.field]).isAfter(dayjs(due_date).subtract(1, 'days')) &&
+              dayjs(item[filter.type.field]).isBefore(due_date)
             );
+          }
+        } else {
+          if (filter.flag == 2 && item[filter.type.field]) {
+            return dayjs(item[filter.type.field]).isBefore(filter.type.value, 'day');
+          }
+          if (filter.flag == 3 && item[filter.type.field]) {
+            return dayjs(item[filter.type.field]).isAfter(filter.type.value, 'day');
           }
         }
-        //   item[key].flag
-        //     ? !!~filters[key].value === item[key]
-        //     : !!~filters[key].value !== item[key];
       });
       console.log(`output->arr`, name);
       return arr;
