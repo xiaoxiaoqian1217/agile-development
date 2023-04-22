@@ -12,22 +12,28 @@ export const useScrollX = () => {
       container.classList.add('active');
       startX = e.pageX - container.offsetLeft;
       scrollLeft = container.scrollLeft;
-    });
+      container?.addEventListener('mouseup', funMouseUp);
 
-    // 监听鼠标左键抬起事件
-    container?.addEventListener('mouseup', () => {
+      container?.addEventListener('mousemove', funMouseMove);
+    });
+    const funMouseUp = () => {
       isDown = false;
       container.classList.remove('active');
-    });
-
-    // 监听鼠标移动事件
-    container?.addEventListener('mousemove', (e) => {
+      container.removeEventListener('mouseup', funMouseUp);
+      container.removeEventListener('mousemove', funMouseMove);
+    };
+    const funMouseMove = (e) => {
       if (!isDown) return;
       e.preventDefault();
       const x = e.pageX - container.offsetLeft;
-      const walk = (x - startX) * 3; // 定义移动距离的倍数，可以调整滚动速度
+      const walk = (x - startX) * 1; // 定义移动距离的倍数，可以调整滚动速度
       container.scrollLeft = scrollLeft - walk;
-    });
+    };
+    // 监听鼠标左键抬起事件
+    // container?.addEventListener('mouseup', funMouseUp);
+
+    // // 监听鼠标移动事件
+    // container?.addEventListener('mousemove', funMouseMove);
   };
   return {
     bindEle,
