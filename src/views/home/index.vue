@@ -5,7 +5,7 @@
         <div class="flex flex-wrap items-start pb-20px">
           <template v-for="project in projectList" :key="project.id">
             <div
-              class="w-213px shadow-md rounded-1xl m-2 overflow-hidden project-item"
+              class="w-213px rounded-1xl m-2 overflow-hidden project-item"
               @click="toProject(project)"
             >
               <div class="project-img-wrap"></div>
@@ -53,6 +53,20 @@
 </script>
 
 <style scoped>
+  .project-item {
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 1px 5px rgba(38, 38, 38, 0.1);
+    transition: all 0.3s cubic-bezier(0.44, 0.9, 0.6, 0.94);
+    transition-property: transform, box-shadow, background, border-color;
+  }
+  .project-item:hover {
+    box-shadow: 0 6px 16px rgba(38, 38, 38, 0.14);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0) translateY(-4px);
+  }
+
   .project-img-wrap {
     height: 90px;
     background-size: cover;

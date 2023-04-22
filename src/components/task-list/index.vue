@@ -20,7 +20,7 @@
   >
     <template #item="{ element }">
       <div
-        class="mb-2 bg-light-50 flex task-item-wrap relative cursor-pointer"
+        class="mb-2 bg-light-50 task-item-wrap flex relative cursor-pointer"
         :class="element.status_id === Status.solve && 'done'"
         @click="openTaskDetail(element)"
       >
@@ -155,16 +155,19 @@
   .task-item-priority {
     border-bottom-left-radius: 4px;
     border-top-left-radius: 4px;
-    /* bottom: 0;
-    left: 0;
-    position: absolute;
-    top: 0;
-    transition: width 218ms ease-in;
-    width: 4px;
-    opacity: 0; */
   }
-  /* .task-item-wrap:hover .task-item-priority {
-    opacity: 1;
-    width: 8px;
-  } */
+
+  .task-item-wrap {
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(154, 153, 153, 0.2);
+    transition: all 0.3s cubic-bezier(0.44, 0.9, 0.6, 0.94);
+    transition-property: transform, box-shadow, background, border-color;
+  }
+  .task-item-wrap:hover {
+    box-shadow: 0 6px 16px rgba(154, 153, 153, 0.2);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0) translateY(-2px);
+  }
 </style>

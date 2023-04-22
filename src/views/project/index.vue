@@ -32,18 +32,11 @@
             </Menu>
           </template>
         </Dropdown>
-        <!-- <span class="ml-3"> <ExclamationCircleOutlined /> </span>
-            <span class="ml-3"> <StarOutlined /> </span> -->
+
         <Tabs v-model:activeKey="activeTab" @change="toTask" sise="small">
           <TabPane v-for="item in tabsRoutes" :key="item?.name" :tab="item.meta?.title"> </TabPane>
         </Tabs>
       </div>
-      <!--  tab-routes-切换 -->
-      <!-- </div> -->
-      <!-- right -->
-      <!-- <div class="ml-auto">
-        <span class="user" @click="showMembers"><UserOutlined /></span>
-      </div> -->
     </div>
     <router-view v-slot="{ Component }">
       <component :is="Component" />
@@ -69,16 +62,11 @@
 
 <script setup lang="ts">
   import { computed, ref, onMounted, inject } from 'vue';
-  import {
-    ExclamationCircleOutlined,
-    DownOutlined,
-    UserOutlined,
-    LeftOutlined,
-  } from '@ant-design/icons-vue';
+  import { DownOutlined, LeftOutlined } from '@ant-design/icons-vue';
   import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
-  import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
+  import { useRouter, useRoute } from 'vue-router';
   import { Key } from 'ant-design-vue/lib/_util/type';
-  import { getMembers, getTaskStatusTypes } from '../../apis';
+  import { getMembers } from '../../apis';
   import { useUserStore } from '../../stores';
   import { UserItem } from '../../types';
   import { PAGE_ROUTE_NAME } from '../../router/router.d';

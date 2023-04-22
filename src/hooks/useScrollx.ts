@@ -1,0 +1,35 @@
+export const useScrollX = () => {
+  const bindEle = () => {
+    // 获取页面元素
+    const container = document.querySelector('.task-board');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    // 监听鼠标左键按下事件
+    container?.addEventListener('mousedown', (e) => {
+      isDown = true;
+      container.classList.add('active');
+      startX = e.pageX - container.offsetLeft;
+      scrollLeft = container.scrollLeft;
+    });
+
+    // 监听鼠标左键抬起事件
+    container?.addEventListener('mouseup', () => {
+      isDown = false;
+      container.classList.remove('active');
+    });
+
+    // 监听鼠标移动事件
+    container?.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 3; // 定义移动距离的倍数，可以调整滚动速度
+      container.scrollLeft = scrollLeft - walk;
+    });
+  };
+  return {
+    bindEle,
+  };
+};

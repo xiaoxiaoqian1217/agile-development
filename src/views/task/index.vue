@@ -10,9 +10,9 @@
         @task-panel-change="sidePanelChange"
       ></SideTaskPanel>
     </div>
-    <div class="w-full">
+    <div class="w-full" :class="isVisiblePanel && 'ml-300px'">
       <!-- 顶部操作栏 -->
-      <div class="tool-bar flex h-48px px-24px py-12px" :class="isVisiblePanel && 'pl-310px'">
+      <div class="tool-bar flex h-48px px-24px py-12px">
         <!-- 控制任面板图标 -->
         <span class="cursor-pointer flex items-center" @click="openTaskPanel">
           <DoubleLeftOutlined v-if="isVisiblePanel" />
@@ -154,9 +154,9 @@
   import { TaskList, SideTaskPanel, TaskFilterGroup } from '@/components';
   import { CreateTaskModal, UpdateTaskModal } from './components';
   import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU, type SideMenuItem } from './constants';
-  import { useProjectApi, useCommonApis } from '@/hooks';
+  import { useProjectApi, useCommonApis, useScrollX } from '@/hooks';
   import { useTaskBusiness } from './hooks';
-  import { Status, TaskItem } from '@/types';
+  import { FieldItem, Status, TaskItem } from '@/types';
   import { FilterOptionConfig } from '@/components/task-filter-group/type';
   import 'ant-design-vue/lib/date-picker/style';
   const router = useRouter();
@@ -176,6 +176,7 @@
     filterList,
     multFilterType,
   } = useTaskBusiness();
+  const { bindEle } = useScrollX();
 
   const activeFilterMenu = reactive({ ...FILTER_DROP_DOWN_MENU[0] });
   const searchValue = ref('');
@@ -197,6 +198,7 @@
     toAllTask();
     fetchProjectList();
     searchTypeChange(activeFilterMenu);
+    bindEle();
   });
   const searchFromName = () => {
     const value = searchValue.value;
@@ -245,10 +247,10 @@
     if (searchValue.value) searchTask({ subject: searchValue.value });
     classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
   };
-  const classifyTask = async (list) => {
+  const classifyTask = async (list: TaskItem) => {
     const { field } = activeFilterMenu;
     const groupMap = new Map();
-    taskBoard.statusType?.forEach((type) => {
+    taskBoard.statusType?.forEach((type: FieldItem) => {
       if (!groupMap.has(type.id)) groupMap.set(type.id, ref([]));
     });
     list.forEach((issue) => {
@@ -258,7 +260,7 @@
   };
 
   const getStatusName = (typeId: number) => {
-    return taskBoard.statusType.find((item) => {
+    return taskBoard.statusType.find((item: FieldItem) => {
       return item.id === typeId;
     });
   };
@@ -292,9 +294,9 @@
   const isShowUpdateModal = ref(false);
 
   const taskdetail = reactive({});
-  const showTaskDetail = (detail) => {
+  const showTaskDetail = (detail: TaskItem) => {
     Object.keys(detail).forEach((key) => {
-      taskdetail[key] = detail[key];
+      taskdetail[key] = detail[key as keyof TaskItem];
     });
     isShowUpdateModal.value = true;
   };
@@ -322,8 +324,6 @@
 
   const filterGroupChange = (values: FilterOptionConfig, filters: FilterOptionConfig[]) => {
     savedFilterConfig.value = filters;
-    // const params = getFilterListParams(filters);
-    // console.log(`output->params`, params);
     multFilterType(filters);
     if (searchValue.value) searchTask({ subject: searchValue.value });
     console.log(`output->params`, filters);
