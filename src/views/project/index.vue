@@ -133,7 +133,7 @@
         ? activeTab.value
         : matchedRoutes.value[matchedRoutes.value.length];
     activeTab.value = activeRoute as string;
-    console.log(`output->activeRoute`,  activeRoute);
+    console.log(`output->activeRoute`, activeRoute);
     toTask(activeRoute as Key);
   });
   //  获取项目成员相关

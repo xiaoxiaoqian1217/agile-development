@@ -4,14 +4,14 @@
       style="top: 50px"
       v-model:visible="visible"
       :title="`创建${seletedTrackerName}`"
-      @ok="handleOk"
+      @ok="addTask"
       @cancel="handleCancel"
     >
       <template #footer>
         <Button key="back" @click="createNew" type="primary" ghost :loading="loading"
           >完成并创建下一个</Button
         >
-        <Button key="submit" type="primary" :loading="loading" @click="handleOk">完成</Button>
+        <Button key="submit" type="primary" :loading="loading" @click="addTask">完成</Button>
       </template>
       <Textarea class="w-full" v-model:value="formModel.subject" placeholder="输入标题" :rows="3" />
 
@@ -23,10 +23,14 @@
           </TaskTypeSelect>
         </div>
         <div class="mr-5 status">
-          <TaskTypeSelect :status_id="formModel.status_id" @change="statusChange">
+          <TaskStatusSelect
+            :tracker_id="formModel.tracker_id"
+            :status_id="formModel.status_id"
+            @change="statusChange"
+          >
             <span class="px-1">·</span>
-          </TaskTypeSelect>
-          <Dropdown :trigger="['click']">
+          </TaskStatusSelect>
+          <!-- <Dropdown :trigger="['click']">
             <span class="text-14px" @click.prevent>
               <span> {{ computedStatusName }} </span>
               <DownOutlined class="ml-1" />
@@ -43,7 +47,7 @@
                 </template>
               </Menu>
             </template>
-          </Dropdown>
+          </Dropdown> -->
         </div>
       </div>
       <div class="h-1px bg-gray-100" />
@@ -241,7 +245,7 @@
   const handleTrackerChange = (key: number) => {
     formModel.tracker_id = key;
   };
-  const statusChange = ({ key }: { key: number }) => {
+  const statusChange = (key) => {
     formModel.status_id = key;
   };
 
@@ -275,9 +279,12 @@
     }
     return true;
   };
-
-  const handleOk = async () => {
+  const addTask = async () => {
     if (!validateTitle()) return false;
+    await handleOk();
+    emits('onVisible', false);
+  };
+  const handleOk = async () => {
     loading.value = true;
     const start_date = formModel.start_date
       ? dayjs(formModel.start_date).format('YYYY-MM-DD')
@@ -323,6 +330,8 @@
     formModel.due_date = date ? date?.[1] : undefined;
   };
   const createNew = async () => {
+    if (!validateTitle()) return false;
+
     await handleOk();
     Object.keys(formModel).forEach((key) => {
       formModel[key] = defaultFormModel[key];

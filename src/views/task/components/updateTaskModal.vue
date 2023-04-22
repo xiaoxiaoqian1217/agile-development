@@ -29,26 +29,11 @@
       <div class="flex py-2 my-1 items-center">
         <div class="w-30"><span class="label">状态</span></div>
         <div class="flex-auto">
-          <Dropdown :trigger="['click']">
-            <a class="ant-dropdown-link" @click.prevent>
-              {{ seletedStatusName }}
-              <span class="filter"></span>
-            </a>
-            <template #overlay>
-              <Menu class="w-200px" @click="({ key }) => onChange(key, 'status_id')">
-                <template v-for="status in statusList" :key="status.id">
-                  <MenuItem>
-                    <div class="flex justify-between">
-                      <span>{{ status.name }}</span>
-                      <span v-if="formModel.status_id === status.id">
-                        <CheckOutlined />
-                      </span>
-                    </div>
-                  </MenuItem>
-                </template>
-              </Menu>
-            </template>
-          </Dropdown>
+          <TaskStatusSelect
+            :tracker_id="formModel.tracker_id"
+            :status_id="formModel.status_id"
+            @change="(key) => onChange(key, 'status_id')"
+          />
         </div>
       </div>
       <div class="flex py-2 my-1 items-center">
@@ -163,8 +148,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed, toRaw, inject } from 'vue';
-  import { useRoute } from 'vue-router';
+  import { ref, reactive, computed, inject, Ref } from 'vue';
   import dayjs, { Dayjs } from 'dayjs';
   import {
     Modal,
@@ -178,45 +162,34 @@
     RangePicker,
   } from 'ant-design-vue';
   import { CheckOutlined } from '@ant-design/icons-vue';
-  import { SelectMember, TaskTypeSelect } from '@/components';
+  import { SelectMember, TaskTypeSelect, TaskStatusSelect } from '@/components';
   import { updateTask } from '@apis/index';
   import { LevelType } from '../constants';
-  import { iconTypes } from '@/components/task-list/icon';
-
-  const route = useRoute();
-  const projectId = route.params.projectId;
-  const props = defineProps({
-    visible: Boolean,
-    detail: {},
-  });
+  import { FieldItem, TaskItem } from '@/types';
+  const props = defineProps<{ visible: boolean; detail: TaskItem }>();
   const { detail } = props;
   const emits = defineEmits(['onVisible']);
   const visible = computed(() => {
     return props.visible;
   });
-  const versionList = inject('versionList');
+  const versionList = inject<Ref<FieldItem[]>>('versionList');
 
   const defaultDetail = {
     ...props.detail,
     start_date: detail?.start_date ? dayjs(detail.start_date) : undefined,
-    due_date: detail?.due_date ? dayjs(detail?.due_date) : undefined,
+    due_date: detail?.due_date ? dayjs(detail.due_date) : undefined,
   };
 
   const formModel = reactive(defaultDetail);
-  const levels = inject('levelList');
-  const statusList = inject('statusList');
-  const trackers = inject('trackersList');
+  const levels = inject<Ref<FieldItem[]>>('levelList');
+  const trackers = inject<Ref<FieldItem[]>>('trackersList');
 
   const seletedTrackerName = computed(() => {
-    return trackers.value?.find((tracker) => formModel.tracker_id === tracker.id)?.name;
-  });
-
-  const seletedStatusName = computed(() => {
-    return statusList.value?.find((status) => formModel.status_id === status.id)?.name;
+    return trackers?.value.find((tracker) => formModel.tracker_id === tracker.id)?.name;
   });
 
   const seletedLevelName = computed(() => {
-    return levels.value?.find((level) => formModel.priority_id === level.id)?.name;
+    return levels?.value?.find((level) => formModel.priority_id === level.id)?.name;
   });
   const onChange = (value, idKey: string) => {
     formModel[idKey] = value;
@@ -226,43 +199,44 @@
     formModel.tracker_id = tracker_id;
     updateTaskDetail({ tracker_id: tracker_id });
   };
-  const seletedVersionName = computed(() => {
-    return versionList.value?.find((version) => formModel.fixed_version_id === version.id)?.name;
-  });
-
-  const updateTaskDetail = async (params) => {
-    await updateTask({
-      id: formModel.id,
-      token: localStorage.getItem('token'),
-      ...params,
-    });
-  };
-
   const handleCancel = () => {
     emits('onVisible', false);
   };
+  const seletedVersionName = computed(() => {
+    return versionList?.value?.find(
+      (version: FieldItem) => formModel.fixed_version_id === version.id
+    )?.name;
+  });
+
+  const subjectChange = () => {
+    const text = titleElement.value?.innerText?.trim();
+    formModel.subject = text;
+    if (!validate()) return false;
+    updateTaskDetail({ subject: formModel.subject });
+  };
+  const computedDateRange = computed(() => {
+    return [formModel.start_date, formModel.due_date];
+  });
 
   const titleElement = ref(null);
   const validate = (title = '更新失败', tip = '标题不能为空') => {
     if (!formModel['subject']) {
       notification.error({
-        message: title,
+        message: '更新失败',
         placement: 'bottomLeft',
-        description: tip,
+        description: '标题不能为空',
       });
       return false;
     } else return true;
   };
-  function subjectChange() {
-    const text = titleElement.value.innerText.trim();
-    formModel.subject = text;
-    if (!validate()) return false;
-
-    updateTaskDetail({ subject: formModel.subject });
-  }
-  const computedDateRange = computed(() => {
-    return [formModel.start_date, formModel.due_date];
-  });
+  const updateTaskDetail = async (params) => {
+    const token = localStorage.getItem('token');
+    await updateTask({
+      id: formModel.id,
+      token,
+      ...params,
+    });
+  };
   const disabledDate = (current: Dayjs) => {
     return current && current < dayjs().endOf('day');
   };

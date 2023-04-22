@@ -15,7 +15,9 @@
         <a class="login-form-forgot" href="">Forgot password</a>
       </a-form-item> -->
         <FormItem>
-          <Button :disabled="disabled" type="primary" html-type="submit" class="w-full mt-48px"> 立即开始 </Button>
+          <Button :disabled="disabled" type="primary" html-type="submit" class="w-full mt-48px">
+            立即开始
+          </Button>
         </FormItem>
       </Form>
       <!-- <Button :disabled="disabled" type="primary" html-type="submit" class="login-form-button"> 立即开始 </Button> -->

@@ -149,7 +149,7 @@
     MenuOutlined,
     ProjectTwoTone,
   } from '@ant-design/icons-vue';
-  import { useRouter, useRoute } from 'vue-router';
+  import { useRouter } from 'vue-router';
   import { updateTask } from '@/apis';
   import { TaskList, SideTaskPanel, TaskFilterGroup } from '@/components';
   import { CreateTaskModal, UpdateTaskModal } from './components';
