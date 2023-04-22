@@ -5,12 +5,12 @@
       <!-- <DownOutlined class="ml-1" /> -->
     </span>
     <template #overlay>
-      <Menu @click="statusChange" class="w-150px">
+      <Menu @click="statusChange" class="w-200px">
         <template v-for="status in getDefaultStatus()" :key="status.id">
           <MenuItem>
-            <div class="flex justify-between">
+            <div class="flex justify-between items-center">
               <span>{{ status?.name }}</span>
-              <span v-if="computedStatusId === status?.id"></span>
+              <CheckOutlined v-if="computedStatusId === status.id" />
             </div>
           </MenuItem>
         </template>

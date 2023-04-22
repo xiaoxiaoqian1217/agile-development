@@ -28,6 +28,7 @@ const router = createRouter({
   ],
 });
 router.beforeEach(async (to, from) => {
+  document.title = to.meta.title || '项目管理';
   if (
     // 检查用户是否已登录
     !localStorage.getItem('token') &&

@@ -12,7 +12,7 @@
     </div>
     <div class="w-full" :class="isVisiblePanel && 'ml-300px'">
       <!-- 顶部操作栏 -->
-      <div class="tool-bar flex h-48px px-24px py-12px">
+      <div class="tool-bar flex h-48px px-24px py-12px w-full">
         <!-- 控制任面板图标 -->
         <span class="cursor-pointer flex items-center" @click="openTaskPanel">
           <DoubleLeftOutlined v-if="isVisiblePanel" />
@@ -42,7 +42,7 @@
           </template>
         </Dropdown>
 
-        <div class="flex flex-1 setting items-center justify-center">
+        <div class="flex setting items-center justify-center mx-50px">
           <!-- 搜索标题和ID -->
           <Input
             class="custome-input w-300px bg-gray-light border-none"
@@ -86,8 +86,8 @@
           </div>
         </div>
       </div>
-      <div class="flex task-board pr-6.5 w-full overflow-x-auto bg-gray-100">
-        <div class="pl-5 task-list-handler relative mt-2">
+      <div class="flex task-board overflow-x-auto pr-6.5 w-full bg-gray-100">
+        <div class="pl-5 task-list-handler mt-2">
           <SideTaskPanel
             v-if="!isVisiblePanel"
             @task-panel-change="sidePanelChange"
@@ -95,7 +95,7 @@
             class="task-list-panel absolute w-320px"
           ></SideTaskPanel>
         </div>
-        <div class="flex flex-auto w-full mb-2">
+        <div class="flex flex-auto w-full mb-2 pl-20px">
           <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
             <TaskList
               @open-detail="showTaskDetail"
@@ -332,6 +332,9 @@
 </script>
 
 <style>
+  .container-right {
+    /* width: calc(100vw - 380px); */
+  }
   .task-sidebar {
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
     height: calc(100vh - 85px);
@@ -339,30 +342,43 @@
     left: 0;
     position: absolute;
     top: 0px;
-    transition: all 0.1s ease-in-out;
-    transform: translateX(-400px);
+    transition: all 0.2s ease-in-out;
+    /* transform: translateX(-400px); */
     z-index: 30;
     cursor: pointer;
-    width: 300px;
+    width: 0px;
+    visibility: hidden;
   }
   .task-sidebar.active {
-    transform: translateX(0px);
+    /* display: block; */
+    visibility: visible;
+    transform: translateX(-0px);
+    width: 300px;
   }
   .task-board {
     height: calc(100vh - 120px);
+    position: relative;
+  }
+
+  .task-list-handler {
+    position: absolute;
+    left: 0;
+    top: 0px;
+    width: 20px;
+    z-index: 30;
+    height: 100%;
   }
   .task-list-panel {
-    bottom: 0;
-    left: 0;
+    bottom: 0px;
+    top: 5px;
     position: absolute;
-    top: 0px;
-    transition: all 0.1s ease-in-out;
-    transform: translateX(-600px);
+    transition: all 0.2s ease-in-out;
+    transform: translateX(-400px);
     z-index: 30;
     cursor: pointer;
   }
   .task-list-handler:hover .task-list-panel {
-    transform: translateX(0px);
+    transform: translateX(-20px);
   }
   .custome-input .ant-input {
     background-color: inherit;
