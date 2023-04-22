@@ -159,16 +159,12 @@
   import { Status, TaskItem } from '@/types';
   import { FilterOptionConfig } from '@/components/task-filter-group/type';
   import 'ant-design-vue/lib/date-picker/style';
-
-  const route = useRoute();
   const router = useRouter();
   const { getVersion, versionList, projectList, fetchProjectList } = useProjectApi();
   const { memberList, fetchMembers } = useCommonApis();
-
   const {
     searchTask,
     fetchTask,
-    initTaskList,
     searchTaskList,
     getTaskLevel,
     getTrackerTypes,
@@ -274,29 +270,24 @@
   const isShowCreateModal = ref(false);
   const showCreateModal = async (flag: boolean) => {
     isShowCreateModal.value = flag;
-    if (!flag) await fetchTask();
-    searchTypeChange(activeFilterMenu);
+    if (!flag) refreshTaskList();
   };
   const showUpdateModal = (flag: boolean) => {
     isShowUpdateModal.value = flag;
-    if (!flag) refeshTaskList();
+    if (!flag) refreshTaskList();
   };
-  const refeshTaskList = async () => {
+  const refreshTaskList = async () => {
     await fetchTask();
-    if (savedFilterConfig.value?.length) {
-      const params = getFilterListParams(savedFilterConfig.value);
-      multFilterType(params);
-      classifyTask(filterList.value);
-    } else classifyTask(filterList.value);
-    // searchTypeChange(activeFilterMenu);
+    if (savedFilterConfig.value?.length) multFilterType(savedFilterConfig.value);
+    if (searchValue.value) searchTask({ subject: searchValue.value });
+    classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
   };
   const drapStatusChange = async (todo: TaskItem) => {
     await updateTask({
       token: localStorage.getItem('token'),
       ...todo,
     });
-    await fetchTask();
-    searchTypeChange(activeFilterMenu);
+    refreshTaskList();
   };
   const isShowUpdateModal = ref(false);
 
@@ -331,18 +322,12 @@
 
   const filterGroupChange = (values: FilterOptionConfig, filters: FilterOptionConfig[]) => {
     savedFilterConfig.value = filters;
-    const params = getFilterListParams(filters);
-    console.log(`output->params`, params);
-    multFilterType(params);
-    classifyTask(filterList.value);
-  };
-  const getFilterListParams = (values: FilterOptionConfig[]) => {
-    const filterArr = values.map((value: FilterOptionConfig) => ({
-      flag: value.flag.value,
-      orAnd: value.orAndFlag.value,
-      type: value.type,
-    }));
-    return filterArr;
+    // const params = getFilterListParams(filters);
+    // console.log(`output->params`, params);
+    multFilterType(filters);
+    if (searchValue.value) searchTask({ subject: searchValue.value });
+    console.log(`output->params`, filters);
+    classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
   };
 </script>
 
@@ -355,7 +340,7 @@
     position: absolute;
     top: 0px;
     transition: all 0.1s ease-in-out;
-    transform: translateX(-600px);
+    transform: translateX(-400px);
     z-index: 30;
     cursor: pointer;
     width: 300px;

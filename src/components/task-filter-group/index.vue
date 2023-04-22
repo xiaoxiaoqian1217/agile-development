@@ -330,7 +330,7 @@
     group.orAndFlag.value = value;
     if (optionGroup.value.length > 0)
       optionGroup.value.forEach((item) => (item.orAndFlag.value = value));
-    emits('change', group, unref(optionGroup));
+    if (group.type.value !== undefined) emits('change', group, unref(optionGroup));
   };
   const computedIsShow = computed(() => {
     return props.visible;
