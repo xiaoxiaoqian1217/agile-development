@@ -10,7 +10,7 @@
         @click="changeMenu(sideItem)"
       >
         <div class="mr-3 py-1">
-          <ProjectTwoTone />
+          <img :src="chartPng" class="w-20px h-20px" />
         </div>
         <span class="truncate text-neutral-800">{{ sideItem.name }}</span>
       </div>
@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue';
+  import { computed } from 'vue';
   import { SIDER_MENU, type SideMenuItem } from '../../views/task/constants';
-  import { ProjectTwoTone, HeartTwoTone, CheckCircleTwoTone } from '@ant-design/icons-vue';
+  import chartPng from '@/assets/chart.png';
 
   const emits = defineEmits(['taskPanelChange']);
   const props = defineProps({

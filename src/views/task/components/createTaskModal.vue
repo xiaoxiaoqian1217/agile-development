@@ -15,7 +15,7 @@
       </template>
       <Textarea class="w-full" v-model:value="formModel.subject" placeholder="输入标题" :rows="3" />
 
-      <div class="flex py-2 my-2 cursor-pointer hover:text-blue-400">
+      <div class="flex py-2 my-2 cursor-pointer hover:text-blue-default">
         <div class="project-name"></div>
         <div class="flex tracker">
           <TaskTypeSelect :tracker_id="formModel.tracker_id" @change="handleTrackerChange">

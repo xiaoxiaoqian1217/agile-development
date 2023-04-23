@@ -2,7 +2,7 @@
   <div class="mask fixed" v-if="isShow" @click="hideMask"></div>
   <div class="relative filter-box">
     <a class="flex items-center ant-dropdown-link" @click="openFilter">
-      <FilterOutlined class="mr-1" :class="filterNum && 'text-blue-400'" />
+      <FilterOutlined class="mr-1" :class="filterNum && 'text-blue-default'" />
       <div class="cursor-pointer">
         <span v-if="filterNum" class="text-sky-500">{{ filterNum }}</span>
         <span v-else>筛选</span>

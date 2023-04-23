@@ -4,11 +4,10 @@
       <div class="h-70px"></div>
       <div>
         <div
-          class="flex flex-col text-center py-8px w-60px text-12px bg-gray-light text-blue-400 rounded-md"
+          class="flex flex-col text-center py-8px w-60px text-12px bg-gray-lightHex text-blue-default rounded-md"
         >
-          <i class="iconfont icon-home-station text-25px"></i>
+          <i class="iconfont icon-home-station text-20px"></i>
 
-          <!-- <AppstoreOutlined class="text-20px" /> -->
           <div class="w-full mt-1" :style="{ opacity: 1 }">项目</div>
         </div>
         <!-- <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">

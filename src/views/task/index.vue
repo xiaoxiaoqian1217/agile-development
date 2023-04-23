@@ -14,14 +14,18 @@
       <!-- 顶部操作栏 -->
       <div class="tool-bar flex h-48px px-24px py-12px w-full">
         <!-- 控制任面板图标 -->
-        <span class="cursor-pointer flex items-center hover:text-blue-400" @click="openTaskPanel">
+        <span
+          class="cursor-pointer flex items-center hover:text-blue-default"
+          @click="openTaskPanel"
+        >
           <DoubleLeftOutlined v-if="isVisiblePanel" />
           <MenuOutlined v-else />
         </span>
         <Dropdown class="ml-4" :trigger="['click']">
           <a class="ant-dropdown-link flex items-center" @click.prevent>
             <!-- two-tone-color="#41b7fd" -->
-            <ProjectTwoTone class="mr-2" />
+            <img :src="chartPng" class="w-20px h-20px mr-2" />
+
             <span>{{ curSideMenuName }}</span>
             <DownOutlined class="mt-0.5 ml-1" />
             <span class=""> </span>
@@ -31,7 +35,7 @@
               <template v-for="menu in SIDER_MENU" :key="menu.tag">
                 <MenuItem class="my-4px px-6px" @click="sidePanelChange(menu)">
                   <div class="flex items-center">
-                    <ProjectTwoTone class="mr-2" />
+                    <img :src="chartPng" class="w-20px h-20px mr-2" />
 
                     <span>{{ menu.name }}</span>
                     <span v-if="activePanelMenuId === menu.tag"></span>
@@ -165,6 +169,8 @@
   import { FieldItem, Status, TaskItem } from '@/types';
   import { FilterOptionConfig } from '@/components/task-filter-group/type';
   import 'ant-design-vue/lib/date-picker/style';
+  import chartPng from '@/assets/chart.png';
+
   const router = useRouter();
   const { getVersion, versionList, projectList, fetchProjectList } = useProjectApi();
   const { memberList, fetchMembers } = useCommonApis();
