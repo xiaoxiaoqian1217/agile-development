@@ -2,19 +2,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 let isShowError = true;
 
-const FailCode: any = {
-  1000001: (resData: any) => {
-    // 可以在这里添加错误提示
-    return Promise.reject(resData);
-  },
-  '-1': (resData: any) => {
-    return Promise.reject(resData);
-  },
-  default: (resData: any) => {
-    return Promise.reject(resData);
-  },
-};
-
 const instance = axios.create({
   timeout: 60000,
 });
@@ -39,10 +26,6 @@ instance.interceptors.response.use(
   function (response) {
     const { headers, status, data } = response;
     if (status === 200) {
-      // const { ret } = data;
-      // if (ret !== 0 && !config.headers?.isHideError) {
-      //   return FailCode[ret] ? FailCode[ret](data) : FailCode.default(data);
-      // }
       return data;
     } else {
       isShowError && console.error(`接口出错：${status}`);
