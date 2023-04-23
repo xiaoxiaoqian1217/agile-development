@@ -3,11 +3,15 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
+import dotenv from 'dotenv';
+
 import pkg from './package.json';
 // vite 本身已按需导入了组件库，仅样式不是按需导入的，因此只需按需导入样式即可。
 import { createStyleImportPlugin, AndDesignVueResolve } from 'vite-plugin-style-import';
 import WindiCSS from 'vite-plugin-windicss';
 import path from 'path';
+//  加载环境变量配置文件
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -16,17 +20,8 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve';
   const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
-  const serverConfig = process.env.VSCODE_DEBUG
-    ? (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-        return {
-          host: url.hostname,
-          port: +url.port,
-        };
-      })()
-    : {
-        host: 'https://sz.cwgis.site/',
-      };
+  console.log(`output->env`, process.env.VITE_API_HOST);
+
   return {
     css: {
       preprocessorOptions: {
@@ -105,7 +100,7 @@ export default defineConfig(({ command }) => {
       : {
           proxy: {
             '/api': {
-              target: 'https://sz.cwgis.site/',
+              target: process.env.VITE_API_HOST,
               changeOrigin: true,
             },
           },

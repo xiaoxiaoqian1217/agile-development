@@ -31,7 +31,7 @@ router.beforeEach(async (to, from) => {
   document.title = to.meta.title || '项目管理';
   if (
     // 检查用户是否已登录
-    !localStorage.getItem('token') &&
+    !sessionStorage.getItem('token') &&
     // ❗️ 避免无限重定向
     to.name !== 'login'
   ) {

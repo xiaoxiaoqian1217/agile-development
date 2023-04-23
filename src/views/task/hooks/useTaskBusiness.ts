@@ -116,7 +116,7 @@ export const useTaskBusiness = () => {
     try {
       const taskResp = await getTaskList({
         pid: projectId,
-        token: localStorage.getItem('token'),
+        token: sessionStorage.getItem('token'),
         sort: 'status:desc',
       });
       taskList.value = taskResp.issues;
@@ -131,14 +131,14 @@ export const useTaskBusiness = () => {
   // 获取任务类型
   const getTrackerTypes = async () => {
     const resp = await fetchTrackerTypes({
-      token: localStorage.getItem('token'),
+      token: sessionStorage.getItem('token'),
       pid: projectId,
     });
     trackers.value = resp.tracker;
   };
   const getTaskLevel = async () => {
     const resp = await fetchTaskLevel({
-      token: localStorage.getItem('token'),
+      token: sessionStorage.getItem('token'),
       pid: projectId,
     });
     levels.value = resp.priority.reverse();
@@ -148,7 +148,7 @@ export const useTaskBusiness = () => {
     isLoadingTask.value = true;
     try {
       const resp = await getTaskStatusTypes({
-        token: localStorage.getItem('token'),
+        token: sessionStorage.getItem('token'),
       });
       isLoadingTask.value = false;
 

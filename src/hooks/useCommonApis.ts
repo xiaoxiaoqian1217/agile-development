@@ -12,7 +12,7 @@ export const useCommonApis = () => {
   const fetchMembers = async () => {
     const resp = await getMembers({
       pid: projectId,
-      token: localStorage.getItem('token'),
+      token: sessionStorage.getItem('token'),
     });
     userList.value = resp.users;
   };

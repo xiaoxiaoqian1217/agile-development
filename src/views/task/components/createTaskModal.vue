@@ -301,7 +301,7 @@
     try {
       await createTask({
         pid: projectId,
-        token: localStorage.getItem('token'),
+        token: sessionStorage.getItem('token'),
         ...toRaw(formModel),
         start_date,
         due_date,

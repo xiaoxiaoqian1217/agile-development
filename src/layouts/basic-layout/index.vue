@@ -48,15 +48,15 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, provide, ref, nextTick } from 'vue';
-  import { Tabs, Drawer, Dropdown, Menu, MenuItem } from 'ant-design-vue';
-  import { AppstoreOutlined, DesktopOutlined, LogoutOutlined } from '@ant-design/icons-vue';
+  import { provide, ref, nextTick } from 'vue';
+  import { Dropdown, Menu, MenuItem } from 'ant-design-vue';
+  import { LogoutOutlined } from '@ant-design/icons-vue';
   import { useRouter } from 'vue-router';
   const selectedKeys = ref(['1']);
   const router = useRouter();
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  const userInfo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
   const logOut = () => {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     router.push({
       name: 'login',
     });

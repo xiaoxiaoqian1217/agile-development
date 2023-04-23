@@ -56,7 +56,7 @@
     const loginResp = await loginIn({
       ...toRaw(formState),
     });
-    localStorage.setItem('token', loginResp?.data?.token);
+    sessionStorage.setItem('token', loginResp?.data?.token);
     userStore.setToken(loginResp.data.token);
     userStore.setUserInfo(loginResp.data.userInfo);
   };

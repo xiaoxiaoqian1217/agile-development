@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', {
     },
     setUserInfo(userInfo: LoginUserInfo) {
       this.userInfo = userInfo;
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
     },
   },
 });

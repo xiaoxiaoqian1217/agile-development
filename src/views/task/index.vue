@@ -241,7 +241,7 @@
   const curSideMenuName = computed(() => {
     return SIDER_MENU.find((item) => item.tag === activePanelMenuId.value)?.name;
   });
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  const userInfo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');
 
   const searchTypeChange = async (menuItem) => {
     if (menuItem.id === FilterType.status) {
@@ -309,7 +309,7 @@
   };
   const drapStatusChange = async (todo: TaskItem) => {
     await updateTask({
-      token: localStorage.getItem('token'),
+      token: sessionStorage.getItem('token'),
       ...todo,
     });
     refreshTaskList();

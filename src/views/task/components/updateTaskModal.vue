@@ -254,7 +254,7 @@
     } else return true;
   };
   const updateTaskDetail = async (params) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     await updateTask({
       id: formModel.id,
       token,

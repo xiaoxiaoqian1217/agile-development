@@ -10,14 +10,14 @@ export const useProjectApi = () => {
   });
   const getVersion = async () => {
     const resp = await fetchVersion({
-      token: localStorage.getItem('token'),
+      token: sessionStorage.getItem('token'),
       pid: projectId,
     });
     projectModel.versionList = resp.version;
   };
   const fetchProjectList = async () => {
     const res = await getProjectList({
-      token: localStorage.getItem('token'),
+      token: sessionStorage.getItem('token'),
     });
     projectModel.projectList = res.projects;
   };
