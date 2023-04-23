@@ -10,7 +10,7 @@
     </div>
     <div>
       <div
-        class="absolute w-705px top-full mt-15px -left-654px z-500 flex flex-col bg-light-50 py-16px px-20px shadow-lg"
+        class="absolute w-705px top-full mt-15px left-0px z-500 flex flex-col bg-light-50 py-16px px-20px shadow-lg"
         v-if="isShow"
       >
         <template v-if="!optionGroup.length">

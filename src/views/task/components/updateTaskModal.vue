@@ -1,7 +1,7 @@
 <template>
   <div>
     <Modal
-      style="top: 50px"
+      style="top: 50px; width: 600px"
       v-model:visible="visible"
       :title="`${seletedTrackerName}`"
       @cancel="handleCancel"
@@ -18,7 +18,9 @@
         {{ formModel.subject }}
       </div>
       <div class="flex py-2 my-1 items-center">
-        <div class="w-30"><span class="label">任务类型</span></div>
+        <div class="w-30 flex items-center">
+          <CreditCardOutlined /><span class="label ml-8px">任务类型</span>
+        </div>
         <div class="flex-auto">
           <TaskTypeSelect
             :tracker_id="formModel.tracker_id"
@@ -27,7 +29,9 @@
         </div>
       </div>
       <div class="flex py-2 my-1 items-center">
-        <div class="w-30"><span class="label">状态</span></div>
+        <div class="w-30 flex items-center">
+          <CheckSquareOutlined /><span class="label ml-8px">状态</span>
+        </div>
         <div class="flex-auto">
           <TaskStatusSelect
             :tracker_id="formModel.tracker_id"
@@ -37,7 +41,9 @@
         </div>
       </div>
       <div class="flex py-2 my-1 items-center">
-        <div class="w-30"><span class="label">执行者</span></div>
+        <div class="w-30 flex items-center">
+          <UserOutlined /><span class="label ml-8px">执行者</span>
+        </div>
         <div class="flex-auto">
           <SelectMember
             class="w-250px"
@@ -47,10 +53,10 @@
         </div>
       </div>
       <div class="flex py-2 my-1 items-center">
-        <div class="w-30"><span class="label">备注</span></div>
+        <div class="w-30 flex"><FileTextOutlined /><span class="label ml-8px">备注</span></div>
         <div>
           <Textarea
-            class="w-250px"
+            class="w-400px"
             @blur="(value) => onChange(formModel.description, 'description')"
             v-model:value="formModel.description"
             placeholder="添加备注"
@@ -59,7 +65,10 @@
         </div>
       </div>
       <div class="flex py-2 my-1 items-center">
-        <div class="w-30"><span class="label">优先级</span></div>
+        <div class="w-30 flex items-center">
+          <i class="iconfont icon-circle text-gray-600 text-12px"></i>
+          <span class="label ml-8px">优先级</span>
+        </div>
         <div class="flex-auto">
           <Dropdown :trigger="['click']" class="w-150px">
             <div>
@@ -88,7 +97,10 @@
         </div>
       </div>
       <div class="flex py-2 my-1 items-center">
-        <div class="inline-block w-30"><span class="label">目标版本</span></div>
+        <div class="inline-block w-30 flex items-center">
+          <i class="iconfont icon-running text-gray-600"></i>
+          <span class="label ml-8px">目标版本</span>
+        </div>
         <div class="flex-auto">
           <Dropdown :trigger="['click']">
             <a class="ant-dropdown-link" @click.prevent>
@@ -119,7 +131,9 @@
       </div>
 
       <div class="flex py-2 my-1">
-        <div class="w-30"><span class="label">日期</span></div>
+        <div class="w-30 flex items-center">
+          <CalendarOutlined /><span class="label ml-8px">日期</span>
+        </div>
         <div class="flex-auto">
           <RangePicker
             :disabled-date="disabledDate"
@@ -130,7 +144,9 @@
         </div>
       </div>
       <div class="flex py-2 my-1 items-center">
-        <div class="w-30"><span class="label">预计工时</span></div>
+        <div class="w-30 flex items-center">
+          <ClockCircleOutlined /><span class="label ml-8px">预计工时</span>
+        </div>
         <div class="flex-auto">
           <InputNumber
             class="w-250px"
@@ -161,7 +177,15 @@
     notification,
     RangePicker,
   } from 'ant-design-vue';
-  import { CheckOutlined } from '@ant-design/icons-vue';
+  import {
+    CheckOutlined,
+    CheckSquareOutlined,
+    UserOutlined,
+    FileTextOutlined,
+    ClockCircleOutlined,
+    CalendarOutlined,
+    CreditCardOutlined,
+  } from '@ant-design/icons-vue';
   import { SelectMember, TaskTypeSelect, TaskStatusSelect } from '@/components';
   import { updateTask } from '@apis/index';
   import { LevelType } from '../constants';

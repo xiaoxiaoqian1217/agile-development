@@ -1,7 +1,7 @@
 <template>
   <div>
     <Modal
-      style="top: 50px"
+      style="top: 50px; width: 600px"
       v-model:visible="visible"
       :title="`创建${seletedTrackerName}`"
       @ok="addTask"
@@ -55,18 +55,18 @@
       <!-- label项 -->
       <div class="">
         <div class="flex py-2 my-1 items-center">
-          <div class="inline-block w-30">
-            <span class="label">执行者</span>
+          <div class="w-30 flex items-center">
+            <UserOutlined /><span class="label ml-8px">执行者</span>
           </div>
           <div class="flex-auto">
             <SelectMember class="w-250px" @on-change="assignedMemeberChange"></SelectMember>
           </div>
         </div>
         <div class="flex py-2 my-1">
-          <div class="w-30"><span class="label">备注</span></div>
+          <div class="w-30 flex"><FileTextOutlined /><span class="label ml-8px">备注</span></div>
           <div>
             <Textarea
-              class="w-250px"
+              class="w-400px"
               v-model:value="formModel.description"
               placeholder="添加备注"
               :rows="4"
@@ -78,8 +78,9 @@
           <div></div>
         </div> -->
         <div class="flex py-2 my-1 items-center">
-          <div class="inline-block w-30">
-            <span class="label">优先级 </span>
+          <div class="w-30 flex items-center">
+            <i class="iconfont icon-circle text-12px"></i>
+            <span class="label ml-8px">优先级</span>
           </div>
 
           <div class="flex-auto">
@@ -110,8 +111,9 @@
           </div>
         </div>
         <div class="flex py-2 my-1 items-center">
-          <div class="inline-block w-30">
-            <span class="label">目标版本</span>
+          <div class="inline-block w-30 flex items-center">
+            <i class="iconfont icon-running text-gray-600"></i>
+            <span class="label ml-8px">目标版本</span>
           </div>
           <div class="flex-auto">
             <Dropdown :trigger="['click']" class="w-250px">
@@ -140,8 +142,8 @@
           </div>
         </div>
         <div class="flex py-2 my-1">
-          <div class="w-30">
-            <span class="label">计划完成日期</span>
+          <div class="w-30 flex items-center">
+            <CalendarOutlined /><span class="label ml-8px">日期</span>
           </div>
           <div class="w-250px items-center">
             <RangePicker
@@ -152,7 +154,9 @@
           </div>
         </div>
         <div class="flex py-2 my-1 items-center">
-          <div class="w-30"><span class="label">预期时间</span></div>
+          <div class="w-30 flex items-center">
+            <ClockCircleOutlined /><span class="label ml-8px">预计工时</span>
+          </div>
           <div class="flex-auto">
             <InputNumber
               class="w-250px"
@@ -185,7 +189,15 @@
     Tag,
     RangePicker,
   } from 'ant-design-vue';
-  import { CheckOutlined, DownOutlined } from '@ant-design/icons-vue';
+  import {
+    CheckOutlined,
+    CheckSquareOutlined,
+    UserOutlined,
+    FileTextOutlined,
+    ClockCircleOutlined,
+    CalendarOutlined,
+    CreditCardOutlined,
+  } from '@ant-design/icons-vue';
   import { createTask } from '@apis/index';
   import { SelectMember, TaskTypeSelect, TaskStatusSelect } from '@/components';
   import { LevelType } from '../constants';
@@ -197,7 +209,6 @@
   });
   const emits = defineEmits(['onVisible']);
   const loading = ref<boolean>(false);
-  // const visible = ref<boolean>(false);
   const visible = computed(() => {
     return props.visible;
   });
@@ -227,9 +238,6 @@
   const trackers = inject<Ref<FieldItem[]>>('trackersList');
   const versionList = inject<Ref<FieldItem[]>>('versionList');
 
-  const computedStatusName = computed(() => {
-    return getDefaultStatus()?.[0]?.name;
-  });
   const getDefaultStatus = () => {
     if (formModel.tracker_id === TrackerType.error)
       return statusList?.value.filter(
@@ -249,8 +257,6 @@
     formModel.status_id = key;
   };
 
-  // 查询任务优先级
-  // const seletedLevelId = ref();
   const seletedLevelName = computed(() => {
     return levels?.value?.find((level) => formModel.priority_id === level.id)?.name;
   });

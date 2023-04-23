@@ -108,7 +108,6 @@ export const useTaskBusiness = () => {
     let list = [];
     if (isAnd === 'and') list = multiFilterForAnd(filterList.value, newParams);
     else list = multiFilterForOr(filterList.value, newParams);
-    console.log(`output->filterList`, filterList.value, list);
     filterList.value = list;
   };
 

@@ -226,6 +226,7 @@
   const curSideMenuName = computed(() => {
     return SIDER_MENU.find((item) => item.tag === activePanelMenuId.value)?.name;
   });
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
   const searchTypeChange = async (menuItem) => {
     if (menuItem.id === FilterType.status) {
@@ -280,7 +281,14 @@
   };
   const refreshTaskList = async () => {
     await fetchTask();
+    // 侧边栏过滤
+    filterTask({
+      field: activePanelMenuId.value,
+      value: userInfo.id,
+    });
+    //  全局筛选过滤
     if (savedFilterConfig.value?.length) multFilterType(savedFilterConfig.value);
+    // 搜索过滤
     if (searchValue.value) searchTask({ subject: searchValue.value });
     classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
   };
@@ -312,7 +320,6 @@
     searchValue.value = '';
     // 这里需要重置筛选框中保留的参数
 
-    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     filterTask({
       field: tag,
       value: userInfo.id,
