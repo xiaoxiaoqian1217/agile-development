@@ -43,7 +43,7 @@
 
               <div class="ml-auto align-top" v-if="assignedMember(element)">
                 <div
-                  class="w-5 h-5 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-xs text-light-50 -mt-8px"
+                  class="w-5 h-5 bg-amber-300 mr-3 rounded-1/2 flex items-center justify-center text-xs text-white -mt-8px"
                 >
                   <span class="text-12px">{{ assignedMember(element)?.slice(0, 1) }}</span>
                 </div>

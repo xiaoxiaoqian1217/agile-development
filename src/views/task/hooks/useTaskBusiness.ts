@@ -8,6 +8,7 @@ import { FilterType } from '../constants';
 import { FilterOptionConfig } from '@/components/task-filter-group/type';
 
 export const useTaskBusiness = () => {
+  const isLoadingTask = ref(false);
   const route = useRoute();
   const projectId = route.params.projectId;
   const taskList = ref();
@@ -112,13 +113,18 @@ export const useTaskBusiness = () => {
   };
 
   const fetchTask = async () => {
-    const taskResp = await getTaskList({
-      pid: projectId,
-      token: localStorage.getItem('token'),
-      sort: 'status:desc',
-    });
-    taskList.value = taskResp.issues;
-    filterList.value = taskResp.issues;
+    try {
+      const taskResp = await getTaskList({
+        pid: projectId,
+        token: localStorage.getItem('token'),
+        sort: 'status:desc',
+      });
+      taskList.value = taskResp.issues;
+      filterList.value = taskResp.issues;
+    } catch (error) {
+      console.log(`output->error`, error);
+      isLoadingTask.value = false;
+    }
   };
 
   const trackers = ref();
@@ -139,10 +145,17 @@ export const useTaskBusiness = () => {
   };
   const status = ref();
   const taskStatusTypes = async () => {
-    const resp = await getTaskStatusTypes({
-      token: localStorage.getItem('token'),
-    });
-    status.value = resp.tracker;
+    isLoadingTask.value = true;
+    try {
+      const resp = await getTaskStatusTypes({
+        token: localStorage.getItem('token'),
+      });
+      isLoadingTask.value = false;
+
+      status.value = resp.tracker;
+    } catch (error) {
+      isLoadingTask.value = false;
+    }
   };
   return {
     searchTask,
@@ -158,5 +171,6 @@ export const useTaskBusiness = () => {
     filterTask,
     filterList,
     multFilterType,
+    isLoadingTask,
   };
 };

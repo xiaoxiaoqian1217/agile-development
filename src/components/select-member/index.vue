@@ -9,7 +9,7 @@
     <template #option="{ value: val, label }">
       <div class="flex px-1 items-center">
         <div
-          class="w-6 h-6 bg-amber-200 mr-3 rounded-1/2 flex items-center justify-center text-white"
+          class="w-6 h-6 bg-amber-300 mr-3 rounded-1/2 flex items-center justify-center text-white"
         >
           <span>{{ label.slice(0, 1) }}</span>
         </div>
@@ -18,7 +18,7 @@
     </template>
     <template #tagRender="{ value: val, label, closable, onClose, option }">
       <Tag :closable="closable" style="margin-right: 3px" @close="onClose">
-        <span class="w-4 h-4 text-12px bg-amber-200 mr-3 rounded-1/2 text-white">
+        <span class="w-4 h-4 text-12px bg-amber-300 mr-3 rounded-1/2 text-white">
           <span>{{ label.slice(0, 1) }}</span>
         </span>
         <span class="truncate text-12px text-neutral-800">{{ label }}</span>

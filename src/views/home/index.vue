@@ -5,7 +5,7 @@
         <div class="flex flex-wrap items-start pb-20px">
           <template v-for="project in projectList" :key="project.id">
             <div
-              class="w-213px rounded-1xl m-2 overflow-hidden project-item"
+              class="w-213px m-2 overflow-hidden project-item rounded-md"
               @click="toProject(project)"
             >
               <div class="project-img-wrap"></div>
@@ -30,7 +30,6 @@
   import { onMounted, ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { useProjectApi } from '@/hooks';
-  import projectImg from '@/assets/project.png';
 
   const router = useRouter();
   const activeKey = ref('1');

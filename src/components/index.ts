@@ -4,5 +4,14 @@ import SelectMember from './select-member/index.vue';
 import TaskFilterGroup from './task-filter-group/index.vue';
 import TaskTypeSelect from './task-type-select/index.vue';
 import TaskStatusSelect from './task-stauts-select/index.vue';
+import GlobalLoading from './global-loading/index.vue';
 
-export { TaskList, SideTaskPanel, SelectMember, TaskFilterGroup, TaskTypeSelect, TaskStatusSelect };
+export {
+  TaskList,
+  SideTaskPanel,
+  SelectMember,
+  TaskFilterGroup,
+  TaskTypeSelect,
+  TaskStatusSelect,
+  GlobalLoading,
+};

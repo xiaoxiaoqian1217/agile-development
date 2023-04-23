@@ -1,13 +1,13 @@
 <template>
   <div class="mask fixed" v-if="isShow" @click="hideMask"></div>
   <div class="relative filter-box">
-    <div class="flex items-center" @click="openFilter">
+    <a class="flex items-center ant-dropdown-link" @click="openFilter">
       <FilterOutlined class="mr-1" :class="filterNum && 'text-blue-400'" />
-      <div>
+      <div class="cursor-pointer">
         <span v-if="filterNum" class="text-sky-500">{{ filterNum }}</span>
         <span v-else>筛选</span>
       </div>
-    </div>
+    </a>
     <div>
       <div
         class="absolute w-705px top-full mt-15px left-0px z-500 flex flex-col bg-light-50 py-16px px-20px shadow-lg"

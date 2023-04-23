@@ -14,7 +14,7 @@
       <!-- 顶部操作栏 -->
       <div class="tool-bar flex h-48px px-24px py-12px w-full">
         <!-- 控制任面板图标 -->
-        <span class="cursor-pointer flex items-center" @click="openTaskPanel">
+        <span class="cursor-pointer flex items-center hover:text-blue-400" @click="openTaskPanel">
           <DoubleLeftOutlined v-if="isVisiblePanel" />
           <MenuOutlined v-else />
         </span>
@@ -96,7 +96,13 @@
           ></SideTaskPanel>
         </div>
         <div class="flex flex-auto task-board overflow-x-auto w-full mb-2 pl-20px">
-          <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
+          <div class="w-full flex justify-center" v-if="isLoadingTask"><GlobalLoading /></div>
+          <div
+            v-else
+            class="flex flex-col mr-5"
+            v-for="[type, tasks] in taskBoard.groupMap"
+            :key="type"
+          >
             <TaskList
               @open-detail="showTaskDetail"
               :title="getStatusName(type)?.name"
@@ -151,7 +157,7 @@
   } from '@ant-design/icons-vue';
   import { useRouter } from 'vue-router';
   import { updateTask } from '@/apis';
-  import { TaskList, SideTaskPanel, TaskFilterGroup } from '@/components';
+  import { TaskList, SideTaskPanel, TaskFilterGroup, GlobalLoading } from '@/components';
   import { CreateTaskModal, UpdateTaskModal } from './components';
   import { FILTER_DROP_DOWN_MENU, FilterType, SIDER_MENU, type SideMenuItem } from './constants';
   import { useProjectApi, useCommonApis, useScrollX } from '@/hooks';
@@ -162,7 +168,9 @@
   const router = useRouter();
   const { getVersion, versionList, projectList, fetchProjectList } = useProjectApi();
   const { memberList, fetchMembers } = useCommonApis();
+  // const isLoadingTask = ref(false);
   const {
+    isLoadingTask,
     searchTask,
     fetchTask,
     searchTaskList,
@@ -191,6 +199,7 @@
     // todo 优化成循环并发
     await fetchTask();
     await taskStatusTypes();
+
     getVersion();
     fetchMembers();
     getTaskLevel();

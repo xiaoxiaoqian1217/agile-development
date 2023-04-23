@@ -4,9 +4,11 @@
       <div class="h-70px"></div>
       <div>
         <div
-          class="flex flex-col text-center py-8px w-60px text-12px bg-gray-light text-blue-400 rounded-xl"
+          class="flex flex-col text-center py-8px w-60px text-12px bg-gray-light text-blue-400 rounded-md"
         >
-          <AppstoreOutlined class="text-20px" />
+          <i class="iconfont icon-home-station text-25px"></i>
+
+          <!-- <AppstoreOutlined class="text-20px" /> -->
           <div class="w-full mt-1" :style="{ opacity: 1 }">项目</div>
         </div>
         <!-- <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">
@@ -22,7 +24,7 @@
 
       <Dropdown class="mb-30px mt-auto" placement="topLeft">
         <div
-          class="w-8 h-8 cursor-pointer rounded-1/2 flex items-center justify-center text-xs text-light-50 bg-amber-200"
+          class="w-8 h-8 cursor-pointer rounded-1/2 flex items-center justify-center text-xs text-light-50 bg-amber-300"
         >
           <span>{{ userInfo?.name?.slice(0, 1) }}</span>
         </div>
@@ -30,7 +32,9 @@
         <template #overlay>
           <Menu>
             <MenuItem>
-              <div @click="logOut"><LogoutOutlined /> <span>退出登录</span></div>
+              <div class="flex items-center" @click="logOut">
+                <LogoutOutlined /> <span class="ml-2">退出登录</span>
+              </div>
             </MenuItem>
           </Menu>
         </template>
