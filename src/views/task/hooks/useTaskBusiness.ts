@@ -59,7 +59,6 @@ export const useTaskBusiness = () => {
     });
   }
   const filterFunc = (item: TaskItem, option: FilterOptionConfig) => {
-    if (typeof option.type.value === 'undefined') return false;
     if (
       option.type.field !== FilterTypeField.start_date &&
       option.type.field !== FilterTypeField.due_date
@@ -101,12 +100,14 @@ export const useTaskBusiness = () => {
       filterTask({ field: activePanelMenu.field, value: activePanelMenu.value });
       return false;
     }
+    // 过滤没有选择类型z
+    const newParams = params.filter((param) => param.type.value);
     // // 1 且 0 或
     const isAnd = params.length === 1 ? 'and' : params[1]?.orAndFlag.value;
     filterTask({ field: activePanelMenu.field, value: activePanelMenu.value });
     let list = [];
-    if (isAnd === 'and') list = multiFilterForAnd(filterList.value, params);
-    else list = multiFilterForOr(filterList.value, params);
+    if (isAnd === 'and') list = multiFilterForAnd(filterList.value, newParams);
+    else list = multiFilterForOr(filterList.value, newParams);
     console.log(`output->filterList`, filterList.value, list);
     filterList.value = list;
   };

@@ -366,20 +366,20 @@
     top: 50px;
     width: 20px;
     z-index: 30;
-    height: 100%;
+    height: 80%;
   }
   .task-list-panel {
     bottom: 0px;
     top: 0px;
     position: absolute;
     transition: all 0.2s ease-in-out;
-    transform: translateX(-500px);
-    z-index: 30;
+    transform: translateX(-600px);
+    z-index: 10;
     cursor: pointer;
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
   }
   .task-list-handler:hover .task-list-panel {
-    transform: translateX(-20px);
+    transform: translateX(-25px);
   }
   .custome-input .ant-input {
     background-color: inherit;

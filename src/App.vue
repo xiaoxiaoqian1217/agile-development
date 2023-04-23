@@ -1,11 +1,9 @@
 <template>
-  <div>
-    <ConfigProvider :locale="zhCN">
-      <router-view v-slot="{ Component }">
-        <component :is="Component" />
-      </router-view>
-    </ConfigProvider>
-  </div>
+  <ConfigProvider :locale="zhCN">
+    <router-view v-slot="{ Component }">
+      <component :is="Component" />
+    </router-view>
+  </ConfigProvider>
 
   <!-- <Button type="primary" @click="$router.back()">Go back</Button> -->
 </template>

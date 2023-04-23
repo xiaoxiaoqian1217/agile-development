@@ -10,7 +10,7 @@
     </div>
   </div>
   <draggable
-    class="w-272px min-h-400px draggable-container overflow-y-auto h-full"
+    class="min-h-400px w-272px draggable-container overflow-y-auto h-full pr-5px"
     v-model="computedList"
     group="taskList"
     @change="dragChange"
@@ -58,23 +58,23 @@
               </Tag>
               <!-- <span :class="`text-${StatusColor[element.status_id]}`">{{}}</span> -->
               <img
-                class="w-20px h-20px inline-block"
+                class="w-20px mr-8px h-20px inline-block"
                 :src="iconTypes[`type${element.tracker_id}`] || iconTypes.type3"
               />
               <!-- 显示日期 -->
-              <span class="ml-1 text-12px text-gray-500 bg-gray-100 p-4px"
+              <span class="mr-8px text-12px text-gray-500 bg-gray-100 p-4px"
                 >{{ dayjs(element.start_date).format('MM-DD') }}月-{{
                   dayjs(element.due_date).format('MM-DD')
                 }}日</span
               >
-              <FileTextOutlined v-if="element.description" class="text-gray-500 text-12px" />
-              <span v-if="element.fixed_version_id" class="text-12px text-gray-500 mt-1px ml-1">
+              <FileTextOutlined v-if="element.description" class="text-gray-500 text-12px mr-8px" />
+              <span v-if="element.fixed_version_id" class="text-12px text-gray-500 mt-1px mr-8px">
                 <i class="iconfont icon-running text-gray-400"></i>
                 <span class="-mt-2px inline-block">{{
                   getVersionName(element?.fixed_version_id)
                 }}</span>
               </span>
-              <span v-if="element.estimated_hours" class="ml-1 text-12px text-gray-500 mt-1">
+              <span v-if="element.estimated_hours" class="mr-8px text-12px text-gray-500 mt-1">
                 预期时间: {{ element?.estimated_hours }}小时
               </span>
             </div>

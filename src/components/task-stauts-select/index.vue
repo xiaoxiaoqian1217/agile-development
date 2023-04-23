@@ -22,8 +22,8 @@
 <script setup lang="ts">
   import { computed, inject, type Ref } from 'vue';
   import { MenuItem, Menu, Dropdown } from 'ant-design-vue';
-  import { CheckOutlined, DownOutlined } from '@ant-design/icons-vue';
-  import { FieldItem, Status, TrackerType, TaskItem } from '@/types';
+  import { CheckOutlined } from '@ant-design/icons-vue';
+  import { FieldItem, Status, TrackerType } from '@/types';
   const props = defineProps({
     status_id: Number,
     tracker_id: Number,
@@ -42,7 +42,6 @@
   });
   const statusChange = ({ item, key }) => {
     emits('change', key);
-    // formModel.tracker_id = key;
   };
   const statusList = inject<Ref<FieldItem[]>>('statusList');
 

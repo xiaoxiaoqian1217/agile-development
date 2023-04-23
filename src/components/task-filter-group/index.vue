@@ -332,9 +332,7 @@
       optionGroup.value.forEach((item) => (item.orAndFlag.value = value));
     if (group.type.value !== undefined) emits('change', group, unref(optionGroup));
   };
-  const computedIsShow = computed(() => {
-    return props.visible;
-  });
+
   const yesOrNoChange = (group: FilterOptionConfig, value: number) => {
     if (
       group.type.field === FilterTypeField.start_date ||
