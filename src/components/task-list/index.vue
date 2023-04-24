@@ -15,12 +15,14 @@
     group="taskList"
     @change="dragChange"
     :forceFallback="true"
+    item-key="id"
     @start="dragging = true"
     @end="dragging = false"
   >
-    item-key="id" >
     <template #item="{ element }">
       <div
+        @mousemove="(e) => e.stopPropagation()"
+        @mousedown="(e) => e.stopPropagation()"
         @dragstart="(e) => e.preventDefault()"
         class="mb-2 bg-light-50 task-item-wrap flex relative cursor-pointer"
         :class="element.status_id === Status.solve && 'done'"

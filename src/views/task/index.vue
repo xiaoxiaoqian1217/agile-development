@@ -208,7 +208,7 @@
     toAllTask();
     fetchProjectList();
     searchTypeChange(activeFilterMenu);
-    // bindEle();
+    bindEle();
   });
   const searchFromName = () => {
     const value = searchValue.value;
