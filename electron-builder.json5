@@ -4,7 +4,7 @@
 {
   "appId": "YourAppID",
   "asar": true,
-  "icon": "public/faviconx64.png",
+  "icon": "public/faviconx256.png",
   "directories": {
     "output": "release/${version}"
   },
