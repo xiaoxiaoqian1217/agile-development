@@ -62,7 +62,6 @@
     return option?.label.toUpperCase().indexOf(inputValue?.toUpperCase()) >= 0;
   };
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
     emits('onChange', value);
   };
 </script>

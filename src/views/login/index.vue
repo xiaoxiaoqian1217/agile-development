@@ -46,7 +46,6 @@
     return !(formState.username && formState.password);
   });
   const onFinish = async (values: any) => {
-    console.log('Success:', values);
     await login();
     router.push({
       name: 'home',

@@ -77,7 +77,6 @@
   const activeTab = ref<string>(PAGE_ROUTE_NAME.TASK);
   const router = useRouter();
   const route = useRoute();
-  console.log(`output->route`, route.query);
   const reloadRoute = inject('reloadRoute');
   const curPath = computed(() => {
     return router.currentRoute.value;
@@ -108,7 +107,6 @@
 
   const projectName = computed(() => {
     return projectList.value.find((item) => {
-      console.log(`output->item`, item);
       return item.id === Number(route.params.projectId);
     })?.name;
   });
@@ -121,7 +119,6 @@
         ? activeTab.value
         : matchedRoutes.value[matchedRoutes.value.length];
     activeTab.value = activeRoute as string;
-    console.log(`output->activeRoute`, activeRoute);
     toTask(activeRoute as Key);
   });
   //  获取项目成员相关

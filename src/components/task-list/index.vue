@@ -121,7 +121,6 @@
   const props = withDefaults(defineProps<TaskListProps>(), {});
   const emits = defineEmits(['change', 'openDetail']);
   const { field } = props;
-  console.log(`output->`, props);
   const computedList = computed(() => props.list);
   const computedtitle = computed(() => props.title);
   const computedfield = computed(() => props.field);

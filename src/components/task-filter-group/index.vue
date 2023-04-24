@@ -301,7 +301,6 @@
       });
   };
   const deleteOption = (e: any, id: number) => {
-    console.log(`output->e`, e, id);
     e.stopPropagation();
     optionGroup.value = optionGroup.value.filter((item) => item.id !== id);
     if (optionGroup.value.length === 1) optionGroup.value[0].orAndFlag = { value: 'and' };

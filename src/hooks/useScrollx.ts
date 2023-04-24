@@ -8,7 +8,6 @@ export const useScrollX = () => {
 
     // 监听鼠标左键按下事件
     container?.addEventListener('mousedown', (e) => {
-      console.log(`output->mousedown`, 'mousedown');
       isDown = true;
       container.classList.add('active');
       startX = e.pageX - container.offsetLeft;

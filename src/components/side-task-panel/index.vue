@@ -29,7 +29,6 @@
     activePanelMenuId: String,
   });
   const activePanelMenuId = computed(() => {
-    console.log(`output-> props.activePanelMenuId`, props.activePanelMenuId);
     return props.activePanelMenuId;
   });
   const changeMenu = (sideItem: SideMenuItem) => {

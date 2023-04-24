@@ -18,7 +18,6 @@ export default defineConfig(({ command }) => {
   const isServe = command === 'serve';
   const isBuild = command === 'build';
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
-  console.log(`output->env`, process.env.VITE_API_HOST);
 
   return {
     css: {
