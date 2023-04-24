@@ -1,7 +1,6 @@
 import Project from '../../views/project/index.vue';
 import Task from '../../views/task/index.vue';
 import TaskView from '../../views/task-view/index.vue';
-import Test from '../../views/test/index.vue';
 
 export default [
   {

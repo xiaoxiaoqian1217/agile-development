@@ -14,16 +14,20 @@
     v-model="computedList"
     group="taskList"
     @change="dragChange"
-    item-key="id"
-    @start="drag = true"
-    @end="drag = false"
+    :forceFallback="true"
+    @start="dragging = true"
+    @end="dragging = false"
   >
+    item-key="id" >
     <template #item="{ element }">
       <div
+        @dragstart="(e) => e.preventDefault()"
         class="mb-2 bg-light-50 task-item-wrap flex relative cursor-pointer"
         :class="element.status_id === Status.solve && 'done'"
         @click="openTaskDetail(element)"
       >
+        <!-- @mousemove="(e) => e.stopPropagation()"
+        @mousedown="(e) => e.stopPropagation()" -->
         <div
           class="pl-4px task-item-priority opacity-100"
           :class="`bg-${LevelType[element.priority_id]}`"
@@ -145,6 +149,14 @@
   };
   const openTaskDetail = (detail) => {
     emits('openDetail', detail);
+  };
+  const handleDragStart = (event) => {
+    // event.preventDefault();
+    // event.stopPropagation();
+  };
+  const handleDrag = (event) => {
+    // event.preventDefault();
+    // event.stopPropagation();
   };
 </script>
 

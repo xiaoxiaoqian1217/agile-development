@@ -8,18 +8,19 @@ export const useScrollX = () => {
 
     // 监听鼠标左键按下事件
     container?.addEventListener('mousedown', (e) => {
+      console.log(`output->mousedown`, 'mousedown');
       isDown = true;
       container.classList.add('active');
       startX = e.pageX - container.offsetLeft;
       scrollLeft = container.scrollLeft;
-      container?.addEventListener('mouseup', funMouseUp);
+      document?.addEventListener('mousemove', funMouseMove);
 
-      container?.addEventListener('mousemove', funMouseMove);
+      container?.addEventListener('mouseup', funMouseUp);
     });
     const funMouseUp = () => {
       isDown = false;
       container.classList.remove('active');
-      container.removeEventListener('mouseup', funMouseUp);
+      document.removeEventListener('mouseup', funMouseUp);
       container.removeEventListener('mousemove', funMouseMove);
     };
     const funMouseMove = (e) => {
@@ -29,6 +30,10 @@ export const useScrollX = () => {
       const walk = (x - startX) * 1; // 定义移动距离的倍数，可以调整滚动速度
       container.scrollLeft = scrollLeft - walk;
     };
+    // taskBoard?.addEventListener('mousedown', (e) => {
+    //   console.log(`output->mousedown`, e.target);
+    //   e.stopPropagation();
+    // });
     // 监听鼠标左键抬起事件
     // container?.addEventListener('mouseup', funMouseUp);
 

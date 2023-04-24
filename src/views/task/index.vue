@@ -101,12 +101,7 @@
         </div>
         <div class="flex flex-auto task-board overflow-x-auto w-full mb-2 pl-20px">
           <div class="w-full flex justify-center" v-if="isLoadingTask"><GlobalLoading /></div>
-          <div
-            v-else
-            class="flex flex-col mr-5"
-            v-for="[type, tasks] in taskBoard.groupMap"
-            :key="type"
-          >
+          <div class="flex flex-col mr-5" v-for="[type, tasks] in taskBoard.groupMap" :key="type">
             <TaskList
               @open-detail="showTaskDetail"
               :title="getStatusName(type)?.name"
@@ -149,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref, onMounted, reactive, provide } from 'vue';
+  import { computed, ref, onMounted, reactive, provide, nextTick } from 'vue';
   import { Dropdown, Menu, MenuItem, Input } from 'ant-design-vue';
   import {
     PlusOutlined,
@@ -213,7 +208,7 @@
     toAllTask();
     fetchProjectList();
     searchTypeChange(activeFilterMenu);
-    bindEle();
+    // bindEle();
   });
   const searchFromName = () => {
     const value = searchValue.value;
@@ -348,9 +343,16 @@
     savedFilterConfig.value = filters;
     multFilterType(filters);
     if (searchValue.value) searchTask({ subject: searchValue.value });
-    console.log(`output->params`, filters);
     classifyTask(searchValue.value ? searchTaskList.value : filterList.value);
   };
+  onMounted(() => {
+    // taskBoard?.addEventListener('mousemove', (e) => {
+    //   e.stopPropagation();
+    // });
+    // taskBoard?.addEventListener('mousedown', (e) => {
+    //   e.stopPropagation();
+    // });
+  });
 </script>
 
 <style>
@@ -401,7 +403,7 @@
     box-shadow: 0px 10px 24px rgba(0, 0, 0, 0.1);
   }
   .task-list-handler:hover .task-list-panel {
-    transform: translateX(-25px);
+    transform: translateX(-20px);
   }
   .custome-input .ant-input {
     background-color: inherit;
