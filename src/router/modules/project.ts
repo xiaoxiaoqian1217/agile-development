@@ -7,13 +7,15 @@ export default [
     path: '/project/:projectId',
     name: 'project',
     component: Project,
+    meta: {
+      title: '项目',
+    },
     children: [
       {
         path: 'task/:viewId?',
         name: 'task',
         meta: {
-          title: '任务',
-          // parentRouteName: 'project',
+          title: '项目',
         },
         component: Task,
         children: [
@@ -28,16 +30,6 @@ export default [
           },
         ],
       },
-      // {
-      //   path: 'test',
-      //   name: 'test',
-      //   meta: {
-      //     title: '测试',
-      //     // parentRouteName: 'project',
-      //   },
-      //   component: Test,
-      //   // redirect: '/project/:projectId/task/allTask',
-      // },
     ],
   },
 ];

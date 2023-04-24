@@ -5,7 +5,7 @@
       <!-- left -->
       <!-- <div class="flex"> -->
       <div class="flex h-full w-24px justify-center items-center">
-        <span @click="backToHome">
+        <span @click="backToHome" class="cursor-pointer">
           <LeftOutlined />
         </span>
         <!-- 项目图片 -->

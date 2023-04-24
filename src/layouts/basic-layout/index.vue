@@ -1,13 +1,14 @@
 <template>
   <div class="flex h-full">
     <div style="width: 80px" class="side-menu flex flex-col items-center">
-      <div class="h-70px"></div>
+      <div class="h-70px flex justify-center items-center">
+        <img :src="logoImg" class="w-30px h-30px" />
+      </div>
       <div>
         <div
           class="flex flex-col text-center py-8px w-60px text-12px bg-gray-lightHex text-blue-default rounded-md"
         >
           <i class="iconfont icon-home-station text-20px"></i>
-
           <div class="w-full mt-1" :style="{ opacity: 1 }">项目</div>
         </div>
         <!-- <Menu v-model:selectedKeys="selectedKeys" mode="inline" :inline-collapsed="true">
@@ -52,6 +53,7 @@
   import { Dropdown, Menu, MenuItem } from 'ant-design-vue';
   import { LogoutOutlined } from '@ant-design/icons-vue';
   import { useRouter } from 'vue-router';
+  import logoImg from '@/assets/logo.png';
   const selectedKeys = ref(['1']);
   const router = useRouter();
   const userInfo = JSON.parse(sessionStorage.getItem('userInfo') || '{}');

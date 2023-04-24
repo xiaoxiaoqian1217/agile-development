@@ -11,6 +11,9 @@ const router = createRouter({
       name: 'basic-layout',
       component: BasicLayout,
       redirect: '/home',
+      meta: {
+        title: '首页',
+      },
       children: [
         {
           path: 'home',
@@ -27,8 +30,8 @@ const router = createRouter({
     },
   ],
 });
-router.beforeEach(async (to, from) => {
-  document.title = to.meta.title || '项目管理';
+router.beforeEach(async (to, from, next) => {
+  document.title = to.meta.title;
   if (
     // 检查用户是否已登录
     !sessionStorage.getItem('token') &&
@@ -38,5 +41,6 @@ router.beforeEach(async (to, from) => {
     // 将用户重定向到登录页面
     return { name: 'login' };
   }
+  next();
 });
 export default router;
