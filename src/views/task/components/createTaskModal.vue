@@ -202,6 +202,7 @@
   import { SelectMember, TaskTypeSelect, TaskStatusSelect } from '@/components';
   import { LevelType } from '../constants';
   import { FieldItem, Status, TrackerType, TaskItem } from '@/types';
+  import { cloneDeep } from 'lodash';
   const route = useRoute();
   const projectId = route.params.projectId;
   const props = defineProps({
@@ -231,7 +232,7 @@
     watcher_user_ids: '',
     parent_issue_id: '',
   };
-  const formModel = reactive<TaskItem>({ ...defaultFormModel });
+  const formModel = reactive<TaskItem>({ ...cloneDeep(defaultFormModel) });
 
   const levels = inject<Ref<FieldItem[]>>('levelList');
   const statusList = inject<Ref<FieldItem[]>>('statusList');

@@ -311,11 +311,14 @@
   };
   const isShowUpdateModal = ref(false);
 
-  const taskdetail = reactive({});
+  const taskdetail = ref();
   const showTaskDetail = (detail: TaskItem) => {
-    Object.keys(detail).forEach((key) => {
-      taskdetail[key] = detail[key as keyof TaskItem];
-    });
+    // Object.keys(detail).forEach((key) => {
+    //   if (detail[key as keyof TaskItem]) {
+    //     taskdetail[key] = detail[key as keyof TaskItem];
+    //   } else delete taskdetail[key];
+    // });
+    taskdetail.value = detail;
     isShowUpdateModal.value = true;
   };
 

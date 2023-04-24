@@ -136,6 +136,7 @@
         </div>
         <div class="flex-auto">
           <RangePicker
+            :allow-clear="false"
             :disabled-date="disabledDate"
             class="w-250px"
             v-model:value="computedDateRange"
@@ -197,14 +198,21 @@
     return props.visible;
   });
   const versionList = inject<Ref<FieldItem[]>>('versionList');
+  const computedDetial = computed(() => {
+    return {
+      ...props.detail,
+      start_date: detail?.start_date ? dayjs(detail.start_date) : undefined,
+      due_date: detail?.due_date ? dayjs(detail.due_date) : undefined,
+    };
+  });
 
-  const defaultDetail = {
-    ...props.detail,
-    start_date: detail?.start_date ? dayjs(detail.start_date) : undefined,
-    due_date: detail?.due_date ? dayjs(detail.due_date) : undefined,
-  };
+  // const defaultDetail = {
+  //   ...props.detail,
+  //   start_date: detail?.start_date ? dayjs(detail.start_date) : undefined,
+  //   due_date: detail?.due_date ? dayjs(detail.due_date) : undefined,
+  // };
 
-  const formModel = reactive(defaultDetail);
+  const formModel = reactive(computedDetial.value);
   const levels = inject<Ref<FieldItem[]>>('levelList');
   const trackers = inject<Ref<FieldItem[]>>('trackersList');
 
@@ -274,7 +282,7 @@
     }
     formModel.start_date = start_date;
     formModel.due_date = due_date;
-    date && updateTaskDetail({ start_date: dateString[0], due_date: dateString[1] });
+    if (date) updateTaskDetail({ start_date: dateString[0], due_date: dateString[1] });
   };
 </script>
 

@@ -68,7 +68,9 @@
                 :src="iconTypes[`type${element.tracker_id}`] || iconTypes.type3"
               />
               <!-- 显示日期 -->
-              <span class="mr-8px text-12px text-gray-500 bg-gray-100 p-4px"
+              <span
+                v-if="element.start_date && element.due_date"
+                class="mr-8px text-12px text-gray-500 bg-gray-100 p-4px"
                 >{{ dayjs(element.start_date).format('MM-DD') }}月-{{
                   dayjs(element.due_date).format('MM-DD')
                 }}日</span
