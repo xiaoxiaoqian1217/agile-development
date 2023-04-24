@@ -39,8 +39,8 @@ router.beforeEach(async (to, from, next) => {
     to.name !== 'login'
   ) {
     // 将用户重定向到登录页面
-    return { name: 'login' };
-  }
-  next();
+    next({ name: 'login' });
+  } else next();
+  // next();
 });
 export default router;
