@@ -37,7 +37,7 @@
     "prettier": "^2.8.7",
     "typescript": "^5.0.2",
     "vite": "^4.1.4",
-    "vite-plugin-electron": "^0.11.1",
+    "vite-plugin-electron": "^0.12.0",
     "vite-plugin-electron-renderer": "^0.13.14",
     "vite-plugin-style-import": "^2.0.0",
     "vue": "^3.2.47",
